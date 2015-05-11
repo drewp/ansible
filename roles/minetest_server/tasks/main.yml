@@ -1,0 +1,39 @@
+---
+- git: repo=https://github.com/minetest/minetest.git dest=/opt/minetest version=3993093f51544d4eb44efb57c973e29107ea2f7a
+- git: repo=https://github.com/minetest/minetest_game.git dest=/opt/minetest/games/minetest_game version=9eb9502209b33bed33a36fb3db2ab4a59716fe5b
+
+- apt: name=build-essential
+- apt: name=libirrlicht-dev
+- apt: name=cmake
+- apt: name=libbz2-dev
+- apt: name=libpng12-dev
+- apt: name=libjpeg8-dev
+- apt: name=libxxf86vm-dev
+- apt: name=libgl1-mesa-dev
+- apt: name=libsqlite3-dev
+- apt: name=libogg-dev
+- apt: name=libvorbis-dev
+- apt: name=libopenal-dev
+- apt: name=libcurl4-gnutls-dev
+- apt: name=libfreetype6-dev
+- command: cmake . -DRUN_IN_PLACE=1 -DBUILD_CLIENT=0 chdir=/opt/minetest
+- command: make -j4 chdir=/opt/minetest
+  
+- file: path=/opt/minetest/mods state=absent
+- file: path=/opt/minetest/mods state=link src=/home/drewp/.minetest/mods
+
+  
+- supervisor_process_mod:
+    name=minetest_30000
+    directory=/home/drewp
+    user=drewp
+    command="/opt/minetest/bin/minetestserver --config /home/drewp/.minetest/minetest.conf --gameid minetest --port 30000 --world /home/drewp/.minetest/worlds/minecraft"
+  notify: supervisord update
+  
+- supervisor_process_mod:
+    name=minetest_30001
+    directory=/home/drewp
+    user=drewp
+    command="/opt/minetest/bin/minetestserver --config /home/drewp/.minetest/minetest.conf --gameid minetest --port 30001 --world /home/drewp/.minetest/worlds/oakland"
+  notify: supervisord update
+

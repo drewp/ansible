@@ -1,0 +1,8 @@
+---
+# these were all purge=true in puppet, but there is nothing yet to
+# clean out unmanaged entries in ansible
+
+- file: path=/var/lib/openid_proxy.d state=directory
+- file: path=/var/lib/nginx.d/ state=directory
+- file: path=/var/lib/ruler.d state=directory
+  

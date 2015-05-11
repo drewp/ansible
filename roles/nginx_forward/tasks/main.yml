@@ -1,0 +1,44 @@
+---
+
+- apt_repository: repo=ppa:nginx/stable
+- apt: update_cache=yes pkg=nginx=1.6.2-5+trusty0 state=present
+- name: do not use init.d to launch nginx
+  service: name=nginx enabled=no
+
+- command: /my/proj/openid_proxy/bin/python build_nginx_conf.py /tmp/nginx.conf prime chdir=/my/proj/openid_proxy
+  delegate_to: bang
+  tags:
+    - nginx_conf
+    
+- name: install the generated host-specific nginx conf
+  copy: src=/tmp/nginx.conf dest=/etc/nginx/nginx.conf owner=root group=root mode=0644
+  notify: nginx update
+  tags:
+    - nginx_conf
+
+- name: install the other standard nginx conf files
+  copy:
+    src=/my/proj/openid_proxy/build_nginx/{{ item }}
+    dest=/etc/nginx/{{ item }}
+    owner=root
+    group=root
+    mode=0644
+  with_items:
+    - gzip.conf
+    - http-proxy-header.conf
+    - http.conf
+    - mime.types
+    - top.conf
+    - tiny.conf
+    - default_server.conf
+  notify: nginx update
+  tags:
+    - nginx_conf
+
+- supervisor_process_mod:
+    name=nginx
+    user=root
+    directory=/tmp
+    command="/usr/sbin/nginx -c /etc/nginx/nginx.conf"
+  notify:
+    - supervisord update

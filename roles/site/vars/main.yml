@@ -1,0 +1,6 @@
+---
+openid: "no" # note that this becomes False even though I meant 
+accessLog: true
+upstreamPath: /
+domain: bigasterisk.com
+root_page_timeout_secs: 1

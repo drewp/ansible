@@ -1,0 +1,8 @@
+---
+- supervisor_process_mod:
+    name=photo_fileschangedpost
+    directory=/my/site/photo
+    user=drewp
+    command=/my/site/photo/fileschangedpost
+  notify: supervisord update
+  

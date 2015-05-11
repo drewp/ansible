@@ -1,0 +1,7 @@
+---
+- name: dhcpd reload
+  service: name=isc-dhcp-server state=reloaded
+
+- name: tinydns data
+  command: make chdir=/etc/tinydns/root
+  notify: house dns restart

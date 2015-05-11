@@ -1,0 +1,26 @@
+---
+- apt: pkg=mpd
+- service: name=mpd enabled=no
+
+- set_fact: isAdminHost=false
+- set_fact: isAdminHost=true
+  when: ansible_hostname == 'bang'
+- template: dest=/etc/mpd.conf src=mpd.conf.j2 owner=root mode=0644
+
+- file: path=/var/lib/mpd state=directory
+- file: path=/var/lib/mpd/state state=touch
+- file: path=/var/lib/mpd/state owner=drewp
+
+- cron: user=drewp hour=5 name="mpc update" job="mpc update >/dev/null"
+  when: isAdminHost == 'true'
+
+# see http://blog.louiz.org/pulseaudio_mpd for XDG_RUNTIME_DIR note
+- supervisor_process_mod:
+    name=mpd
+    user=drewp
+    environment="DISPLAY=:0.0,XDG_RUNTIME_DIR=/run/user/501"
+    command="/usr/bin/mpd --no-daemon --stderr /etc/mpd.conf"
+  notify:
+    - supervisord update
+
+  

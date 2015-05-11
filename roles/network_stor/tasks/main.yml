@@ -1,0 +1,3 @@
+---
+- copy: dest=/etc/network/interfaces src=interfaces owner=root group=root
+- copy: dest=/etc/udev/rules.d/70-persistent-net.rules src=net.rules owner=root group=root

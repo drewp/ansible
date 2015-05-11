@@ -1,0 +1,9 @@
+---
+- apt: name=postfix state=present
+- command: postconf -e 'inet_protocols = ipv4'
+- command: postconf -e 'relayhost = bang.bigasterisk.com'
+- service: name=postfix state=reloaded
+- apt: name=bsd-mailx state=present
+
+# test like
+# date | mail -s 'test' drewp@bigasterisk.com -- -f robot@bigasterisk.com

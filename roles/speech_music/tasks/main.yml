@@ -1,0 +1,16 @@
+---
+- apt: pkg=libopenal1 state=present
+- apt: pkg=libalut0 state=present
+- apt: pkg=festival state=present 
+- apt: pkg=sox
+
+# currently breaking pulseaudio for everyone else :(
+- file: path=/var/lib/supervisor.d/speechMusic_9049.conf state=absent
+  notify: supervisord update
+
+#- supervisor_process_mod:
+#    name=speechMusic_9049
+#    directory=/my/proj/homeauto/service/speechMusic
+#    command="/my/proj/homeauto/service/speechMusic/bin/{{ 'python' if ansible_architecture == 'x86_64' else 'python32' }} speechMusic.py"
+#    user=drewp
+    

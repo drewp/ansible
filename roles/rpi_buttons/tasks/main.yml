@@ -1,0 +1,8 @@
+---
+- supervisor_process_mod:
+    name=rpi_buttons
+    directory=/my/proj/homeauto/service/thermostat/
+    command=/my/proj/homeauto/service/thermostat/rpi_buttons.py
+    user=root
+  notify:
+   - supervisord update

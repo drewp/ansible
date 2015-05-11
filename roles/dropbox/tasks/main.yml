@@ -1,0 +1,18 @@
+---
+- file: path=/etc/apt/sources.list.d/dropbox.list state=absent
+- get_url:
+    dest=/home/drewp/dropbox-lnx.x86_64.tgz
+    url=https://www.dropbox.com/download?plat=lnx.x86_64
+- command:
+    tar xzf dropbox-lnx.x86_64.tgz
+    chdir=/home/drewp
+    creates=/home/drewp/.dropbox-dist
+- group: gid=14564 name=dropbox
+- user: name=dropbox uid=14564 group=dropbox
+- file: path=/home/drewp/.dropbox state=directory group=dropbox mode=0770
+- file: path=/home/drewp/Dropbox state=directory mode=0770
+- supervisor_process_mod: 
+    name=dropbox
+    command="/home/drewp/.dropbox-dist/dropboxd"
+    user=dropbox
+  notify: supervisord update

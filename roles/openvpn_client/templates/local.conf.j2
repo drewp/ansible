@@ -1,0 +1,59 @@
+client
+
+ca /etc/openvpn/ca.crt
+cert /etc/openvpn/{{ remote }}.crt
+key /etc/openvpn/{{ remote }}.key
+tls-auth /etc/openvpn/ta.key 1
+tls-remote server
+
+dev tun
+resolv-retry infinite
+nobind
+
+remote vpn.bigasterisk.com
+
+float
+
+comp-lzo
+
+# Our up script will establish routes once the VPN is alive.
+# Running scripts need the script-security set to 2.
+#script-security 2
+#up ./openvpn.up
+
+persist-tun
+persist-key
+
+# Verbosity level.
+# 0 -- quiet except for fatal errors.
+# 1 -- mostly quiet, but display non-fatal network errors.
+# 3 -- medium output, good for normal operation.
+# 9 -- verbose, good for troubleshooting
+verb 0
+
+# Log files
+log-append {{ openvpn_log_dir }}/openvpn.log
+
+
+#  Inactivity timeout
+# suggested by http://www.jethrocarr.com/2012/06/17/keeping-android-wifi-awake/
+keepalive 300 600 
+#ping-timer-rem
+
+# TLS handshake timeout
+hand-window 10
+
+# i need these settings to talk to boxes on the other side, but they
+# might not work under linux. is there a similar thing to edit
+# resolv.conf at the right times?
+dhcp-option DOMAIN bigasterisk.com
+dhcp-option DNS 10.1.0.1
+
+{% if remote == 'bang' %}
+management 127.0.0.1 9018
+{% endif %}
+
+{% if remote == 'drewnote' %}
+dev-node /dev/tun
+{% endif %}
+

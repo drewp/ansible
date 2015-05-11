@@ -1,0 +1,26 @@
+---
+- file: state=directory path=/opt/supdebug
+
+# for later when this is in its own repo
+#- name: initial checkout
+#  command: darcs get ... creates=/opt/supdebug/_darcs
+#- name: update
+#  command: darcs pull ...
+
+- local_action: command rsync -az --delete /my/proj/supdebug/ {{ inventory_hostname }}:/opt/supdebug
+
+- apt: pkg=python-virtualenv state=installed
+- apt: pkg=python2.7-dev state=installed
+- apt: pkg=libffi-dev state=installed
+- apt: pkg=libssl-dev state=installed
+
+- command: virtualenv --system-site-packages /opt/supdebug creates=/opt/supdebug/bin
+- command: /opt/supdebug/bin/pip install cyclone tailer
+
+- supervisor_process_mod:
+    name=supdebug_10004
+    directory=/opt/supdebug
+    command="/opt/supdebug/bin/python supdebug.py"
+    user=drewp
+    autostart=true
+  notify: supervisord update

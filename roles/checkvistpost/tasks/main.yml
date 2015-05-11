@@ -1,0 +1,20 @@
+---
+- lineinfile:
+    dest=/etc/aliases
+    regexp="^checkvist:"
+    line="checkvist{{':'}} \"| /usr/bin/curl http://bang:9108/newmail -H 'Content-type{{':'}} message/rfc822' --data-binary @-\""
+# notify newaliases
+
+- lineinfile:
+    dest=/etc/aliases
+    regexp="^leafnotify:"
+    line="leafnotify{{':'}} \"| /usr/bin/curl http://bang:9108/newmail -H 'Content-type{{':'}} message/rfc822' --data-binary @-\""
+# notify newaliases
+
+- supervisor_process_mod:
+    name=mailops_9108
+    directory=/my/proj/mailops
+    command="/my/proj/mailops/bin/python mailops.py"
+    user=drewp
+
+# weird colon bug https://github.com/ansible/ansible/issues/1341

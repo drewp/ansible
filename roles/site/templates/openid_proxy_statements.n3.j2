@@ -1,0 +1,18 @@
+@prefix : <http://bigasterisk.com/openid_proxy#> .
+@prefix site: <http://bigasterisk.com/openidProxySite/> .
+@prefix acl: <http://www.w3.org/ns/auth/acl#> .
+
+site:{{name}}
+  :host "{{domain}}";
+  :requestPrefix "{{path}}";
+  :proxyUrlPrefix "{{upstreamTarget}}" .
+
+{% if openid == 'anonymous' %}
+  :publicAccess acl:accessTo site:{{name}} .
+{% elif openid == 'no' %}
+  site:{{name}} a :NonOpenidProxiedSite .
+{% else %}
+  :admin1 acl:accessTo site:{{name}} .
+  :admin2 acl:accessTo site:{{name}} .
+{% endif %}
+      

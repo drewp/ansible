@@ -1,0 +1,10 @@
+## Allow read-only ZoL commands to be called through sudo
+## without a password. Remove the first '#' column to enable.
+##
+## CAUTION: Any syntax error introduced here will break sudo.
+##
+## Cmnd alias specification
+Cmnd_Alias C_PACTL = \
+  /usr/bin/pactl list *
+
+ALL ALL = (drewp) NOPASSWD: C_PACTL

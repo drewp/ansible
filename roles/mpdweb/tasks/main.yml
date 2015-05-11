@@ -1,0 +1,7 @@
+---
+- supervisor_process_mod:
+    name=mpdweb_9009
+    directory=/my/proj/pympd
+    command="{{ '/my/proj/pympd/bin/python' if ansible_architecture == 'x86_64' else '/usr/bin/python' }} mpdweb.py -p 9009"
+    user=drewp
+    autostart=true

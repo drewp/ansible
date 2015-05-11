@@ -1,0 +1,25 @@
+---
+- group: name=adm gid=4
+- group: name=cdrom gid=24
+- group: name=dialout gid=20
+- group: name=dip gid=30
+- group: name=lp gid=7
+# prime has something on 109
+- group: name=lpadmin gid=200
+- group: name=plugdev gid=46
+
+- group: name=drewp gid=1000
+- group: name=damon gid=3011
+- group: name=ffg gid=3008
+
+- user: name=drewp uid=501 group=drewp groups=adm,cdrom,sudo,dip,plugdev,lpadmin,ffg,dialout,lp
+- user: name=damon uid=3011 group=damon groups=ffg
+
+- group: name=brettw gid=3012
+- user: name=brettw uid=3012 group=brettw
+- authorized_key: user=brettw key="{{ lookup('file', 'brettw-key') }}"
+- file: path=/home/brettw/public_html state=directory owner=brettw group=brettw
+# brett fills this dir himself, and there's no code yet to back it up and reconstruct it if prime is rebuilt.
+
+- user: name=ffg uid=3013 group=ffg
+- file: path=/home/ffg/.ssh state=directory owner=ffg group=ffg mode=700

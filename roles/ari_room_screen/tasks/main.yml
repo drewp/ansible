@@ -1,0 +1,45 @@
+---
+
+- copy: dest="/etc/lightdm/lightdm.conf" content="[SeatDefaults]\nautologin-user=drewp\nautologin-user-timeout=0"
+
+#- copy: dest="/usr/share/xsessions/qtile_remote.desktop" content="[Desktop Entry]\nName=qtile_remote\nExec=/my/proj/qtile/bin/qtile -s /tmp/qtile.sock -c /my/proj/qtile/remote.py"
+#- copy: dest="/home/drewp/.dmrc" content="[Desktop]\nSession=qtile_remote\nLanguage=en_US.utf8\nLayout=us\nLanglist=en_US:en\nLCMess=en_US.UTF-8"
+- copy: dest="/home/drewp/.dmrc" content="[Desktop]\nSession=fvwm\nLanguage=en_US.utf8\nLayout=us\nLanglist=en_US:en\nLCMess=en_US.UTF-8"
+
+- supervisor_process_mod:
+    name=room_server_10005
+    directory=/my/proj/ariRoom
+    command="/my/proj/ariRoom/bin/python ariRoom.py"
+    user=drewp
+  notify: supervisord update
+  
+- supervisor_process_mod:
+    name=display_console
+    environment="DISPLAY=:0"
+    command="/usr/bin/google-chrome-unstable --app=https://bigasterisk.com/room/ari/"
+    directory="/home/drewp"
+    user=drewp
+    autostart=false
+  notify: supervisord update
+
+- supervisor_process_mod:
+    name=display_minetest
+    environment="DISPLAY=:0"
+    command="/home/drewp/start_minetest 30000"
+    directory="/home/drewp"
+    user=drewp
+    autostart=false
+    stopasgroup=true
+  notify: supervisord update
+
+- supervisor_process_mod:
+    name=display_minetest_oakland
+    environment="DISPLAY=:0"
+    command="/home/drewp/start_minetest 30001"
+    directory="/home/drewp"
+    user=drewp
+    autostart=false
+    stopasgroup=true
+  notify: supervisord update
+
+

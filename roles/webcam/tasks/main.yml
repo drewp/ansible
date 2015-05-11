@@ -1,0 +1,10 @@
+---
+- name: webcam {{ camName }} serving on {{ port }} with -c {{ config }}
+  supervisor_process_mod:
+    name=webcam_{{ camName }}_{{ port }}
+    directory=/my/proj/webcam2
+    user=drewp
+    autostart=true
+    autorestart=true
+    command="/my/proj/webcam2/{{ 'bin/python' if ansible_architecture == 'x86_64' else 'env32/bin/python' }} /my/proj/webcam2/gstgrab -c {{ config }}"
+  notify: supervisord update

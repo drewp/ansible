@@ -1,0 +1,3 @@
+---
+- apt: pkg=mosquitto
+- service: name=mosquitto enabled=yes state=started

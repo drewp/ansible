@@ -1,0 +1,30 @@
+---
+
+#- supervisor_process_mod: 
+#    name=starArduino_9014
+#    directory=/my/proj/homeauto/service/starArduino
+#    command="/my/proj/homeauto/service/starArduino/bin/python /my/proj/homeauto/service/starArduino/starArduino.py"
+#    user=drewp
+#  notify: supervisord update
+
+#- supervisor_process_mod: 
+#    name=remoteSlideshow_3004
+#    directory=/my/proj/homeauto/service/remoteSlideshow/www
+#    command="/my/proj/homeauto/service/remoteSlideshow/node_modules/nodefront/nodefront.js serve -co build 3004"
+#    user=drewp
+#  notify: supervisord update
+
+#- supervisor_process_mod: 
+#    name=barcodePlayer_9011
+#    directory=/my/proj/homeauto/service/starArduino
+#    command="/my/proj/homeauto/service/starArduino/bin/python barcodePlayer.py"
+#    user=drewp
+#  notify: supervisord update
+
+#- supervisor_process_mod: 
+#    name=audioInputLevels
+#    directory=/my/proj/homeauto/service/audioInputLevels
+#    command="/my/proj/homeauto/service/audioInputLevels/bin/python32 audioInputLevelsPulse.py --source alsa_input.usb-HP_HP_Webcam_HD-4110-02-HD4110.analog-mono"
+#    user=drewp
+#  notify: supervisord update
+  

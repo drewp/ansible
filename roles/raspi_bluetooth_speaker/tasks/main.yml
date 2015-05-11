@@ -1,0 +1,33 @@
+---
+
+- user: name=pi append=yes group=lp 
+- apt: name=bluez
+- apt: name=pulseaudio-module-bluetooth
+- apt: name=python-gobject
+- apt: name=python-gobject-2
+- apt: name=bluez-tools
+
+- copy: src=audio.conf dest=/etc/bluetooth/audio.conf owner=root group=root mode=644
+- copy: src=daemon.conf dest=/etc/pulse/daemon.conf owner=root group=root mode=644
+
+- set_fact:
+    bluetooth_name=bigasterisk-bedroom
+    bluetooth_mac="00:20:E0:CC:2D:65"
+    audio_sink="alsa_output.0.analog-stereo"
+    bluetooth_pin="0000"
+  
+- template: src=main.conf.j2 dest=/etc/bluetooth/main.conf owner=root group=root mode=644
+- template: src=var_config.j2 dest=/var/lib/bluetooth/{{ bluetooth_mac }}/config owner=root group=root mode=644  
+
+- lineinfile:
+    dest=/etc/udev/rules.d/99-input.rules
+    regexp="^KERNEL"
+    line='KERNEL=="input[0-9]*", RUN+="/usr/lib/udev/bluetooth"'
+
+- file: path=/usr/lib/udev state=directory
+- template: src=udev_bluetooth.j2 dest=/usr/lib/udev/bluetooth owner=root group=root mode=774
+- template: src=bluetooth-agent.j2 dest=/etc/init.d/bluetooth-agent owner=root group=root mode=755
+- command: update-rc.d bluetooth-agent defaults
+  
+  
+  

@@ -1,0 +1,5 @@
+---
+- apt: pkg=openvpn state=present
+- copy: dest=/etc/openvpn/server.conf src=server.conf
+- copy: dest=/etc/openvpn/ta.key src=ta.key owner=root group=root mode=0600
+# restart openvpn

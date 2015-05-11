@@ -1,0 +1,30 @@
+---
+- apt: pkg=ufw state=present
+
+# here we'd clear existing rules but i'm scared to lose my ansible connection
+  
+- ufw: rule=allow proto=tcp to_port=ssh
+- ufw: rule=allow proto=tcp to_port=http
+- ufw: rule=allow proto=tcp to_port=https
+- ufw: rule=allow proto=tcp to_port=smtp
+- ufw: rule=allow proto=tcp to_port=imaps
+- ufw: rule=allow to_port=openvpn
+
+- name: mqtt
+  ufw: rule=allow to_port=1883
+
+- name: bling openvpn
+  ufw: rule=allow to_port=1195
+
+- name: cjdns
+  ufw: rule=allow to_port=9878
+
+- name: internal
+  ufw: rule=allow from_ip=10.3.0.0/24
+
+- name: internal, bling openvpn
+  ufw: rule=allow from_ip=10.5.0.0/24
+
+
+- ufw: state=enabled
+  

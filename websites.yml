@@ -1,0 +1,280 @@
+---
+- hosts: bang
+  gather_facts: no
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - role: site
+      name: 'heist_querytransactions'
+      port: "10003"
+      path: "/heist/"
+      openid: "admin"
+      serverHost: "bang"
+      process:
+        directory: "/my/proj/heist"
+        command: "/my/proj/heist/bin/python querytransactions.py"
+
+    - role: site
+      name: 'darcsweb'
+      path: "/darcs/"
+      openid: "anonymous"
+      serverHost: "bang"
+      port: "8004"
+      root_page_timeout_secs: 10
+      process:
+        directory: "/my/site/darcsweb"
+        command: "nice /my/site/darcsweb/serve"
+        user: "darcsweb"
+    
+    - role: site
+      name: 'href'
+      path: "/href/"
+      openid: "anonymous"
+      serverHost: "bang"
+      port: "10002"
+      process:
+        directory: "/my/proj/href"
+        command: "/my/proj/href/run"
+
+#    - role: site
+#      name: 'thermostat'
+#      path: "/thermostat/"
+#      openid: "admin"
+#      serverHost: "bang"
+#      accessLog: false
+#      port: "10001"
+#      process:
+#        directory: "/my/proj/homeauto/service/thermostat"
+#        command: "/my/proj/homeauto/service/thermostat/bin/python thermostat.py"
+
+    - role: site
+      tags: ['babysitcoop']
+      name: 'babysitcoop'
+      path: "/babysitcoop/"
+      openid: "anonymous"
+      serverHost: "bang"
+      port: "3002"
+      process:
+        directory: "/my/proj/babysitcoop"
+        command: "/my/proj/babysitcoop/bin/python babysitcoop.py"
+
+    - role: site
+      tags: ['babysitcoop']
+      name: 'babysitcoop_jm'
+      path: "/jmbc/"
+      openid: "anonymous"
+      serverHost: "bang"
+      port: "3004"
+      process:
+        directory: "/my/proj/babysitcoop_jm"
+        environment: "BABYSIT_INSTANCE=jm"
+        command: "/my/proj/babysitcoop/bin/python babysitcoop.py"
+        
+    - role: site
+      name: 'bigfoaf'
+      path: "/foaf/"
+      upstreamPath: "/foaf/"
+      openid: "admin"
+      serverHost: "bang"
+      port: "3003"
+      process:
+        directory: "/my/proj/bigfoaf"
+        command: "/my/proj/bigfoaf/bin/python bigfoaf.py"
+        
+    - role: site
+      name: 'activity'
+      path: "/activity/"
+      openid: "admin"
+      serverHost: "bang"
+      port: "9067"
+      process:
+        directory: "/my/site/magma/activityMerge"
+        command: "/my/site/magma/buildout_bin/python ./activity_merge.py 9067"
+        
+    - role: site
+      name: 'diarybot'
+      path: "/diary/"
+      openid: "admin"
+      serverHost: "bang"
+      port: "9048" # also talks jabber
+      process:
+        directory: "/my/proj/diarybot"
+        command: "/my/proj/diarybot/start"
+        
+    - role: site
+      name: 'wesabe'
+      path: "/wesabe/"
+      openid: "admin"
+      serverHost: "bang"
+      port: "9044"
+      root_page_timeout_secs: 10
+      process:
+        directory: "/my/proj/wesabe-rdf"
+        command: "/my/proj/wesabe-rdf/bin/python /my/proj/wesabe-rdf/pervisit.py"
+
+    - role: site
+      name: 'search'
+      path: "/search/"
+      openid: "admin"
+      serverHost: "bang"
+      port: "9096"
+      process:
+        directory: "/my/proj/search"
+        command: "java -jar /my/proj/search/target/search-assembly-1.7.jar 9096"
+        stdout_logfile_backups: 2
+        stderr_logfile_backups: 2
+
+    - role: site
+      name: 'searchFiles'
+      path: "/search/files/"
+      openid: "admin"
+      serverHost: "bang"
+      port: "9089"
+      process:
+        directory: "/my/proj/fsindex"
+        command: "/my/proj/fsindex/bin/python fsindex.py"
+
+    - role: site
+      name: 'whopickedthis'
+      path: "/"
+      openid: "anonymous"
+      serverHost: "bang"
+      port: "9109"
+      domain: "whopickedthis.com"
+      process:
+        directory: "/my/site/whopickedthis"
+        command: "/my/site/whopickedthis/whopickedthis.py"
+
+    - role: site
+      name: 'qrnotifyme'
+      path: "/qrnotifyme/"
+      openid: "anonymous"
+      serverHost: "bang"
+      port: "9107"
+      process:
+        directory: "/my/proj/qrnotifyme"
+        command: "/my/proj/qrnotifyme/bin/python qrnotifyme.py"
+
+    - role: site
+      name: 'heist_querytransactions'
+      path: "/heist/"
+      openid: "admin"
+      serverHost: "bang"
+      port: "10003"
+      process:
+        directory: "/my/proj/heist"
+        command: "/my/proj/heist/bin/python querytransactions.py"
+
+    - role: site
+      name: 'jessicaanddavidswedding'
+      path: "/jessicaanddavidswedding/"
+      openid: "no"
+      serverHost: "bang"
+      port: "3190"
+      process:
+        directory: "/home/dmcc/wedding"
+        command: "/home/dmcc/wedding/env/bin/python server_http.py"
+      tags: ['jessicaanddavidswedding']
+
+    - role: site
+      name: 'firedata'
+      path: "/firedata/"
+      openid: "no"
+      serverHost: "bang"
+      port: "3191"
+      root_page_timeout_secs: 5
+      process:
+        directory: "/my/proj/firedata"
+        command: "/usr/bin/coffee firedata.coffee"
+      tags: ['firedata']
+      
+    - role: site
+      name: 'firedata_zipborders'
+      path: '/firedata/zipborders/'
+      serverHost: "bang"
+      port: "3192"
+      process:
+        directory: "/my/proj/firedata"
+        command: "/usr/bin/coffee zipborders.coffee"
+      tags: ['firedata']
+
+    - role: site
+      name: 'colorcast'
+      path: '/colorcast/'
+      serverHost: "bang"
+      port: "9094"
+      process:
+        directory: "/my/proj/colorcast"
+        command: "/my/proj/colorcast/bin/python getcolors.py"
+      openid: "anonymous"
+
+    - role: site
+      name: 'daily'
+      path: '/daily/'
+      serverHost: "bang"
+      port: "9111"
+      process:
+        directory: "/my/proj/pimscreen/daily"
+        command: "/my/proj/pimscreen/bin/python daily.py"
+      openid: "admin"
+      tags: ['daily']
+
+    - role: site
+      name: 'timebank'
+      path: "/timebank/"
+      openid: "admin"
+      serverHost: "bang"
+      port: "10006"
+      process:
+        directory: "/my/proj/ariRoom"
+        command: "/my/proj/ariRoom/bin/python timebank.py"
+      tags: ['timebank']
+        
+    - role: site
+      name: 'dhcpleases'
+      path: "/dhcpleases/"
+      openid: "admin"
+      serverHost: "bang"
+      port: "9073"
+      process:
+        directory: "/my/proj/homeauto/service/dhcpleases/"
+        command: "/my/proj/homeauto/service/dhcpleases/bin/python dhcpleases.py"
+      tags: ['dhcpleases']
+
+    - role: site
+      name: 'wifi'
+      path: "/wifi/"
+      openid: "admin"
+      serverHost: "bang"
+      port: "9070"
+      process:
+        directory: "/my/proj/homeauto/service/tomatoWifi/"
+        command: "/my/proj/homeauto/service/tomatoWifi/bin/python tomatoWifi.py"
+      tags: ['wifi']
+      
+    - role: site
+      name: 'arduinoNodeBang'
+      path: "/arduino/bang/"
+      openid: "admin"
+      serverHost: "bang"
+      port: "9059"
+      process:
+        directory: "/my/proj/homeauto/service/arduinoNode/"
+        command: "/my/proj/homeauto/service/arduinoNode/bin/python arduinoNode.py"
+      tags: ['arduinoNode']
+
+- hosts: dash
+  gather_facts: no
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - role: site
+      name: 'arduinoNodeDash'
+      path: "/arduino/dash/"
+      openid: "admin"
+      serverHost: "dash"
+      port: "9059"
+      process:
+        directory: "/my/proj/homeauto/service/arduinoNode/"
+        command: "/my/proj/homeauto/service/arduinoNode/bin/python arduinoNode.py"
+      tags: ['arduinoNode']

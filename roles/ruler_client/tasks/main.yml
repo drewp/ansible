@@ -1,0 +1,10 @@
+---
+
+- supervisor_process_mod:
+    name=ruler_client_8101
+    command="/my/proj/ruler/bin/python client.py"
+    directory=/my/proj/ruler/client
+    autostart=true
+    user=sensu
+  notify:
+   - supervisord update

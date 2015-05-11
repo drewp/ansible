@@ -1,0 +1,7 @@
+---
+- supervisor_process_mod:
+    name=usbReset_9100
+    directory=/my/proj/homeauto/service/usbReset
+    command="/my/proj/homeauto/service/usbReset/bin/python usbReset.py"
+    user=root
+  notify: supervisord update

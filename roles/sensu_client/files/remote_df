@@ -1,0 +1,11 @@
+#!/bin/sh
+sshLogin=$1
+mountPoint=$2
+graphiteChannel=$3
+
+eval `keychain --quiet --noask --eval id_rsa`
+
+
+ssh $sshLogin df --block-size=M $mountPoint | \
+tail -n 1 | \
+python -c "import sys, time; print '"${graphiteChannel}"', sys.stdin.read().split()[3].strip('M'), int(time.time())"

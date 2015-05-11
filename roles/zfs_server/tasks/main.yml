@@ -1,0 +1,27 @@
+---
+- apt: pkg=openssh-server
+- apt: pkg=openssh-client
+- apt: pkg=curl
+- apt: pkg=emacs24
+- apt: pkg=xosview
+- apt: pkg=zsh
+- apt: pkg=nfs-kernel-server
+- apt: pkg=libjson-xs-perl
+- apt: pkg=sysstat
+- apt: pkg=smartmontools
+- apt: pkg=ntp
+
+- apt_repository: repo="ppa:zfs-native/stable"
+- apt: pkg=ubuntu-zfs
+
+- copy: dest=/etc/exports src=exports owner=root group=root mode=0644
+- service: name=nfs-kernel-server state=running
+
+- file: state=link path=/my src=/stor6/my
+        
+    # this is so my user tools can check zfs status, so be careful
+    # no longer necessary, i think because of some sudo rules
+    #file {"/dev/zfs":
+    #  mode => 666,
+    #}
+

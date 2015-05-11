@@ -1,0 +1,4 @@
+---
+- apt: pkg=thunar-volman
+- file: path=/home/drewp/.config/xfce4/xfconf/xfce-perchannel-xml state=directory
+- copy: dest=/home/drewp/.config/xfce4/xfconf/xfce-perchannel-xml/thunar-volman.xml src=thunar-volman.xml

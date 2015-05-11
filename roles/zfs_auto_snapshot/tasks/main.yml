@@ -1,0 +1,21 @@
+---
+- apt: pkg=git
+- name: clone
+  command: /usr/bin/git clone git://github.com/zfsonlinux/zfs-auto-snapshot.git /opt/zfs-auto-snapshot creates=/opt/zfs-auto-snapshot
+- name: rev
+  command: /usr/bin/git checkout cc9f1802ed56852c2bf9f619308abacaab8b0ea1 chdir=/opt/zfs-auto-snapshot
+
+- command: cp /opt/zfs-auto-snapshot/etc/zfs-auto-snapshot.cron.monthly /etc/cron.monthly/zfs-auto-snapshot
+- command: cp /opt/zfs-auto-snapshot/etc/zfs-auto-snapshot.cron.weekly /etc/cron.weekly/zfs-auto-snapshot
+- command: cp /opt/zfs-auto-snapshot/etc/zfs-auto-snapshot.cron.daily /etc/cron.daily/zfs-auto-snapshot
+- command: cp /opt/zfs-auto-snapshot/etc/zfs-auto-snapshot.cron.hourly /etc/cron.hourly/zfs-auto-snapshot
+- command: cp /opt/zfs-auto-snapshot/etc/zfs-auto-snapshot.cron.frequent /etc/cron.d/zfs-auto-snapshot
+  
+- file: mode=0700 path=/etc/cron.monthly/zfs-auto-snapshot
+- file: mode=0700 path=/etc/cron.weekly/zfs-auto-snapshot
+- file: mode=0700 path=/etc/cron.daily/zfs-auto-snapshot
+- file: mode=0700 path=/etc/cron.hourly/zfs-auto-snapshot
+- file: mode=0700 path=/etc/cron.d/zfs-auto-snapshot
+
+- command: cp /opt/zfs-auto-snapshot/src/zfs-auto-snapshot.sh /sbin/zfs-auto-snapshot
+- file: mode=0755 path=/sbin/zfs-auto-snapshot

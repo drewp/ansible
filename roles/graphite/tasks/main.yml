@@ -1,0 +1,35 @@
+---
+
+- apt: name=graphite-carbon
+- apt: name=graphite-web
+- service: name=carbon-cache enabled=no state=stopped
+- copy: src=carbon.conf dest=/etc/carbon/carbon.conf
+- copy: src=storage-schemas.conf dest=/etc/carbon/storage-schemas.conf
+- file: path=/opt/graphite/whisper state=directory owner=_graphite
+
+- supervisor_process_mod: 
+    name=graphite_carbon_2003
+    directory=/
+    command="/usr/bin/carbon-cache --config=/etc/carbon/carbon.conf --pidfile=/tmp/carbon.pid --debug start"
+    user=_graphite
+  notify: supervisord update
+
+- apt: name=gunicorn
+- copy: src=local_settings.py dest=/etc/graphite/local_settings.py
+- copy: src=graphTemplates.conf dest=/etc/graphite/graphTemplates.conf
+- file: path=/var/log/graphite state=directory owner=_graphite
+- file: path=/etc/carbon/storage-aggregation.conf state=touch
+
+# patch in https://github.com/graphite-project/graphite-web/commit/14a75ffb6c93901a2c9839296ca9b56c92aba6bc?diff=split
+- patch: patchfile=/my/proj/ansible/roles/graphite/files/patch-functions basedir=/
+- patch: patchfile=/my/proj/ansible/roles/graphite/files/patch-composer_widgets basedir=/
+
+- command: sudo -u _graphite /usr/bin/graphite-manage syncdb --settings=graphite.settings --noinput
+  
+- supervisor_process_mod: 
+    name=graphite_9037
+    directory=/
+    command="/usr/bin/gunicorn_django -b 0.0.0.0:9037  --workers=8 /usr/lib/python2.7/dist-packages/graphite/settings.py"
+    user=_graphite
+  notify: supervisord update
+

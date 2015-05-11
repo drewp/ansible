@@ -1,0 +1,24 @@
+#!/usr/bin/python
+import xmlrpclib
+
+import commands, sys
+
+def finish(resultCode, message):
+    print "%s - %s" % (['OK', 'WARNING', 'CRITICAL'][resultCode], message)
+    raise SystemExit(resultCode)
+    
+host, port, process = sys.argv[1:4]
+
+
+conn = xmlrpclib.ServerProxy('http://%s:%s' % (host, port))
+info = conn.supervisor.getProcessInfo(process)
+status = info['statename']
+
+line = "%s %s" % (status, info['description'])
+
+# implementation of http://www.plope.com/software/collector/280
+if status in ['STOPPED', 'STARTING', 'RUNNING', 'EXITED']:
+    finish(0, line)
+if status in ['STOPPING']:
+    finish(1, line)
+finish(2, line)

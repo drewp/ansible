@@ -1,0 +1,11 @@
+---
+- file: path=/var/cache/photo state=directory
+- mount: fstype=nfs name=/var/cache/photo src=bang:/var/cache/photo state=mounted
+- supervisor_process_mod:
+    name=photo_worker
+    directory=/my/site/photo/
+    process_name=%(program_name)s_%(process_num)s
+    command="/my/site/photo/bin/python /my/site/photo/worker.py"
+    user=drewp
+    numprocs={{ansible_processor_vcpus}}
+  notify: supervisord update

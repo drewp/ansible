@@ -1,0 +1,5 @@
+---
+- apt: pkg=openvpn state=present
+- copy: dest=/etc/openvpn/server_bling.conf src=server_bling.conf
+- copy: dest=/etc/openvpn/bling.key src=bling.key
+# restart openvpn

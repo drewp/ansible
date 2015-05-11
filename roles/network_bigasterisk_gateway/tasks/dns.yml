@@ -1,0 +1,22 @@
+---
+- set_fact: partDir="/etc/tinydns/root/data.d" externalTtl="86400"
+
+- file: path={{partDir}} state=directory
+# empty it here?
+
+- include: dns_parts.yml
+
+- assemble: dest=/etc/tinydns/root/data src={{partDir}}
+- command: /usr/bin/tinydns-data chdir=/etc/tinydns/root
+- copy: dest=/etc/tinydns/env/IP content="{{ext}}{{'\n'}}" owner=root group=root
+- name: tinydns-restart
+  command: /usr/local/bin/supervisorctl -c /etc/supervisord-local.conf restart tinydns
+
+
+- copy: dest=/etc/dnscache/root/servers/bigasterisk.com content="{{ext}}{{'\n'}}" owner=root group=root
+
+# not in use, albany setup 2014
+#- name: dnscache-restart
+#  command: /usr/bin/killall /usr/bin/dnscache
+
+- service: name=squid3 state=restarted

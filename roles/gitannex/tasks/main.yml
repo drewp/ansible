@@ -1,0 +1,37 @@
+---
+
+# upgrades in advance of ubuntu 14.04
+#git-annex_5.20140412ubuntu1_amd64.deb
+#libicu52_52.1-3_amd64.deb
+#git_1.9.1-1_amd64.deb
+#git-man_1.9.1-1_all.deb
+#gitk_1.9.1-1_all.deb
+
+#libgsasl7
+
+# then don't do this part:
+
+- file: path=/opt/git-annex state=directory
+- name: download current git-annex
+  get_url: url=http://downloads.kitenet.net/git-annex/linux/current/git-annex-standalone-amd64.tar.gz dest=/opt/git-annex/dl.tgz
+- name: unpack
+  command: /bin/tar xzf /opt/git-annex/dl.tgz
+           chdir=/opt/git-annex creates=/opt/git-annex/git-annex.linux/git-annex
+- name: git-annex runner
+  copy: dest=/usr/local/bin/git-annex
+        mode=0755
+        src=git-annex
+- name: git-annex-shell runner
+  copy: dest=/usr/local/bin/git-annex-shell
+        mode=0755
+        src=git-annex-shell
+- supervisor_process_mod:
+    name=git_annex_assistant
+    user=drewp
+    directory=/home/drewp/annex
+    command="/usr/local/bin/git-annex assistant --foreground"
+    environment="HOME=/home/drewp"
+  notify:
+    - supervisord update
+
+  

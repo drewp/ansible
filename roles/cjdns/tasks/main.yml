@@ -1,0 +1,57 @@
+---
+
+# depends on nodejs, which needs to vary a bit on the debian/arm installs
+
+- apt: pkg=git
+- name: clone
+  command: /usr/bin/git clone https://github.com/cjdelisle/cjdns.git /opt/cjdns creates=/opt/cjdns
+
+- name: pull
+  command: git pull origin master chdir=/opt/cjdns
+- command: git checkout master chdir=/opt/cjdns
+- name: rev
+  command: /usr/bin/git checkout a05ade40dc31caebaf3aa770aac3ab2ecb02d867 chdir=/opt/cjdns
+
+
+- name: build cjdns
+  command: /opt/cjdns/do chdir=/opt/cjdns
+
+- name: make config
+  local_action: command python /my/proj/ansible/roles/cjdns/make_config.py "{{ inventory_hostname }}"
+  register: cjdroute_conf
+  tags: ['cjdns_config']
+
+- name: install config
+  copy: dest=/opt/cjdns/cjdroute.conf content="{{ cjdroute_conf.stdout }}" mode=0400
+  tags: ['cjdns_config']
+  
+- name: make admin config
+  local_action: shell python /my/proj/ansible/roles/cjdns/make_admin_config.py "{{ inventory_hostname }}"
+  register: cjdnsadmin
+
+- name: install admin config
+  copy: dest=/home/drewp/.cjdnsadmin  content="{{ cjdnsadmin.stdout }}" mode=0400 owner=drewp
+  when: inventory_hostname != "drewnote"
+
+- name: make /tun
+  file: path=/dev/net state=directory
+  when: inventory_hostname == "drewnote"
+- shell: creates=/dev/net/tun mknod /dev/net/tun c 10 200
+  when: inventory_hostname == "drewnote"
+- file: path=/dev/net/tun mode=0666
+  when: inventory_hostname == "drewnote"
+
+- name: runner
+  copy: dest=/opt/cjdns/run content="#!/bin/sh\nexec /opt/cjdns/cjdroute < /opt/cjdns/cjdroute.conf" mode=0755 owner=root
+  
+- supervisor_process_mod:
+    name=cjdns
+    command="/opt/cjdns/run"
+    directory=/opt/cjdns
+    user=root
+    stopasgroup=true
+  notify: supervisord update
+  
+# write some /etc/hosts
+
+# to look at the log, /opt/cjdns/contrib/python/cjdnslog DEBUG

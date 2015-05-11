@@ -1,0 +1,65 @@
+---
+- set_fact:
+    openvpn_log_dir=/var/log
+    remote={{ inventory_hostname }}
+
+
+- file: path=/etc/openvpn/{{ remote }} state=directory
+  sudo: no
+  delegate_to: bang
+
+- name: make new client key
+  sudo: no
+  delegate_to: bang
+  shell:
+    /etc/openvpn/create-key {{ remote }}
+    creates=/etc/openvpn/easy-rsa-2.0-bigasterisk/keys/{{ remote }}.key
+
+- apt: pkg=openvpn state=present
+- copy:
+    dest=/etc/openvpn/ca.crt
+    src=../../openvpn_server/files/ca.crt
+    owner=root
+    group=root
+    mode=0644
+- template: dest=/etc/openvpn/{{ remote }}.conf src=local.conf.j2 owner=root group=root
+
+#- name: install key
+#  sudo: yes
+#  local_action: command scp /etc/openvpn/easy-rsa-2.0-bigasterisk/keys/{{ remote }}.key pi@tower-ext:/etc/openvpn/{{ remote }}.key
+    
+- name: install key
+  copy:
+    dest=/etc/openvpn/{{ remote }}.key
+    src=/etc/openvpn/easy-rsa-2.0-bigasterisk/keys/{{ remote }}.key
+    owner=root
+    group=root
+    mode=0600
+
+- name: install crt
+  copy:
+    dest=/etc/openvpn/{{ remote }}.crt
+    src=/etc/openvpn/easy-rsa-2.0-bigasterisk/keys/{{ remote }}.crt
+    owner=root
+    group=root
+    mode=0600
+  notify: openvpn restart
+
+- name: install tls-auth
+  copy:
+    dest=/etc/openvpn/ta.key
+    src=../../openvpn_server/files/ta.key
+    owner=root
+    group=root
+    mode=0600
+  notify: openvpn restart
+    
+- name: write server-side config to give client a fixed address
+  sudo: no
+  delegate_to: prime
+  copy:
+    dest=/etc/openvpn/client/{{ remote }}
+    content="ifconfig-push {{ vpn_remote_addr }} 10.3.0.0"
+  notify: openvpn restart
+
+  

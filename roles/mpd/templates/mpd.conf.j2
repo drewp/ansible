@@ -1,0 +1,26 @@
+music_directory	   "/my/music"
+playlist_directory "/my/music/playlists"
+db_file		   "/my/music/mpd/tag_cache"
+
+log_file	   "/var/log/mpd/mpd.log"
+
+state_file	   "/var/lib/mpd/state"
+
+bind_to_address    "localhost"
+#port              "6600"
+
+default_permissions "read,add,control{% if isAdminHost!='false' %},admin{% endif %}"
+
+# Controls the amount of information that is logged.  Can be
+# "default", "secure", or "verbose".
+#log_level                       "default"
+
+# see http://mpd.wikia.com/wiki/PulseAudio
+audio_output {
+  type "pulse"
+  name "MPD PulseAudio Output"
+# sink "your-sink-name-here"
+}
+
+filesystem_charset "UTF-8"
+id3v1_encoding     "UTF-8"

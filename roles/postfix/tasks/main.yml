@@ -1,0 +1,68 @@
+---
+- apt: pkg=postfix
+- apt: pkg=procmail
+- copy: dest=/etc/postfix/main.cf src=main.cf owner=root group=root mode=0644
+  notify: postfix reload
+- copy: dest=/etc/ssl/certs/self1-ca.crt src=/etc/ssl/certs/self1-ca.crt mode=0600
+  notify: postfix reload
+- copy: dest=/etc/ssl/certs/self1-ca.key src=/etc/ssl/certs/self1-ca.key mode=0600
+  notify: postfix reload
+
+# checkvistpost modifies /etc/aliases, so you have to run this after that one somehow
+- copy: dest=/etc/aliases src=/etc/aliases mode=0644
+  notify: new aliases
+  
+- copy: dest=/etc/mailname content="bigasterisk.com" mode=0644
+  notify: postfix reload
+- copy: dest=/etc/postfix/mydestination src=mydestination mode=0644
+  notify: postfix reload
+- copy: dest=/etc/postfix/virtual src=/etc/postfix/virtual mode=0644
+  notify: rebuild virtual
+- copy: dest=/etc/postfix/sender_access src=sender_access mode=0644
+  notify: rebuild sender_access
+
+- apt: pkg=syncmaildir
+- file: path=/home/drewp/.smd state=directory owner=drewp group=drewp
+- copy:
+    dest=/home/drewp/.smd/config.default
+    content="SMDSERVEROPTS=--no-delete{{'\n'}}SERVERNAME=bang-default{{'\n'}}CLIENTNAME=primary{{'\n'}}MAILBOX=\"Maildir/\"{{'\n'}}"
+
+- apt: pkg=syncmaildir
+  delegate_to: bang
+- file: path=/home/drewp/.smd state=directory owner=drewp group=drewp
+  delegate_to: bang
+- copy:
+    dest=/home/drewp/.smd/config.default
+    content="SMDSERVEROPTS=--no-delete{{'\n'}}SERVERNAME=maildirfetch.bigasterisk.com{{'\n'}}CLIENTNAME=bang-default{{'\n'}}MAILBOX=\"Maildir/\"{{'\n'}}"
+  delegate_to: bang
+  
+
+- copy:
+    dest=/home/drewp/.smd/loop
+    content="#pull-mins push-mins endpoint{{'\n'}} 1 0 default{{'\n'}}"
+  delegate_to: bang
+- file: path=/home/drewp/Maildir state=link src=/my/mail/drewp/.hosted force=yes owner=drewp
+  delegate_to: bang
+
+- copy:
+    dest=/home/drewp/.smd/hooks/post-pull.d/mv_inbox
+    content="#!/bin/zsh{{'\n'}}stat /my/mail/drewp/cur || exit 1{{'\n'}}for x in /home/drewp/Maildir/{new,cur}/*(N){{'\n'}}do formail -s procmail /home/drewp/mailprocess/procmailrc-new < $x && rm $x{{'\n'}}done" mode=0755
+  delegate_to: bang
+  
+- copy:
+    dest=/home/drewp/mailprocess/run-smd-loop
+    content="#!/bin/sh{{'\n'}}export HOME=/home/drewp{{'\n'}}eval `keychain --noask --eval id_rsa`{{'\n'}}/usr/bin/smd-loop"
+    mode=0755
+  delegate_to: bang
+     
+- supervisor_process_mod:
+    name=syncmaildir
+    command=/home/drewp/mailprocess/run-smd-loop
+    user=drewp
+  notify:
+    # oops, this update goes to remote host, not delegate host
+    - supervisord update
+  delegate_to: bang
+
+- service: name=postfix state=started
+  

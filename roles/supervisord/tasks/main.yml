@@ -1,0 +1,16 @@
+---
+- name: No distro version of supervisor
+  apt: name=supervisor state=absent
+- easy_install: name=supervisor==3.1.3
+- name: we will read config fragments from /var/lib/supervisor.d
+  file: path=/var/lib/supervisor.d state=directory
+- copy: dest=/etc/supervisord.conf src=supervisord.conf
+
+# then you run 'sudo supervisord -c /etc/supervisord.conf' when it's
+# safe. This is not in upstart yet because I have some supervisor
+# tasks that need NFS which wasn't getting started in advance, and
+# this made boots stall.
+#
+# in an upstart definition, this might be enough to time it after NFS:
+  # start on (local-filesystems and net-device-up)
+  # stop on [!12345]

@@ -1,0 +1,24 @@
+---
+- apt_key: keyserver=keyserver.ubuntu.com id=36A1D7869245C8950F966E92D8576A8BA88D21E9
+- apt_key: keyserver=keyserver.ubuntu.com id=A040830F7FAC5991
+- apt_key: keyserver=keyserver.ubuntu.com id=E601AAF9486D3664
+- apt_key: keyserver=keyserver.ubuntu.com id=46830400C4A100CF
+- apt_key: keyserver=keyserver.ubuntu.com id=B5115B98AA836CA8
+- apt_key: keyserver=keyserver.ubuntu.com id=0CD0F565F8CDAB41
+  
+# note that some of these don't have packages for the newest ubuntu release
+- apt_repository: repo='deb http://dl.google.com/linux/chrome/deb/ stable main'
+  when: ansible_architecture != "armv7l"
+- apt_repository: repo='deb http://ppa.launchpad.net/anatol/tup/ubuntu precise main'
+  when: ansible_architecture != "armv7l"
+# consider https://launchpad.net/~minetestdevs/+archive/ubuntu/daily-builds
+- apt_repository: repo='deb http://ppa.launchpad.net/minetestdevs/stable/ubuntu trusty main'
+  when: ansible_architecture != "armv7l"
+- apt_repository: repo='deb http://ppa.launchpad.net/sunab/kdenlive-release/ubuntu utopic main'
+  when: ansible_architecture != "armv7l"
+- apt_repository: repo='ppa:thomas-schiex/blender'
+  when: ansible_architecture != "armv7l"
+- apt_repository: repo='ppa:inkscape.dev/stable'
+  when: ansible_architecture != "armv7l"
+- apt_repository: repo='ppa:zfs-native/stable'
+  when: ansible_architecture != "armv7l"

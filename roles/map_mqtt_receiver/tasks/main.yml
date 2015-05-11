@@ -1,0 +1,38 @@
+---
+- apt: pkg=mosquitto
+- apt: pkg=mosquitto-clients
+
+- copy: dest=/etc/mosquitto/mosquitto.conf src=mosquitto.conf
+  notify: reload mosquitto
+
+- name: hack zc/buildout/easy_install.py to support python version containing +
+  lineinfile:
+    dest=/usr/lib/python2.7/dist-packages/zc/buildout/easy_install.py
+    regexp='re\.match'
+    line="        version = re.match('(\d[.]\d)([.].*\d)?\+?$', version).group(1)"
+
+- apt: pkg=python-zc.buildout
+
+# don't do these on anything with /my nfs mount!
+- file: path="/my/site/maps" state=directory
+  when: inventory_hostname == "prime"
+- local_action: command rsync -az --delete /my/site/maps/ {{ inventory_hostname }}:/my/site/maps/
+  when: inventory_hostname == "prime"
+- copy: dest="/my/site/maps/RSYNC_DELETE_RUNS_IN_HERE" content="don't add files on this side!"
+  when: inventory_hostname == "prime"
+- command: make chdir=/my/site/maps
+  when: inventory_hostname == "prime"
+
+# this can be run on bang too, but I'm trying it on prime since I had
+# stalls when there was more latency between mqtt_receiver and mqtt
+# server
+- supervisor_process_mod: 
+    name=map_mqtt_receiver
+    directory=/my/site/maps 
+    command="/my/site/maps/bin/python mqtt_receiver.py"
+    user=drewp
+  notify: supervisord update
+
+# service was getting wedged, not sure why
+- cron: name="mqtt_receiver_restart" user=drewp job="/usr/local/bin/supervisorctl -s http://prime:9001/ restart map_mqtt_receiver | tail -n +3" hour="*/6" minute="45"
+  delegate_to: bang

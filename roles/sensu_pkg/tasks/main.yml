@@ -1,0 +1,5 @@
+---
+- apt_key: url='http://repos.sensuapp.org/apt/pubkey.gpg' state=present
+- apt_repository: repo='deb http://repos.sensuapp.org/apt sensu main' state=present
+- apt: pkg="sensu=0.12.6-4"
+

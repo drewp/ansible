@@ -1,0 +1,10 @@
+--- /usr/share/graphite-web/static/js/composer_widgets.js	2013-08-22 11:36:04.000000000 -0700
++++ /tmp/composer_widgets.js	2014-12-21 01:04:34.299676645 -0800
+@@ -910,6 +910,7 @@
+         {text: 'ScaleToSeconds', handler: applyFuncToEachWithInput('scaleToSeconds', 'Please enter a number of seconds to scale to')},
+         {text: 'Offset', handler: applyFuncToEachWithInput('offset', 'Please enter the value to offset Y-values by')},
+         {text: 'Derivative', handler: applyFuncToEach('derivative')},
++        {text: 'Time-adjusted Derivative', handler: applyFuncToEachWithInput('perSecond', "Please enter a maximum value if this metric is a wrapping counter (or just leave this blank)", {allowBlank: true})},
+         {text: 'Integral', handler: applyFuncToEach('integral')},
+         {text: 'Percentile Values', handler: applyFuncToEachWithInput('percentileOfSeries', "Please enter the percentile to use")},
+         {text: 'Non-negative Derivative', handler: applyFuncToEachWithInput('nonNegativeDerivative', "Please enter a maximum value if this metric is a wrapping counter (or just leave this blank)", {allowBlank: true})},

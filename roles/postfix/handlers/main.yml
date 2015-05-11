@@ -1,0 +1,11 @@
+---
+- name: new aliases
+  command: /usr/bin/newaliases
+- name: rebuild virtual
+  command: /usr/sbin/postmap /etc/postfix/virtual
+  notify: postfix reload
+- name: rebuild sender_access
+  command: /usr/sbin/postmap /etc/postfix/sender_access
+  notify: postfix reload
+- name: postfix reload
+  service: name=postfix state=reloaded

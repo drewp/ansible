@@ -1,0 +1,37 @@
+---
+# how do i add supervisord role dependency to these 1-task things?
+#- supervisor_process_mod:
+#    name=deskArduino_9014
+#    directory=/my/proj/homeauto/service/deskArduino
+#    command="/my/proj/homeauto/service/deskArduino/bin/python deskArduino.py"
+#    user=drewp
+#  notify: supervisord update
+  
+- supervisor_process_mod:
+    name=ffg_thttp_9015
+    command="/usr/sbin/thttpd -p 9015 -d /home/drewp/projects-local/ffg/build_static -D -nos"
+    user=drewp
+  notify: supervisord update
+  
+- supervisor_process_mod:
+    name=picinput_11008
+    directory=/home/drewp/projects-local/ffg
+    command=/home/drewp/projects-local/ffg/bin/picInput
+    user=drewp
+  notify: supervisord update
+  
+- supervisor_process_mod:
+    name=photo_worker
+    directory=/my/site/photo/
+    command="/my/site/photo/bin/python worker.py"
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=cmd_ffg_release
+    directory=/home/drewp/projects-local/ffg
+    command="/usr/bin/fab release"
+    user=drewp
+    autostart=false
+    autorestart=false
+  notify: supervisord update

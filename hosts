@@ -1,0 +1,70 @@
+[all]
+dash
+bang
+slash
+star
+stor
+prime
+drewnote
+brace
+
+[big]
+dash
+bang
+slash
+stor
+brace
+
+[remote]
+plus
+drewnote
+btv
+
+[pi]
+#grapes ansible_ssh_user=pi
+#laundry-ext ansible_ssh_user=pi
+#cactuscar ansible_ssh_user=pi
+#tower-ext
+sticker
+
+[with_speakers]
+dash
+slash
+plus
+brace
+
+[with_x11]
+dash
+slash
+brace
+star
+
+[with_removable_storage]
+dash
+plus
+brace
+
+[nfs_server]
+stor
+
+[nfs_client]
+#dash
+bang
+slash
+
+[sshfs_client]
+brace
+star
+
+[vpn_client]
+#tower-ext vpn_remote_addr=10.3.0.35
+fantasy3 vpn_remote_addr=10.3.0.41
+dash vpn_remote_addr=10.3.0.39
+drewnote vpn_remote_addr=10.3.0.23 openvpn_log_dir=/tmp
+btv vpn_remote_addr=10.3.0.33
+bang vpn_remote_addr=10.3.0.37
+plus vpn_remote_addr=10.3.0.5
+brace vpn_remote_addr=10.3.0.43
+
+[hosted]
+prime

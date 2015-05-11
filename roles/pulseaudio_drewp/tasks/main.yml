@@ -1,0 +1,10 @@
+---
+- apt: pkg=pulseaudio
+- apt: pkg=pulseaudio-module-x11 state=absent
+- copy: dest=/etc/pulse/pulseaudio_launch src=pulseaudio_launch owner=root mode=755
+- supervisor_process_mod:
+    name=pulseaudio
+    user=drewp
+    command="/etc/pulse/pulseaudio_launch"
+  notify:
+    - supervisord update

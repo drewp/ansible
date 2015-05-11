@@ -1,0 +1,106 @@
+## Graphite local_settings.py
+# Edit this file to customize the default Graphite webapp settings
+#
+# Additional customizations to Django settings can be added to this file as well
+
+#####################################
+# General Configuration #
+#####################################
+# Set this to a long, random unique string to use as a secret key for this
+# install. This key is used for salting of hashes used in auth tokens,
+# CRSF middleware, cookie storage, etc. This should be set identically among
+# instances if used behind a load balancer.
+#SECRET_KEY = 'UNSAFE_DEFAULT'
+
+# In Django 1.5+ set this to the list of hosts your graphite instances is
+# accessible as. See:
+# https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-ALLOWED_HOSTS
+#ALLOWED_HOSTS = [ '*' ]
+
+# Set your local timezone (Django's default is America/Chicago)
+# If your graphs appear to be offset by a couple hours then this probably
+# needs to be explicitly set to your local timezone.
+TIME_ZONE = 'America/Los_Angeles'
+
+# Override this to provide documentation specific to your Graphite deployment
+#DOCUMENTATION_URL = "http://graphite.readthedocs.org/"
+
+# Logging
+# True see: https://answers.launchpad.net/graphite/+question/159731
+LOG_RENDERING_PERFORMANCE = True
+LOG_CACHE_PERFORMANCE = True
+LOG_METRIC_ACCESS = True
+
+# Enable full debug page display on exceptions (Internal Server Error pages)
+#DEBUG = True
+
+
+#####################################
+# Filesystem Paths #
+#####################################
+GRAPHITE_ROOT = '/usr/share/graphite-web'
+
+# Most installs done outside of a separate tree such as /opt/graphite will only
+# need to change these three settings. Note that the default settings for each
+# of these is relative to GRAPHITE_ROOT
+CONF_DIR = '/etc/graphite'
+STORAGE_DIR = '/opt/graphite/whisper'
+CONTENT_DIR = '/usr/share/graphite-web/static'
+
+# To further or fully customize the paths, modify the following. Note that the
+# default settings for each of these are relative to CONF_DIR and STORAGE_DIR
+#
+## Webapp config files
+#DASHBOARD_CONF = '/opt/graphite/conf/dashboard.conf'
+GRAPHTEMPLATES_CONF = '/etc/graphite/graphTemplates.conf'
+
+## Data directories
+# NOTE: If any directory is unreadable in DATA_DIRS it will break metric browsing
+WHISPER_DIR = '/opt/graphite/whisper'
+#RRD_DIR = '/opt/graphite/storage/rrd'
+#DATA_DIRS = [WHISPER_DIR, RRD_DIR] # Default: set from the above variables
+LOG_DIR = '/var/log/graphite'
+INDEX_FILE = '/var/lib/graphite/search_index'  # Search index file
+
+
+##########################
+# Database Configuration #
+##########################
+# By default sqlite is used. If you cluster multiple webapps you will need
+# to setup an external database (such as MySQL) and configure all of the webapp
+# instances to use the same database. Note that this database is only used to store
+# Django models such as saved graphs, dashboards, user preferences, etc.
+# Metric data is not stored here.
+#
+# DO NOT FORGET TO RUN 'manage.py syncdb' AFTER SETTING UP A NEW DATABASE
+#
+# The following built-in database engines are available:
+#  django.db.backends.postgresql          # Removed in Django 1.4
+#  django.db.backends.postgresql_psycopg2
+#  django.db.backends.mysql
+#  django.db.backends.sqlite3
+#  django.db.backends.oracle
+#
+# The default is 'django.db.backends.sqlite3' with file 'graphite.db'
+# located in STORAGE_DIR
+#
+DATABASES = {
+    'default': {
+        'NAME': '/var/lib/graphite/graphite.db',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': ''
+    }
+}
+
+
+
+#####################################
+# Additional Django Settings #
+#####################################
+# Uncomment the following line for direct access to Django settings such as
+# MIDDLEWARE_CLASSES or APPS
+#from graphite.app_settings import *
+

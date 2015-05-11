@@ -1,0 +1,48 @@
+---
+- set_fact: ext="173.228.113.124" extMask="255.255.255.0" extNet="173.228.113.0" extBcast="173.228.113.255" extGateway="173.228.113.1" prime="162.243.138.136"
+
+- template:
+    dest=/etc/network/interfaces
+    src=interfaces.j2
+    owner=root
+    group=root
+    mode=0644
+  notify: eth2 reset
+
+- name: external address for nginx config
+  copy:
+    dest=/etc/nginx/external_address_mapping.conf
+    content="# written by /my/proj/puppet/ansible/roles/network_bigasterisk_gateway/tasks/main.yml{{'\n'}}  {{ext}}/32 bang;{{'\n'}}"
+    owner=root
+    group=root
+  notify: nginx update
+  # this could perhaps go in /var/lib/nginx.d but watch out for a
+  # cleaner removing all non-website files from there
+
+- name: external address for firewall-setup
+  copy:
+    dest=/etc/network/firewall-setup.publicaddr
+    content="# written by /my/proj/puppet/ansible/roles/network_bigasterisk_gateway/tasks/main.yml{{'\n'}}PUBLIC_ADDR={{ext}}{{'\n'}}"
+    mode=644
+    owner="root"
+    group="root"
+  notify: firewall setup
+
+- copy: dest=/etc/resolv.conf content="nameserver 10.2.0.1{{'\n'}}domain bigasterisk.com{{'\n'}}"
+  tags: ['resolvconf']
+  
+# not yet reworked for berkeley setup
+#- include: dns.yml
+  
+# also when the IP changes:
+#  /my/proj/netbars/netbars/traffic.py needs editing
+#  install/restart netbars
+#  change nameservers at namecheap, including ns20.quickwitretort.com which they don't normally show
+#  change @ hover.com
+#  change rdns at sonic   
+  
+- include: dhcp.yml
+  tags: ['dhcp']
+
+- include: house_dns.yml
+  tags: ['house_dns']

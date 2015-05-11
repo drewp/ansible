@@ -1,0 +1,19 @@
+---
+- hosts: laundry-ext
+
+  tasks:
+  # http://geekmonkey.org/articles/38-baking-a-pi-for-google-go
+  - name: install mercurial
+    apt: pkg=mercurial
+  - name: install gcc
+    apt: pkg=gcc
+  - name: install libc dev
+    apt: pkg=libc6-dev
+  - name: mkdir
+    file: dest=/opt/go state=directory
+  - name: clone go
+    command: hg clone https://code.google.com/p/go/ /opt/go creates=/opt/go/README
+  - name: build go
+    command: ./make.bash chdir=/opt/go/src creates=/opt/go/bin/
+    
+    

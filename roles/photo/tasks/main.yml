@@ -1,0 +1,115 @@
+---
+- supervisor_process_mod:
+    name=photo_{{item}}
+    directory=/my/site/photo
+    user=drewp
+    command="/my/site/photo/bin/python /usr/bin/twistd --pidfile= -noy serve"
+    environment="PORT={{item}}"
+  notify: supervisord update
+  with_items:
+    - 8031
+    - 8042
+    - 8043
+    - 8044
+
+- supervisor_process_mod:
+    name=photo_media_{{item}}
+    command="/my/site/photo/bin/python mediaServe.py {{item}}"
+    directory=/my/site/photo
+    user=drewp
+  notify: supervisord update
+  with_items:
+    - 8033
+    - 8034
+    - 8035
+    - 8036
+    - 8037
+    - 8038
+    - 8039
+    - 8040
+    - 8046 
+    - 8047 
+    - 8048 
+    - 8049 
+    - 8050 
+    - 8051 
+    - 8052 
+    - 8053 
+    
+- supervisor_process_mod:
+    name=photo_sesameSyncImport_9042
+    command="/my/site/photo/bin/python sesameSyncImport.py"
+    directory=/my/site/photo
+    user=drewp
+  notify: supervisord update
+  
+- supervisor_process_mod:
+    name=photo_oneimage_9043
+    command="/my/site/photo/bin/python /my/site/photo/oneimage.py"
+    directory=/my/site/photo
+    user=drewp
+  notify: supervisord update
+  
+- supervisor_process_mod:
+    name=photo_route_8030
+    command="/bin/sh /my/site/photo/v2/route/run"
+    directory=/my/site/photo
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod:
+    name=photo_imageset_8045
+    command="/bin/sh /my/site/photo/v2/imageset/run"
+    directory=/my/site/photo
+    user=drewp
+  notify: supervisord update
+  
+- supervisor_process_mod:
+    name=photo_sharesingle_8041
+    command="/my/site/photo/bin/python /my/site/photo/bin/gunicorn -b 0.0.0.0:8041 -w 1 sharesingle:application"
+    directory=/my/site/photo
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod:
+    name=photo_watchMail_9082
+    command="/my/site/photo/bin/python watchmail.py"
+    directory=/my/site/photo
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod:
+    name=photo_flickrupload_9036
+    command="/my/site/photo/bin/python /my/site/photo/flickrupload.py 9036"
+    directory=/my/site/photo
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod:
+    name=photo_findbymap_9088
+    command="/my/site/photo/bin/python /my/site/photo/findbymap/findbymap.py"
+    directory=/my/site/photo/findbymap
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod:
+    name=photo_sync_dropbox
+    command="/bin/sh /my/site/photo/sync_dropbox_kelsi.sh"
+    directory=/my/site/photo
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod:
+    name=photo_worker_1
+    command="/my/site/photo/bin/python /my/site/photo/worker.py"
+    directory=/my/site/photo
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod:
+    name=photo_worker_2
+    command="/my/site/photo/bin/python /my/site/photo/worker.py"
+    directory=/my/site/photo
+    user=drewp
+  notify: supervisord update
+  

@@ -1,0 +1,19 @@
+#!/usr/bin/python
+"""
+error if zpool status has errors
+"""
+import sys, subprocess
+
+for line in subprocess.check_output(['/usr/bin/sudo', '/sbin/zpool', 'status', 'stor6']).splitlines():
+    if line.startswith('errors:') and line != 'errors: No known data errors':
+        print "CRITICAL - %s" % line
+        sys.exit(2)
+    if line.strip().startswith('state:') and line.strip() != 'state: ONLINE':
+        print "CRITICAL - %s" % line
+        sys.exit(2)
+        
+print "OK"
+sys.exit(0)
+
+    
+

@@ -1,0 +1,16 @@
+---
+- copy:
+    dest=/etc/default/isc-dhcp-server
+    content="# written by /my/proj/puppet/ansible/roles/network_bigasterisk_gateway{{'\n'}}INTERFACES=\"eth1 eth2\"{{'\n'}}"
+    owner=root
+    group=root
+  notify: dhcpd reload
+  
+- copy:
+    dest=/etc/dhcp/dhcpd.conf
+    src=dhcpd.conf
+    owner=root
+    group=root
+  notify: dhcpd reload
+    
+- service: name=isc-dhcp-server state=started

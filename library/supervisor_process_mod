@@ -1,0 +1,139 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import ast, socket
+
+DOCUMENTATION = '''
+---
+module: supervisor_process
+short_description: Make a conf file for one supervisord process
+description: 
+
+'''
+
+EXAMPLES = '''
+- supervisor_process: user=... command=...
+# see superisord docs
+'''
+
+# I got these names from echo_supervisord_conf
+process_params = [
+    'command', 'process_name', 'numprocs', 'directory',
+    'umask', 'priority', 'autostart', 'autorestart', 'startsecs',
+    'startretries', 'exitcodes', 'stopsignal', 'stopwaitsecs',
+    'stopasgroup', 'killasgroup', 'user', 'redirect_stderr',
+    'stdout_logfile', 'stdout_logfile_maxbytes', 'stdout_logfile_backups',
+    'stdout_capture_maxbytes', 'stdout_events_enabled', 'stderr_logfile',
+    'stderr_logfile_maxbytes', 'stderr_logfile_backups',
+    'stderr_capture_maxbytes', 'stderr_events_enabled',
+    'environment', 'serverurl']
+
+
+def getOldContents(outPath):
+    try:
+        return open(outPath).read()
+    except IOError:
+        return None
+
+def rewrite(module, outPath, contents):
+    try:
+        os.makedirs(os.path.dirname(outPath))
+    except OSError:
+        pass
+    f = open(outPath, 'w')
+    f.write(contents)
+    f.close()
+    
+    changed = module.set_file_attributes_if_different(
+        dict(
+            path=outPath,
+            secontext=None,
+            owner='root',
+            group='root',
+            mode='0644'),
+        False)
+    return changed
+
+
+def writeSupervisorProcessDescription(module):
+    out = '[program:%s]\n' % module.params['name']
+    for p in process_params:
+        if module.params.get(p):
+            out = out + "%s=%s\n" % (p, module.params[p])
+            
+    outPath = "/var/lib/supervisor.d/%s.conf" % module.params['name']
+    old = getOldContents(outPath)
+    changed = out != old
+    if module.check_mode:
+        module.exit_json(changed=changed,
+                         msg="old %s bytes, new %s bytes" %
+                         (len(old), len(out)))
+
+    if changed:
+        rewrite(module, outPath, out)
+
+    return changed, outPath
+
+rulerCheckDir = '/var/lib/ruler.d/supervisor_process'
+    
+def writeRulerCheck(module, name):
+    host = socket.gethostname()
+    supervisorPort = 9001 # except bang-local
+    checkName = 'supervisor_%(host)s_%(name)s' % dict(
+        host=host, name=name)
+    checkPath = "%s/%s.n3" % (rulerCheckDir, checkName)
+
+    out = ('@prefix : <http://bigasterisk.com/ruler/ns#> .\n'
+           '@prefix check: <http://bigasterisk.com/ruler/check/> .\n'
+           '@prefix host: <http://bigasterisk.com/ruler/host/> .\n'
+           '@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.\n\n'
+           'check:%(checkName)s a :Check; '
+           ':runHost host:bang; '
+           ':samplePeriod "900sec"; '
+           ':observedHost host:%(host)s; '
+           ':argv ("/etc/sensu/plugins/supervisor_check" "%(host)s" "%(supervisorPort)s" "%(name)s") .' % vars())
+
+    old = getOldContents(checkPath)
+    changed = out != old
+    if module.check_mode:
+        module.exit_json(changed=changed,
+                         msg="ruler check changed: old %s bytes, new %s bytes" %
+                         (len(old), len(out)))
+
+    if changed:
+        rewrite(module, checkPath, out)
+    else:
+        # even for no 'change', we bump the mtime so a directory
+        # cleaner can purge old files
+        os.utime(checkPath, None)
+    return changed, checkPath
+                     
+def main():
+    args = {}
+    for p in process_params:
+        args[p] = dict()
+    args['name'] = {'required': True}
+    args['arg_dict_string'] = dict(
+        doc='string of python code that evaluates to a '
+        'dictionary. These dict keys will replace other '
+        'param values.')
+    module = AnsibleModule(
+        argument_spec = args,
+        supports_check_mode=True
+    )
+    if module.params['arg_dict_string']:
+        module.params.update(ast.literal_eval(module.params['arg_dict_string']))
+
+    changed1, outPath = writeSupervisorProcessDescription(module)
+
+    changed2, checkPath = writeRulerCheck(module, module.params['name'])
+
+    module.exit_json(path=outPath, checkPath=checkPath,
+                     changed=changed1 or changed2,
+                     notify="supervisord_update", # not happening i think
+                     )
+
+# this is magic, see lib/ansible/module_common.py
+#<<INCLUDE_ANSIBLE_MODULE_COMMON>>
+main()
+

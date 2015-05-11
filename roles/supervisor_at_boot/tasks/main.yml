@@ -1,0 +1,4 @@
+---
+# may not be safe yet for machines that use nfs- untested
+- copy: dest=/etc/init/supervisor.conf src=supervisor.conf
+  

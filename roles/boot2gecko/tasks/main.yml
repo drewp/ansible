@@ -1,0 +1,17 @@
+---
+# download and extract b2g-17.0a1.linuxgl-gnueabi-armhf_v6.tar.gz
+- supervisor_process_mod:
+    name=boot2gecko
+    user=pi
+    environment="B2G_HOMESCREEN=http://10.1.0.1:9102,HOME=/home/pi"
+    directory=/home/pi
+    command="/home/pi/b2g/b2g --screen=700x480"
+  notify:
+    - supervisord update
+- copy: dest=/home/pi/resize_b2g.sh src=resize_b2g.sh mode=755
+- supervisor_process_mod:
+    name=resize_b2g
+    user=pi
+    command=/home/pi/resize_b2g.sh
+  notify:
+    - supervisord update

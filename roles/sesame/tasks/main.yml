@@ -1,0 +1,25 @@
+---
+- set_fact:
+    top: /opt/apache-tomcat-6.0.18
+    sesame_tgz: openrdf-sesame-2.7.3-sdk.tar.gz
+- set_fact:
+    sesame_outdir: "{{top}}/openrdf-sesame-2.7.3"
+
+- command: /usr/bin/curl -L -o {{top}}/{{sesame_tgz}} http://sourceforge.net/projects/sesame/files/Sesame%202/2.7.3/{{sesame_tgz}}/download creates={{top}}/{{sesame_tgz}}
+
+- name: sesame_unpack
+  command: /bin/tar xzf {{sesame_tgz}} chdir={{top}} creates={{sesame_outdir}}/war/openrdf-sesame.war
+
+- name: install sesame war
+  command: cp {{sesame_outdir}}/war/openrdf-sesame.war {{top}}/webapps/openrdf-sesame.war
+
+- name: install workbench war
+  command: cp {{sesame_outdir}}/war/openrdf-workbench.war {{top}}/webapps/openrdf-workbench.war
+
+  # ... missing the part that restarts tomcat if the war files changed
+
+- supervisor_process_mod:
+    name=sesame_8080
+    directory="{{top}}"
+    command="{{top}}/bin/catalina.sh run"
+    user=drewp

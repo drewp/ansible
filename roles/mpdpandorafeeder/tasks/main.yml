@@ -1,0 +1,9 @@
+---
+- supervisor_process_mod:
+    name=mpdpandorafeeder_9010
+    directory=/my/proj/mpdpandorafeeder
+    # /my/proj/mpdpandorafeeder/env32/bin/python on 32-bit
+    command="/my/proj/mpdpandorafeeder/bin/python-precise mpdpandorafeeder --mpd dash:6600 --port 9010 --preferred preferred.txt"
+    user=drewp
+    startretries=3
+    startsecs=30

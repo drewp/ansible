@@ -1,0 +1,4 @@
+---
+- apt: name=collectd
+- copy: src=collectd.conf dest=/etc/collectd/collectd.conf
+- service: name=collectd state=restarted

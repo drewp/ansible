@@ -1,0 +1,17 @@
+---
+- apt: pkg=ajaxterm
+- file: state=absent path=/etc/init.d/ajaxterm
+- file: state=absent path=/etc/default/ajaxterm
+- replace:
+    dest=/usr/share/ajaxterm/ajaxterm.js
+    regexp="Sarissa.updateContentFromNode.de, dterm."
+    replace="dterm.innerHTML = de.outerHTML"
+- replace:
+    dest=/usr/share/ajaxterm/ajaxterm.html
+    regexp="<script type=.text/javascript. src=.sarissa.*js.></script>"
+- supervisor_process_mod: 
+    name=ajaxterm_8022
+    command="/usr/bin/ajaxterm --log --port=8022 --serverport=22"
+    user=drewp
+  notify: supervisord update
+
