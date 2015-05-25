@@ -20,6 +20,8 @@
 - copy: src=graphTemplates.conf dest=/etc/graphite/graphTemplates.conf
 - file: path=/var/log/graphite state=directory owner=_graphite
 - file: path=/etc/carbon/storage-aggregation.conf state=touch
+- file: src=/usr/share/graphite-web/graphite.wsgi path=/tmp/graphite_wsgi.py state=link
+
 
 # patch in https://github.com/graphite-project/graphite-web/commit/14a75ffb6c93901a2c9839296ca9b56c92aba6bc?diff=split
 - patch: patchfile=/my/proj/ansible/roles/graphite/files/patch-functions basedir=/
@@ -29,8 +31,8 @@
   
 - supervisor_process_mod: 
     name=graphite_9037
-    directory=/
-    command="/usr/bin/gunicorn_django -b 0.0.0.0:9037  --workers=8 /usr/lib/python2.7/dist-packages/graphite/settings.py"
+    directory=/tmp
+    command="/usr/bin/gunicorn -b 0.0.0.0:9037 --workers=8 graphite_wsgi:application"
     user=_graphite
   notify: supervisord update
 
