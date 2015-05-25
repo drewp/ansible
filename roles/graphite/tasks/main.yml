@@ -15,7 +15,8 @@
   notify: supervisord update
 
 - apt: name=gunicorn
-- copy: src=local_settings.py dest=/etc/graphite/local_settings.py
+- include_vars: secret.yml
+- template: src=local_settings.py.j2 dest=/etc/graphite/local_settings.py
 - copy: src=graphTemplates.conf dest=/etc/graphite/graphTemplates.conf
 - file: path=/var/log/graphite state=directory owner=_graphite
 - file: path=/etc/carbon/storage-aggregation.conf state=touch
