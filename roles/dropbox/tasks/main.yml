@@ -9,10 +9,15 @@
     creates=/home/drewp/.dropbox-dist
 - group: gid=14564 name=dropbox
 - user: name=dropbox uid=14564 group=dropbox
-- file: path=/home/drewp/.dropbox state=directory group=dropbox mode=0770
-- file: path=/home/drewp/Dropbox state=directory mode=0770
+
+# This works in /home/dropbox/.dropbox and /home/dropbox/Dropbox
 - supervisor_process_mod: 
     name=dropbox
-    command="/home/drewp/.dropbox-dist/dropboxd"
+    command="/home/drewp/.dropbox-dist/dropbox-lnx.x86_64-3.4.6/dropbox"
     user=dropbox
+    stopasgroup=true
   notify: supervisord update
+
+# to check DB status, set HOME=/home/dropbox then
+# python ~drewp/bin/dropbox.py status
+# to learn if it's syncing or whatever
