@@ -12,11 +12,13 @@
 
 - set_fact:
     bluetooth_name=bigasterisk-bedroom
-    bluetooth_mac="00:20:E0:CC:2D:65"
+    bluetooth_mac="00:1A:7D:DA:71:13"
+    mac_of_the_one_that_doesnt_work_with_macs="00:20:E0:CC:2D:65"
     audio_sink="alsa_output.0.analog-stereo"
     bluetooth_pin="0000"
   
 - template: src=main.conf.j2 dest=/etc/bluetooth/main.conf owner=root group=root mode=644
+- file: path=/var/lib/bluetooth/{{ bluetooth_mac }} state=directory
 - template: src=var_config.j2 dest=/var/lib/bluetooth/{{ bluetooth_mac }}/config owner=root group=root mode=644  
 
 - lineinfile:
