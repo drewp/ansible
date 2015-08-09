@@ -10,7 +10,7 @@
   command: git pull origin master chdir=/opt/cjdns
 - command: git checkout master chdir=/opt/cjdns
 - name: rev
-  command: /usr/bin/git checkout a05ade40dc31caebaf3aa770aac3ab2ecb02d867 chdir=/opt/cjdns
+  command: /usr/bin/git checkout 3311d304ddebda9d8eaa1d389905f12cd8990a62 chdir=/opt/cjdns
 
 
 - name: build cjdns
@@ -31,7 +31,7 @@
 
 - name: install admin config
   copy: dest=/home/drewp/.cjdnsadmin  content="{{ cjdnsadmin.stdout }}" mode=0400 owner=drewp
-  when: inventory_hostname != "drewnote"
+  when: inventory_hostname != "drewnote" and inventory_hostname != "sticker"
 
 - name: make /tun
   file: path=/dev/net state=directory
