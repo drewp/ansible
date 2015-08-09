@@ -1,3 +1,4 @@
 ---
-- apt_repository: repo=ppa:chris-lea/node.js
-- apt: update_cache=yes pkg=nodejs=0.10.37-1chl1~{{ ansible_distribution_release }}1
+- apt_repository: repo=ppa:chris-lea/node.js state=absent
+  
+- apt: pkg=nodejs
