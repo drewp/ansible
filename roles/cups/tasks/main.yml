@@ -1,0 +1,5 @@
+---
+- apt: name=cups-daemon
+- apt: name=cups-browsed
+- template: dest=/etc/cups/cupsd.conf src=cupsd.conf.j2
+  notify: cups restart
