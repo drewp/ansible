@@ -30,3 +30,5 @@
     user=drewp
   notify:
    - supervisord update
+
+- cron: name="dropbox_monitor" user="drewp" special_time="hourly" job="/my/proj/ruler/bin/python /my/proj/ruler/dropbox_monitor/fetch_data.py"
