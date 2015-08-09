@@ -2,6 +2,7 @@
 
 - apt: name=graphite-carbon
 - apt: name=graphite-web
+- apt: name=python-ceres
 - service: name=carbon-cache enabled=no state=stopped
 - copy: src=carbon.conf dest=/etc/carbon/carbon.conf
 - copy: src=storage-schemas.conf dest=/etc/carbon/storage-schemas.conf
@@ -20,7 +21,7 @@
 - copy: src=graphTemplates.conf dest=/etc/graphite/graphTemplates.conf
 - file: path=/var/log/graphite state=directory owner=_graphite
 - file: path=/etc/carbon/storage-aggregation.conf state=touch
-- file: src=/usr/share/graphite-web/graphite.wsgi path=/tmp/graphite_wsgi.py state=link
+- file: src=/usr/share/graphite-web/graphite.wsgi path=/opt/graphite/graphite_wsgi.py state=link
 
 
 # patch in https://github.com/graphite-project/graphite-web/commit/14a75ffb6c93901a2c9839296ca9b56c92aba6bc?diff=split
@@ -31,7 +32,7 @@
   
 - supervisor_process_mod: 
     name=graphite_9037
-    directory=/tmp
+    directory=/opt/graphite
     command="/usr/bin/gunicorn -b 0.0.0.0:9037 --workers=8 graphite_wsgi:application"
     user=_graphite
   notify: supervisord update
