@@ -1,4 +1,10 @@
 ---
+
+# from https://bugs.launchpad.net/ubuntu/+source/isc-dhcp/+bug/1186662/comments/25
+# todo: /etc/fstab root needs option 'acl'
+- command: setfacl -dm u:dhcpd:rwx /var/lib/dhcp
+- command: setfacl -m u:dhcpd:rwx /var/lib/dhcp
+
 - copy:
     dest=/etc/default/isc-dhcp-server
     content="# written by /my/proj/puppet/ansible/roles/network_bigasterisk_gateway{{'\n'}}INTERFACES=\"eth1 eth2\"{{'\n'}}"
