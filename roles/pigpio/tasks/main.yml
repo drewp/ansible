@@ -1,0 +1,13 @@
+---
+
+# get and unupack pigpio.zip, build pigpiod
+
+# patch the server to not fork
+
+- supervisor_process_mod:
+    name=pigpiod_8888
+    user=root
+    directory=/
+    command="/home/pi/dim/PIGPIO/pigpiod"
+  notify:
+    - supervisord update

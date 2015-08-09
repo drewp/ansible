@@ -1,0 +1,16 @@
+---
+- file: state=directory path=/opt/piNode
+- file: state=directory path=/opt/arduinoNode
+- local_action: command rsync -az --delete /my/proj/homeauto/service/piNode/ {{ inventory_hostname }}:/opt/piNode
+- local_action: command rsync -az --delete /my/proj/homeauto/service/arduinoNode/ {{ inventory_hostname }}:/opt/arduinoNode
+- local_action: command rsync -az --delete /my/site/magma/stategraph.py {{ inventory_hostname }}:/opt/piNode/stategraph.py
+
+- supervisor_process_mod:
+    name=piNode_9059
+    command="/opt/piNode/bin/python piNode.py"
+    directory=/opt/piNode
+    autostart=true
+    user=pi
+  notify:
+   - supervisord update
+   
