@@ -65,6 +65,7 @@ btv vpn_remote_addr=10.3.0.33
 bang vpn_remote_addr=10.3.0.37
 plus vpn_remote_addr=10.3.0.5
 brace vpn_remote_addr=10.3.0.43
+bling vpn_remote_addr=10.3.0.45
 
 [hosted]
 prime
