@@ -1,4 +1,6 @@
 ---
 # may not be safe yet for machines that use nfs- untested
 - copy: dest=/etc/init/supervisor.conf src=supervisor.conf
-  
+
+- lineinfile: dest=/etc/rc.local insertbefore="exit 0" line="/usr/local/bin/supervisord -c /etc/supervisord.conf &"
+  when: inventory_hostname == "sticker"
