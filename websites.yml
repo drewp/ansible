@@ -263,6 +263,17 @@
         command: "/my/proj/homeauto/service/arduinoNode/bin/python arduinoNode.py"
       tags: ['arduinoNode']
 
+    - role: site
+      name: 'gcalendarwatch'
+      path: "/gcalendarwatch/"
+      openid: "admin"
+      serverHost: "bang"
+      port: "9105"
+      process:
+        directory: "/my/proj/pimscreen"
+        command: "/my/proj/pimscreen/bin/python gcalendarwatch"
+      tags: ['gcalendarwatch']
+
 - hosts: dash
   gather_facts: no
   handlers:
@@ -273,6 +284,22 @@
       path: "/arduino/dash/"
       openid: "admin"
       serverHost: "dash"
+      port: "9059"
+      process:
+        directory: "/my/proj/homeauto/service/arduinoNode/"
+        command: "/my/proj/homeauto/service/arduinoNode/bin/python arduinoNode.py"
+      tags: ['arduinoNode']
+
+- hosts: slash
+  gather_facts: no
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - role: site
+      name: 'arduinoNodeSlash'
+      path: "/arduino/slash/"
+      openid: "admin"
+      serverHost: "slash"
       port: "9059"
       process:
         directory: "/my/proj/homeauto/service/arduinoNode/"
