@@ -15,6 +15,7 @@
 - apt: pkg=libssl-dev state=installed
 
 - command: virtualenv --system-site-packages /opt/supdebug creates=/opt/supdebug/bin
+- command: /opt/supdebug/bin/pip install -U pip
 - command: /opt/supdebug/bin/pip install cyclone tailer
 
 - supervisor_process_mod:
