@@ -32,3 +32,6 @@
 
 - name: openvpn restart
   service: name=openvpn enabled=yes state=reloaded
+
+- name: cups restart
+  service: name=cups enabled=yes state=reloaded
