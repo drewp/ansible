@@ -1,6 +1,6 @@
 ---
-- git: repo=https://github.com/minetest/minetest.git dest=/opt/minetest version=3993093f51544d4eb44efb57c973e29107ea2f7a
-- git: repo=https://github.com/minetest/minetest_game.git dest=/opt/minetest/games/minetest_game version=9eb9502209b33bed33a36fb3db2ab4a59716fe5b
+- git: repo=https://github.com/minetest/minetest.git dest=/opt/minetest version=74d8b341bc7df3a24710c3b14d39530026516686
+- git: repo=https://github.com/minetest/minetest_game.git dest=/opt/minetest/games/minetest_game version=40e2b945e33fff87c50cd304d2c253e1e85d13c7
 
 - apt: name=build-essential
 - apt: name=libirrlicht-dev
