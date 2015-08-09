@@ -1,19 +1,20 @@
 ---
-- file: path=/etc/apt/sources.list.d/dropbox.list state=absent
-- get_url:
-    dest=/home/drewp/dropbox-lnx.x86_64.tgz
-    url=https://www.dropbox.com/download?plat=lnx.x86_64
-- command:
-    tar xzf dropbox-lnx.x86_64.tgz
-    chdir=/home/drewp
-    creates=/home/drewp/.dropbox-dist
 - group: gid=14564 name=dropbox
 - user: name=dropbox uid=14564 group=dropbox
+
+- file: path=/etc/apt/sources.list.d/dropbox.list state=absent
+- get_url:
+    dest=/home/dropbox/dropbox-lnx.x86_64.tgz
+    url=https://www.dropbox.com/download?plat=lnx.x86_64
+- file: path=/home/dropbox/.dropbox-dist state=absent
+- unarchive: src=/home/dropbox/dropbox-lnx.x86_64.tgz dest=/home/dropbox
+- file: path=/home/dropbox/.dropbox-dist state=directory recurse=yes owner=dropbox
 
 # This works in /home/dropbox/.dropbox and /home/dropbox/Dropbox
 - supervisor_process_mod: 
     name=dropbox
-    command="/home/drewp/.dropbox-dist/dropbox-lnx.x86_64-3.4.6/dropbox"
+    environment="HOME=/home/dropbox"
+    command="/home/dropbox/.dropbox-dist/dropbox-lnx.x86_64-3.8.6/dropbox"
     user=dropbox
     stopasgroup=true
   notify: supervisord update
