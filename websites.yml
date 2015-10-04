@@ -136,11 +136,13 @@
 
     - role: site
       name: 'whopickedthis'
+      tags: ['whopickedthis']
       path: "/"
       openid: "anonymous"
       serverHost: "bang"
       port: "9109"
       domain: "whopickedthis.com"
+      useWebsocketPath: "yes"
       process:
         directory: "/my/site/whopickedthis"
         command: "/my/site/whopickedthis/whopickedthis.py"
