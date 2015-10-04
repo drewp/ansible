@@ -1,5 +1,8 @@
 ---
 
+# for check_file_age on dash
+- apt: pkg=nagios-plugins-basic
+
 - supervisor_process_mod:
     name=ruler_client_8101
     command="/my/proj/ruler/bin/python client.py"
@@ -8,3 +11,16 @@
     user=sensu
   notify:
    - supervisord update
+
+  
+- template:
+    dest=/var/lib/openid_proxy.d/ruler_client_{{inventory_hostname}}.n3
+    src=openid_proxy_statements.n3.j2
+  notify: openid_proxy restart    
+  delegate_to: bang
+
+- copy:
+    dest=/etc/sudoers.d/ruler
+    content="sensu ALL = (drewp) NOPASSWD{{':'}} /usr/bin/paplay, /usr/bin/pacmd, /my/proj/ruler/check/pulseaudio_sink\n"
+    owner=root
+    group=root

@@ -1,0 +1,12 @@
+---
+
+
+- apt: pkg=libleveldb1
+- file: path=/opt/ruler/server_store state=directory owner=drewp
+- supervisor_process_mod:
+    name=ruler_server_8102
+    directory=/my/proj/ruler/server
+    command="/my/proj/ruler/bin/python /my/proj/ruler/server/server.py"
+    user=drewp
+  notify:
+   - supervisord update

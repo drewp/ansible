@@ -1,0 +1,12 @@
+@prefix : <http://bigasterisk.com/openid_proxy#> .
+@prefix site: <http://bigasterisk.com/openidProxySite/> .
+@prefix acl: <http://www.w3.org/ns/auth/acl#> .
+
+site:rulerClient{{inventory_hostname.capitalize()}}
+  :host "bigasterisk.com";
+  :requestPrefix "/ruler/client/{{inventory_hostname}}/";
+  :proxyUrlPrefix "http://{{inventory_hostname}}:8101/" .
+
+:admin1 acl:accessTo site:rulerClient{{inventory_hostname.capitalize()}} .
+:admin2 acl:accessTo site:rulerClient{{inventory_hostname.capitalize()}} .
+

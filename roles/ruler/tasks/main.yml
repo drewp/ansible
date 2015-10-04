@@ -2,23 +2,11 @@
 
 - file: path=/var/lib/ruler.d state=directory
 - command: /my/proj/ruler/bin/python /my/proj/ruler/siteconf2ruler.py /var/lib/ruler.d/sites.n3
-
-
   
 - supervisor_process_mod:
     name=ruler_reloader
     directory=/my/proj/ruler
     command="/my/proj/ruler/bin/python /my/proj/ruler/reloader.py"
-    user=drewp
-  notify:
-   - supervisord update
-
-- apt: pkg=libleveldb1
-- file: path=/opt/ruler/server_store state=directory owner=drewp
-- supervisor_process_mod:
-    name=ruler_server_8102
-    directory=/my/proj/ruler/server
-    command="/my/proj/ruler/bin/python /my/proj/ruler/server/server.py"
     user=drewp
   notify:
    - supervisord update
@@ -32,3 +20,6 @@
    - supervisord update
 
 - cron: name="dropbox_monitor" user="drewp" special_time="hourly" job="/my/proj/ruler/bin/python /my/proj/ruler/dropbox_monitor/fetch_data.py"
+- cron: name="ruler_total"   user="drewp" minute="*/5" job="/my/proj/room/carbon_update ruler.stats.totalChecks `curl -s http://bang:8103/stats/totalChecks`"
+- cron: name="ruler_failing" user="drewp" minute="*/5" job="/my/proj/room/carbon_update ruler.stats.failingChecks `curl -s http://bang:8103/stats/failingChecks`"  
+  
