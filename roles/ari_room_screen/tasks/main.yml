@@ -6,6 +6,16 @@
 #- copy: dest="/home/drewp/.dmrc" content="[Desktop]\nSession=qtile_remote\nLanguage=en_US.utf8\nLayout=us\nLanglist=en_US:en\nLCMess=en_US.UTF-8"
 - copy: dest="/home/drewp/.dmrc" content="[Desktop]\nSession=fvwm\nLanguage=en_US.utf8\nLayout=us\nLanglist=en_US:en\nLCMess=en_US.UTF-8"
 
+# /etc/init/pulseaudio.conf enable line with: start on
+
+- supervisor_process_mod:
+    name=pulseaudio
+    directory=/tmp
+    environment="DISPLAY=:0"
+    command="pulseaudio"
+    user=drewp
+  notify: supervisord update
+
 - supervisor_process_mod:
     name=room_server_10005
     directory=/my/proj/ariRoom
@@ -36,6 +46,26 @@
     name=display_minetest_oakland
     environment="DISPLAY=:0"
     command="/home/drewp/start_minetest 30001"
+    directory="/home/drewp"
+    user=drewp
+    autostart=false
+    stopasgroup=true
+  notify: supervisord update
+
+- supervisor_process_mod:
+    name=display_minecraft
+    environment="DISPLAY=:0"
+    command="/usr/bin/java -jar /home/drewp/Minecraft.jar"
+    directory="/home/drewp"
+    user=drewp
+    autostart=false
+    stopasgroup=true
+  notify: supervisord update
+
+- supervisor_process_mod:
+    name=display_stopmotion
+    environment="DISPLAY=:0"
+    command="/home/drewp/linuxstopmotion-code/build/stopmotion"
     directory="/home/drewp"
     user=drewp
     autostart=false
