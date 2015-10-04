@@ -86,6 +86,13 @@
   notify: supervisord update
 
 - supervisor_process_mod:
+    name=photo_randoms_8054
+    command="/my/site/photo/v2/randoms/run"
+    directory=/my/site/photo
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod:
     name=photo_findbymap_9088
     command="/my/site/photo/bin/python /my/site/photo/findbymap/findbymap.py"
     directory=/my/site/photo/findbymap

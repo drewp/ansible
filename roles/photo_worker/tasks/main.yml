@@ -1,5 +1,8 @@
 ---
 - file: path=/var/cache/photo state=directory
+
+- apt: pkg=nfs-common
+
 - mount: fstype=nfs name=/var/cache/photo src=bang:/var/cache/photo state=mounted
 - supervisor_process_mod:
     name=photo_worker
