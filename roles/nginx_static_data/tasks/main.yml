@@ -1,0 +1,22 @@
+---
+
+# this could just read all the :serveRoot paths from the site
+# descriptions. And it's so slow, it should probably be a single
+# custom tool.
+
+# REMEMBER TRAILING SLASH
+- set_fact:
+    site_paths:
+      - "/my/site/homepage/www/"
+
+- name: prep dir for serving
+  file: path="{{ item }}" state=directory
+  with_items: site_paths
+  
+- name: sync
+  local_action: command rsync -az --delete {{ item }} {{ inventory_hostname }}:{{ item }}
+  with_items: site_paths
+
+- name: leave rsync warning
+  copy: dest="{{ item }}/RSYNC_DELETE_RUNS_IN_HERE" content="don't add files on this side!"
+  with_items: site_paths
