@@ -92,6 +92,8 @@
       service: name=nginx enabled=no
       tags: ['nginx']
     - include: tasks/bang_processes.yml
+    - include: tasks/bang_processes_map.yml
+    - include: tasks/bang_sites.yml
 
 - include: websites.yml
       

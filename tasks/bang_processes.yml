@@ -1,0 +1,288 @@
+---
+
+- command: /my/proj/openid_proxy/bin/python build_nginx_conf.py /etc/nginx/nginx.conf bang chdir=/my/proj/openid_proxy
+  tags: ['nginx', 'nginx_conf']
+    
+- supervisor_process_mod:
+    name=nginx
+    command="/usr/local/bin/pidproxy /var/log/nginx.pid /usr/sbin/nginx -c /etc/nginx/nginx.conf"
+    user=root
+    autostart=false
+  notify: supervisord update
+  tags: ['nginx']
+    
+- supervisor_process_mod: 
+    name=tahoe_home_8123
+    directory=/tahoe/home
+    command="/usr/bin/tahoe run -C /tahoe/home"
+    user=drewp
+    autostart=true
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=tahoe_home_introducer_54260
+    command=/tahoe/home-introducer/run
+    user=drewp
+    autostart=true
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=ffgDarcs_11009
+    directory=/my/proj/ffg/darcsweb
+    command=/my/proj/ffg/darcsweb/serve
+    user=drewp
+    autostart=true
+  notify: supervisord update
+
+- supervisor_process_mod:
+    name=whatsplayingnext_9110
+    directory=/my/site/whatsplayingnext
+    command="/my/site/whatsplayingnext/bin/python whatsplayingnext.py"
+    user=drewp
+    autostart=true
+  notify: supervisord update
+
+- cron: name=whatsplayingnext_update hour=3 minute=25 user=drewp job="/my/site/whatsplayingnext/scrape/update"
+  
+- supervisor_process_mod: 
+    name=moinmoin_9011
+    directory=/my/site/moin
+    command=/my/site/moin/start
+    user=drewp
+    autostart=true
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=openid_proxy_9023
+    directory=/my/proj/openid_proxy
+    command="/my/proj/openid_proxy/bin/python /my/proj/openid_proxy/openid_proxy --port 9023"
+    user=drewp
+    stdout_logfile_backups=2
+    stderr_logfile_backups=2
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=openid_proxy_nginx_9028
+    directory=/my/proj/openid_proxy
+    command="/my/proj/openid_proxy/openid_proxy_nginx"
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=atomojo_9025
+    directory=/opt/atomojo-server-0.12.1
+    command="java -Xmx2048m -jar /opt/atomojo-server-0.12.1/atomojo-server.jar /my/site/blog/mojo"
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=wp2atom_9026
+    command="/my/site/blog/bin/python /my/site/blog/baby/wp2atom"
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=blogrender_9027
+    directory=/my/site/blog/baby
+    command="/my/site/blog/bin/python blogrender.py"
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=twitterwatch
+    directory=/my/proj/pimscreen
+    command="/my/proj/pimscreen/bin/python twitterwatch"
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=deliciouswatch
+    directory=/my/proj/pimscreen
+    command="/my/proj/pimscreen/bin/python deliciouswatch"
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=cgi_9038
+    command="thttpd -p 9038 -d /my/post/cgi -c * -D -l /tmp/cgi-thttpd.log -nos"
+    user=nobody
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=proctask
+    command=/home/drewp/mailprocess/proctask_loop
+    user=drewp
+  notify: supervisord update
+
+# for wedding-john-karin
+- supervisor_process_mod: 
+    name=zope4
+    command="/bin/zsh /my/site/zope4/bin/runzope"
+    user=drewp
+  notify: supervisord update
+
+# for harlan photos, maybe more
+- supervisor_process_mod: 
+    name=zope6
+    command="/bin/zsh /my/site/zope6/bin/runzope"
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=mongo_29017
+    command="/opt/mongodb-linux-x86_64-ubuntu1404-3.0.6/bin/mongod --dbpath /opt/mongodb/data --rest --httpinterface --journal"
+    user=drewp
+  notify: supervisord update
+  tags: ['mongo']
+
+- supervisor_process_mod: 
+    name=ffg_trafficGen
+    directory=/my/proj/ffg
+    command=/my/proj/ffg/bin/trafficGen
+    user=drewp
+    stdout_logfile_backups=2
+    stderr_logfile_backups=2
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=squid_mgr_9050
+    directory=/usr/lib/cgi-bin
+    command="thttpd -p 9050 -c cachemgr.cgi -D"
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=c3po_9040
+    directory=/my/proj/c3po
+    command="/my/proj/c3po/bin/python c3po"
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=cmd_photoBuildCache
+    directory=/my/site/photo
+    command="/usr/bin/python2.7 buildCache.py"
+    user=drewp
+    autostart=false
+    autorestart=false
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=cmd_backupDrewNote
+    directory=/tmp
+    command="/my/pda/drew-note/runbackup"
+    user=drewp
+    autostart=false
+    autorestart=false
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=cmd_seenlists
+    directory=/home/drewp/mailprocess
+    command="/usr/local/bin/python seennewlists"
+    user=drewp
+    autostart=false
+    autorestart=false
+    startsecs=0
+    exitcodes=0
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=cmd_trainnewspam
+    directory=/home/drewp/mailprocess
+    command="/usr/bin/zsh trainnewspam"
+    user=drewp
+    autostart=false
+    autorestart=false
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=netbars2graphite
+    directory=/tmp
+    command="/usr/local/bin/netbars2graphite"
+    user=drewp
+    autorestart=true
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=pim_maildirwatch
+    directory=/my/proj/pimscreen
+    command="/my/proj/pimscreen/bin/python ./maildirwatch"
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=openid_recentvisitors_9068
+    directory=/my/proj/openid_proxy
+    command="/my/proj/openid_proxy/bin/python recentvisitors.py 9068"
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=csigen_9064
+    directory=/my/proj/csigen
+    command="/my/proj/csigen/bin/python csigen.py"
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=csigen_worker
+    directory=/my/proj/csigen
+    command="/my/proj/csigen/runworker"
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=elastic_9200
+    environment="ES_MIN_MEM=32m,ES_MAX_MEM=256m"
+    directory=/tmp
+    user=elastic
+    command="/home/drewp/bin/elasticsearch_start "
+    # see http://www.elasticsearch.org/tutorials/2011/04/06/too-many-open-files.html and
+    # http://www.cyberciti.biz/faq/linux-increase-the-maximum-number-of-open-files/ and
+    # /etc/security/limits.conf
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=reasoning_9071
+    directory=/my/proj/homeauto/service/reasoning
+    command="/my/proj/homeauto/service/reasoning/bin/python reasoning.py"
+    user=drewp
+    stdout_logfile_backups=2
+    stderr_logfile_backups=2
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=newlist_summary_9090
+    directory=/home/drewp/mailprocess
+    command="/home/drewp/mailprocess/bin/python newlist-summary"
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=messagerule_9097
+    directory=/home/drewp/mailprocess
+    command="/home/drewp/mailprocess/bin/python messagerule.py"
+    user=drewp
+  notify: supervisord update
+
+- supervisor_process_mod: 
+    name=wallscreen_9102
+    user=drewp
+    directory=/my/proj/homeauto/service/wallscreen
+    command="/my/proj/homeauto/service/wallscreen/bin/python wallscreen.py "
+  notify: supervisord update
+
+- supervisor_process_mod:
+    name=vist2rdf
+    directory=/my/proj/pimscreen
+    command="/my/proj/pimscreen/bin/python vist2rdf.py"
+    user=drewp
+  notify: supervisord update
+  
+- supervisor_process_mod: 
+    name=supervisorCommander_9072
+    directory=/my/site/magma/supervisorCommander
+    command="/my/site/magma/buildout_bin/python-rdflib2 supervisorCommander.py http://bang:9001 http://bang:9002 http://dash:9001 http://slash:9001 http://slash:11000 http://prime:9001"
+    user=drewp
+  notify: supervisord update
