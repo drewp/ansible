@@ -12,7 +12,11 @@
 - group: name=damon gid=3011
 - group: name=ffg gid=3008
 
-- user: name=drewp uid=501 group=drewp groups=adm,cdrom,sudo,dip,plugdev,lpadmin,ffg,dialout,lp
+# ruler still runs as sensu user
+- group: name=sensu gid=147
+- user: name=sensu uid=139
+
+- user: name=drewp uid=501 group=drewp groups=adm,cdrom,sudo,dip,plugdev,lpadmin,ffg,dialout,lp,audio
 - user: name=damon uid=3011 group=damon groups=ffg
 
 - group: name=brettw gid=3012
