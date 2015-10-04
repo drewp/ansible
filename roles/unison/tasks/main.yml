@@ -1,0 +1,21 @@
+---
+- apt: pkg=unison
+- file: owner=drewp path=/home/drewp/unison state=directory
+- file: owner=drewp path=/home/drewp/.unison state=directory
+- copy: owner=drewp dest=/home/drewp/.unison/home.prf content="root = /home/drewp/unison\nroot = ssh{{':'}}//bang//home/drewp/unison"
+- file: owner=drewp path=/home/drewp/bin state=directory
+- copy: owner=drewp dest=/home/drewp/bin/u content="unison home -batch -terse" mode="u+rwx"
+
+# unison has to be up to date for these to work. maybe force=yes is appropriate
+- file: owner=drewp dest=/home/drewp/.emacs.d state=link src=unison/dot-emacs-d
+- file: owner=drewp dest=/home/drewp/.fonts state=link src=unison/dot-fonts
+- file: owner=drewp dest=/home/drewp/.zshrc state=link src=unison/zshrc
+- file: owner=drewp dest=/home/drewp/.i3 state=link src=unison/dot-i3
+
+# don't share .aptitude/cache
+- file: owner=drewp path=/home/drewp/.aptitude state=directory
+- file: owner=drewp dest=/home/drewp/.aptitude/config state=link src=../unison/dot-aptitude-config force=yes
+  
+# zshrc uses these:
+- apt: pkg=keychain
+- apt: pkg=zsh-common
