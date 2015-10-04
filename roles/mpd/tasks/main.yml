@@ -1,6 +1,7 @@
 ---
 - apt: pkg=mpd
 - service: name=mpd enabled=no
+- file: path=/lib/systemd/system/mpd.service state=absent
 
 - set_fact: isAdminHost=false
 - set_fact: isAdminHost=true

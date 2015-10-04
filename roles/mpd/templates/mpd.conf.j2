@@ -24,3 +24,9 @@ audio_output {
 
 filesystem_charset "UTF-8"
 id3v1_encoding     "UTF-8"
+
+zeroconf_enabled "no"
+
+{% if isAdminHost %}
+auto_update "yes"
+{% endif %}
