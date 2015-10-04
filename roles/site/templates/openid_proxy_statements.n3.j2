@@ -16,3 +16,6 @@ site:{{name}}
   :admin2 acl:accessTo site:{{name}} .
 {% endif %}
       
+{% if useWebsocketPath == 'yes' %}
+  site:{{name}} a :Websocket .
+{% endif %}

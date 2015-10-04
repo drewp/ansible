@@ -1,0 +1,64 @@
+---
+
+- set_fact: openidProxyAddr="http://bang:9023"
+  tags: ['ruler-check']
+  
+- set_fact: upstreamTarget="http://{{serverHost}}:{{port}}{{upstreamPath}}"
+  tags: ['ruler-check']
+  
+- set_fact: proxyTarget="{{openidProxyAddr}}{{path}}"
+  tags: ['ruler-check']
+- set_fact: proxyTarget="{{upstreamTarget}}"
+  when: openid == "no"
+  tags: ['ruler-check']
+
+- set_fact: nginxLocation="proxy_pass {{proxyTarget}}; "
+  tags: ['ruler-check']
+- debug: msg="accessLog={{ accessLog }} openid={{ openid }}"
+  tags: ['ruler-check']
+- set_fact: accessLogLine="{{'' if accessLog else 'access_log off; '}}"
+  tags: ['ruler-check']
+
+- include: setup_directories.yml
+  tags: ['ruler-check']
+  
+- copy:
+    dest="/var/lib/nginx.d/{{domain}}/no-nfs/{{name}}.conf"
+    content="location {{path}} { {{nginxLocation}} {{accessLogLine}} }"
+    # always include the addslash redirect?
+  notify: nginx restart
+  delegate_to: bang
+
+  # this might end up on another host
+
+# note that user may be overridden by arg_dict_string sometimes
+- supervisor_process_mod:
+    name="{{ name }}_{{ port }}"
+    user=drewp
+    arg_dict_string="{{process}}"
+  notify: supervisord update
+
+- set_fact: useWebsocketPath="no"
+
+- template:
+    dest=/var/lib/openid_proxy.d/{{name}}.n3
+    src=openid_proxy_statements.n3.j2
+  notify: openid_proxy restart    
+  delegate_to: bang
+
+  
+#- template:
+#    dest="/my/proj/puppet/ansible/roles/sensu_client/files/generated/site/{{name}}.json"
+#    src=sensu-check.json.j2
+#  # notify: (todo: all sensus on all machines)
+
+- file: path=/var/lib/ruler.d/site state=directory
+  delegate_to: bang
+
+- template:
+    dest="/var/lib/ruler.d/site/{{name}}.n3"
+    src=ruler-check.n3.j2
+  tags: ['ruler-check']
+  delegate_to: bang
+
+# maybe also a ruler check on the local host
