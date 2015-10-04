@@ -1,0 +1,21 @@
+---
+
+- git: repo=https://github.com/notandy/ympd.git version=f2164b382a6bfaf0e609451992c2818f817b7e6f dest=/opt/ympd
+- file: path=/opt/ympd/build state=directory
+- apt: pkg=cmake
+- apt: pkg=libmpdclient-dev
+- command: chdir=/opt/ympd/build creates=/opt/ympd/build/Makefile cmake ..
+- command: chdir=/opt/ympd/build creates=/opt/ympd/build/ympd make
+  
+- supervisor_process_mod:
+    name=ympd
+    user=drewp
+    command="/opt/ympd/build/ympd --webport 0.0.0.0:9010"
+  notify:
+    - supervisord update
+    
+- template:
+    dest=/var/lib/openid_proxy.d/ympd_{{ansible_hostname}}.n3
+    src=openid_proxy_statements.n3.j2
+  notify: openid_proxy restart    
+  delegate_to: bang
