@@ -1,0 +1,16 @@
+---
+
+- apt: pkg=pulseaudio
+- apt: pkg=pulseaudio-module-x11 state=absent
+- supervisor_process_mod:
+    name=pulseaudio
+    user=drewp
+    command="/usr/bin/pulseaudio"
+  notify:
+    - supervisord update
+
+- copy: dest=/etc/pulse/client.conf src=client.conf owner=root mode=0644
+- copy: dest=/etc/pulse/daemon.conf src=daemon.conf owner=root mode=0644
+- copy: dest=/etc/pulse/default.pa src=default.pa owner=root mode=0644
+
+  
