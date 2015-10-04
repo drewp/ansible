@@ -12,8 +12,8 @@ brace
 dash
 bang
 slash
-stor
 brace
+plus
 
 [remote]
 plus
@@ -32,6 +32,7 @@ dash
 slash
 plus
 brace
+bang
 
 [with_x11]
 dash
