@@ -1,0 +1,12 @@
+---
+- apt: pkg=i3
+
+# lightdm doesn't see uid=501. lxdm quits after a minute. slim needs explicit session setting every time
+- apt: pkg=slim
+
+- copy: owner=drewp dest=/home/drewp/.dmrc content="[Desktop]\nLanguage=en_US.utf8\nLayout=us\nLanglist=en_US:en\nLCMess=en_US.UTF-8\nSession=i3\n"
+
+# i3 uses these
+- apt: pkg=rxvt-unicode
+- apt: pkg=network-manager
+# .. status bar stuff
