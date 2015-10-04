@@ -6,6 +6,7 @@
 #  command: darcs get ... creates=/opt/supdebug/_darcs
 #- name: update
 #  command: darcs pull ...
+- apt: pkg=rsync
 
 - local_action: command rsync -az --delete /my/proj/supdebug/ {{ inventory_hostname }}:/opt/supdebug
 
@@ -16,6 +17,9 @@
 
 - command: virtualenv --system-site-packages /opt/supdebug creates=/opt/supdebug/bin
 - command: /opt/supdebug/bin/pip install -U pip
+
+- apt: pkg=build-essential
+
 - command: /opt/supdebug/bin/pip install cyclone tailer
 
 - supervisor_process_mod:
@@ -25,3 +29,9 @@
     user=drewp
     autostart=true
   notify: supervisord update
+
+- template:
+    dest=/var/lib/openid_proxy.d/supdebug_{{ansible_hostname}}.n3
+    src=openid_proxy_statements.n3.j2
+  notify: openid_proxy restart    
+  delegate_to: bang
