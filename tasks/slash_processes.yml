@@ -15,9 +15,10 @@
 
 - supervisor_process_mod:
     name=ffg_static_9018
-    command="thttpd -p 9018 -d /home/drewp/ffg-prod/build_static -D"
+    command="webfsd -F -p 9018 -r /home/drewp/ffg-prod/build_static"
     user=drewp
   notify: supervisord update
+  tags: ['ffg']
       
 - supervisor_process_mod:
     name=mpd_garage_6601
