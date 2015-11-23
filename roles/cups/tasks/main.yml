@@ -3,3 +3,16 @@
 - apt: name=cups-browsed
 - template: dest=/etc/cups/cupsd.conf src=cupsd.conf.j2
   notify: cups restart
+
+- file: path=/opt/google-cloud-print state=directory
+- copy: src=gcp-cups-connector dest=/opt/google-cloud-print/gcp-cups-connector mode=755
+- copy: src=gcp-cups-connector-util dest=/opt/google-cloud-print/gcp-cups-connector-util mode=755
+- copy: src=private.config.json dest=/opt/google-cloud-print/private.config.json mode=644
+
+- supervisor_process_mod:
+    name=google_cloud_print
+    command="/opt/google-cloud-print/gcp-cups-connector --config-filename /opt/google-cloud-print/private.config.json --log-to-console"
+    directory=/opt/google-cloud-print/
+    user=drewp
+    stopasgroup=true
+  notify: supervisord update
