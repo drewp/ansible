@@ -1,0 +1,19 @@
+---
+- apt: pkg=openjdk-8-jdk 
+- apt: pkg=openjdk-8-source 
+- apt: pkg=pkg-config 
+- apt: pkg=zip 
+- apt: pkg=g++ 
+- apt: pkg=zlib1g-dev 
+- apt: pkg=unzip
+
+- set_fact: deb=/opt/bazel_0.1.2-jdk7-linux-x86_64.deb
+  
+- get_url:
+    dest={{deb}}
+    sha256sum=54f6c33cd425bc9750c06fa8cbff1cd146c19e8cbb0eb00d6381d8815fb6c511
+    url=https://github.com/bazelbuild/bazel/releases/download/0.1.2/bazel_0.1.2-jdk7-linux-x86_64.deb
+
+- apt: deb={{deb}}
+  
+    
