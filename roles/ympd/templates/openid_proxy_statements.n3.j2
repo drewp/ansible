@@ -6,13 +6,13 @@ site:ympd{{ansible_hostname.capitalize()}}
   a :Websocket;
   :host "bigasterisk.com";
   :requestPrefix "/music/{{ansible_hostname}}/";
-  :proxyUrlPrefix "http://{{ansible_hostname}}:9010/" .
+  :proxyUrlPrefix "http://{{ansible_hostname}}.bigasterisk.com:9010/" .
 
 site:ympdFonts{{ansible_hostname.capitalize()}}
   a :Websocket;
   :host "bigasterisk.com";
   :requestPrefix "/music/{{ansible_hostname}}/fonts/";
-  :proxyUrlPrefix "http://{{ansible_hostname}}:9010/fonts/" .
+  :proxyUrlPrefix "http://{{ansible_hostname}}.bigasterisk.com:9010/fonts/" .
 
 :admin1 acl:accessTo site:ympd{{ansible_hostname.capitalize()}} .
 :admin2 acl:accessTo site:ympd{{ansible_hostname.capitalize()}} .
