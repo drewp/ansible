@@ -1,5 +1,6 @@
 ---
 - apt: pkg=ajaxterm
+- command: systemctl disable ajaxterm.service
 - file: state=absent path=/etc/init.d/ajaxterm
 - file: state=absent path=/etc/default/ajaxterm
 - replace:
@@ -9,6 +10,20 @@
 - replace:
     dest=/usr/share/ajaxterm/ajaxterm.html
     regexp="<script type=.text/javascript. src=.sarissa.*js.></script>"
+
+# more from https://github.com/antonylesuisse/qweb/issues/16
+- replace:
+    dest=/usr/share/ajaxterm/ajaxterm.js
+    regexp="var dterm=document.createElement.'div'.;"
+    replace="var dterm=document.createElement('pre');"
+
+- replace:
+    dest=/usr/share/ajaxterm/ajaxterm.js
+    regexp="dstat.className='stat';"
+    replace="dstat.className='stat'; dterm.className='term';"
+
+
+
 - supervisor_process_mod: 
     name=ajaxterm_8022
     command="/usr/bin/ajaxterm --log --port=8022 --serverport=22"
