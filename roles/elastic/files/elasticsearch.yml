@@ -1,0 +1,10 @@
+# Cluster Settings
+cluster:
+  name: elasticsearch
+
+path:
+  logs: /tmp
+  data: /opt/elastic-data
+  work: /tmp/elastic_work
+
+

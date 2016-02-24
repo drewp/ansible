@@ -1,0 +1,25 @@
+---
+
+- lineinfile: dest=/etc/security/limits.conf regexp='elastic\s+soft' line='elastic          soft    nofile          90000'
+- lineinfile: dest=/etc/security/limits.conf regexp='elastic\s+hard' line='elastic          hard    nofile          90000'
+
+# this makes a user 'elasticsearch' which i am ignoring
+- apt: pkg=elasticsearch
+- command: systemctl disable elasticsearch.service
+
+- copy: dest=/home/drewp/bin/elasticsearch_start src=elasticsearch_start
+- copy: dest=/opt/elastic-data/elasticsearch.yml src=elasticsearch.yml
+
+
+- file: path=/var/log/elasticsearch state=directory owner=elastic group=elastic
+  
+- supervisor_process_mod: 
+    name=elastic_9200
+    environment="ES_MIN_MEM=32m,ES_MAX_MEM=256m"
+    directory=/tmp
+    user=elastic
+    command="/home/drewp/bin/elasticsearch_start "
+    # see http://www.elasticsearch.org/tutorials/2011/04/06/too-many-open-files.html and
+    # http://www.cyberciti.biz/faq/linux-increase-the-maximum-number-of-open-files/ and
+    # /etc/security/limits.conf
+  notify: supervisord update
