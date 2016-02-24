@@ -22,7 +22,7 @@
   tasks:
     - apt: pkg=djbdns state=present
       tags: ['djbdns']
-      when: inventory_hostname != "sticker"
+      when: ansible_distribution != "Debian"
   
 - hosts: big
   handlers:
@@ -178,24 +178,6 @@
   roles:
     - {role: openvpn_client, tags: ['openvpn_client']}
 
-- hosts: sticker
-  gather_facts: no
-  tasks:
-    - user: name=pi uid=1000 group=7 groups=lp,adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,netdev,i2c,input,spi,gpio,fuse
-    - user: name=drewp uid=501 group=1000 groups=lp,adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,netdev,i2c,input,spi,gpio,fuse
-    - supervisor_process_mod:
-        name=piNode_9059
-        user=pi
-        directory=/home/pi/bang/my/proj/homeauto/service/piNode
-        command=/home/pi/bang/my/proj/homeauto/service/piNode/bin/python piNode.py
-      notify:
-        - supervisord update
-  roles:
-    - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
-    - {role: raspi_bluetooth_speaker, tags: ['raspi_bluetooth_speaker']}
-    - {role: pigpio, tags: ['pigpio']}
-    - {role: raspi_io_node, tags: ['io_node']}    
-
 - hosts: with_speakers
   handlers:
     - include: handlers/main.yml
@@ -207,6 +189,28 @@
     - {role: mpdweb, tags: ['mpdweb']}
     # - mpdpandorafeeder # not working yet
 
+- hosts: pi
+  handlers:
+    - include: handlers/main.yml
+  tasks:
+    - group: name=fuse
+      tags: ['users']
+    - user: name=pi uid=1000 group=7 groups=lp,adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,netdev,i2c,input,spi,gpio,fuse
+      tags: ['users']
+    - group: name=drewp gid=501
+      tags: ['users']
+    - user: name=drewp uid=501 group=drewp groups=lp,adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,netdev,i2c,input,spi,gpio,fuse
+      tags: ['users']
+    - file: path=/home/drewp state=directory owner=drewp group=drewp
+      tags: ['users']
+
+  roles:
+    - {role: hosts, tags: ['hosts']}
+    - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
+    - {role: raspi_airport_speaker, tags: ['raspi_speaker']}
+    - {role: pigpio, tags: ['pigpio']}
+    - {role: raspi_io_node, tags: ['raspi_io_node']}    
+  
 - hosts: with_x11
   handlers:
     - include: handlers/main.yml

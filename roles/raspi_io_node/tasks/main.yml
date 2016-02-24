@@ -1,16 +1,36 @@
 ---
 - file: state=directory path=/opt/piNode
+# put this outside /opt/piNode since we rsync --delete in there.
+- file: state=directory path=/opt/piNode_env
 - file: state=directory path=/opt/arduinoNode
-- local_action: command rsync -az --delete /my/proj/homeauto/service/piNode/ {{ inventory_hostname }}:/opt/piNode
-- local_action: command rsync -az --delete /my/proj/homeauto/service/arduinoNode/ {{ inventory_hostname }}:/opt/arduinoNode
-- local_action: command rsync -az --delete /my/site/magma/stategraph.py {{ inventory_hostname }}:/opt/piNode/stategraph.py
+- file: state=directory path=/opt/homeauto_lib
 
+- apt: pkg=build-essential
+- apt: pkg=python-dev
+
+- set_fact: remoteDir="{{ inventory_hostname }}:/opt/piNode"
+  
+- local_action: command rsync -az --delete /my/proj/homeauto/service/piNode/ {{remoteDir}}
+- pip:
+    chdir=/opt/piNode_env
+    requirements=/opt/piNode/requirements.txt
+    virtualenv=/opt/piNode_env
+
+- local_action: command rsync -az --delete /my/proj/homeauto/service/arduinoNode/ {{ inventory_hostname }}:/opt/arduinoNode
+- local_action: command rsync -az --delete /my/proj/homeauto/lib/                 {{ inventory_hostname }}:/opt/homeauto_lib
+- local_action: command rsync -az  /my/site/magma/stategraph.py                   {{ inventory_hostname }}:/opt/homeauto_lib
+- local_action: command rsync -az  /my/proj/room/carbondata.py                    {{ inventory_hostname }}:/opt/homeauto_lib
+- local_action: command rsync -az  /my/proj/light9/light9                         {{ inventory_hostname }}:/opt/homeauto_lib
+  
+- lineinfile: dest=/etc/modules line="ipv6"
+
+- lineinfile: dest=/boot/config.txt line="dtoverlay=w1-gpio,gpiopin=17,pullup=y"
+  
 - supervisor_process_mod:
     name=piNode_9059
-    command="/opt/piNode/bin/python piNode.py"
     directory=/opt/piNode
     autostart=true
     user=pi
-  notify:
-   - supervisord update
+    command="/opt/piNode_env/bin/python piNode.py"
+  notify: supervisord update
    
