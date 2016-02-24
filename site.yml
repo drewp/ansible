@@ -7,8 +7,7 @@
 
 # to prepare a host, aptitude install python-apt python-pip python-pycurl python-keyczar
 # to run this:
-#  ansible-playbook site.yml 
-#  ansible-playbook site.yml -l dash --tags gitannex
+#  sudo ./playbook -l dash -t gitannex
 
 # supervisord is installed as a dependency. put meta/main.yml in those roles
     
@@ -31,6 +30,7 @@
     - {role: nodejs, tags: ['nodejs']}
     - {role: bigasterisk_users, tags: ['bigasterisk_users']}
     - {role: unison, tags: ['unison']}
+    - {role: hosts, tags: ['hosts']}
   tasks:
     - name: no UseDNS on ssh server
       lineinfile: dest=/etc/ssh/sshd_config regexp="^UseDNS\b" line="UseDNS no"
@@ -56,12 +56,13 @@
     - hostname: name=prime
 
 - hosts: bang
-  gather_facts: no
   handlers:
     - include: handlers/main.yml
   roles:
+    - {role: hosts, tags: ['hosts']}
     - {role: x_bang, tags: ['x_bang']}
     - {role: sesame, tags: ['sesame']}
+    - {role: mongo, tags: ['mongo']}
 # for phone talking to bigasterisk.com at home
     - {role: map_mqtt_receiver, tags: ['map_mqtt_receiver']}
     - {role: checkvistpost, tags: ['checkvistpost']}
@@ -70,26 +71,25 @@
     - {role: network_bigasterisk_gateway, tags: ['network_bigasterisk_gateway']}
     - {role: nginx_ssl_certs, tags: ['nginx_ssl_certs']}
     - {role: dropbox, tags: ['dropbox']}
-#    - {role: openvpn_server, tags: ['openvpn_server']}
     - {role: dovecot_home, tags: ['dovecot_home']}
-#    - {role: usbReset, tags: ['usbReset']}
     - {role: ruler, tags: ['ruler']}
     - {role: ruler_server, tags: ['ruler']}
     - {role: ruler_client, tags: ['ruler']}
     - {role: ajaxterm, tags: ['ajaxterm']}
+    - {role: shortener, tags: ['shortener']}
     - {role: collectd, tags: ['collectd']}
     - {role: graphite, tags: ['graphite']}
     - {role: minetest_server, tags: ['minetest_server']}
-    - {role: cups, tags: ['cups']}
+    - {role: mail_bang, tags: ['mail']}
+    - {role: elastic, tags: ['elastic']}
+    - {role: blog, tags: ['blog']}
+    - {role: photo_worker, tags: ['photo_worker']}
+    - {role: magma, tags: ['magma']}
     
   tasks:
-    - apt_repository: repo=ppa:nginx/stable
+    - apt: pkg=nginx
       tags: ['nginx']
-    # breaking, needs review
-    #- apt: update_cache=yes pkg=nginx=1.6.2-5+trusty0 state=present
-    #  tags: ['nginx']
-    - name: do not use init.d to launch nginx
-      service: name=nginx enabled=no
+    - service: name=nginx enabled=no
       tags: ['nginx']
     - include: tasks/bang_processes.yml
     - include: tasks/bang_processes_map.yml
@@ -98,17 +98,16 @@
 - include: websites.yml
       
 - hosts: dash
-  gather_facts: no
   handlers:
     - include: handlers/main.yml
   roles:
     - {role: cups, tags: ['cups']}
-    - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
-#    - {role: gitannex, tags: ["gitannex"]}
+    - {role: supervisord, tags: ['supervisord']}
     - {role: mail_relay, tags: ['mail_relay']}
-#    - photo_worker # not without nfs
+    - {role: photo_worker, tags: ['photo_worker']}
     - {role: ruler_server, tags: ['ruler']}
     - {role: ruler_client, tags: ['ruler']}
+    - {role: collectd, tags: ['collectd']}
   tasks:
     - include: tasks/dash_processes.yml
 
@@ -116,22 +115,21 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
-    - photo_worker
-    - usbReset
+    - {role: supervisord, tags: ['supervisord']}
+    - {role: photo_worker, tags: ['photo_worker']}
     - { role: webcam, camName: 'c0', port: 9020, config: 'slash.json' }
-    - { role: webcam, camName: 'frontDoor', port: 9023, config: 'slash4.json' }
-    - { role: webcam, camName: 'livingRoom', port: 9025, config: 'slash5.json' }
+#    - { role: webcam, camName: 'frontDoor', port: 9023, config: 'slash4.json' }
+#    - { role: webcam, camName: 'livingRoom', port: 9025, config: 'slash5.json' }
   tasks:
     - include: tasks/slash_processes.yml
 
 - hosts: plus
-  gather_facts: no
   handlers:
     - include: handlers/main.yml
   roles:
     - {role: bigasterisk_users, tags: ['bigasterisk_users']}
-    - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
+    - {role: hosts, tags: ['hosts']}
+    - {role: supervisord, tags: ['supervisord']}
     - {role: laptop_x11, tags: ['laptop_x11']}
 
 - hosts: brace
@@ -140,8 +138,8 @@
     - include: handlers/main.yml
   roles:
     - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
-    - {role: openzwave, tags: ['openzwave']}
-    - {role: openzwave_lightctl, tags: ['openzwave_lightctl']}
+#    - {role: openzwave, tags: ['openzwave']}
+#    - {role: openzwave_lightctl, tags: ['openzwave_lightctl']}
     - {role: ari_room_screen, tags: ['ari_room_screen']}
 
 - hosts: star
@@ -235,6 +233,8 @@
     - include: handlers/main.yml
   tasks:
     - apt: pkg=nfs-common state=present
+    # this mount fails on bang if ext network isn't up (!). rpc.statd
+    # crashes or something
     - mount:
         fstype=nfs
         name=/my
