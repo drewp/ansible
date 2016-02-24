@@ -1,10 +1,18 @@
 ---
+
+- apt: pkg=python-twisted
+- apt: pkg=libav-tools-links
+- apt: pkg=exif
+- apt: pkg=libimage-exiftool-perl
+
 - supervisor_process_mod:
     name=photo_{{item}}
     directory=/my/site/photo
     user=drewp
     command="/my/site/photo/bin/python /usr/bin/twistd --pidfile= -noy serve"
     environment="PORT={{item}}"
+    stopsignal=KILL
+    startsecs=10
   notify: supervisord update
   with_items:
     - 8031
@@ -17,6 +25,8 @@
     command="/my/site/photo/bin/python mediaServe.py {{item}}"
     directory=/my/site/photo
     user=drewp
+    stopsignal=KILL
+    startsecs=10
   notify: supervisord update
   with_items:
     - 8033
@@ -41,6 +51,8 @@
     command="/my/site/photo/bin/python sesameSyncImport.py"
     directory=/my/site/photo
     user=drewp
+    stopsignal=KILL
+    startsecs=10
   notify: supervisord update
   
 - supervisor_process_mod:
@@ -48,6 +60,8 @@
     command="/my/site/photo/bin/python /my/site/photo/oneimage.py"
     directory=/my/site/photo
     user=drewp
+    stopsignal=KILL
+    startsecs=10
   notify: supervisord update
   
 - supervisor_process_mod:
@@ -55,6 +69,8 @@
     command="/bin/sh /my/site/photo/v2/route/run"
     directory=/my/site/photo
     user=drewp
+    stopsignal=KILL
+    startsecs=10
   notify: supervisord update
 
 - supervisor_process_mod:
@@ -62,6 +78,8 @@
     command="/bin/sh /my/site/photo/v2/imageset/run"
     directory=/my/site/photo
     user=drewp
+    stopsignal=KILL
+    startsecs=10
   notify: supervisord update
   
 - supervisor_process_mod:
@@ -69,6 +87,8 @@
     command="/my/site/photo/bin/python /my/site/photo/bin/gunicorn -b 0.0.0.0:8041 -w 1 sharesingle:application"
     directory=/my/site/photo
     user=drewp
+    stopsignal=KILL
+    startsecs=10
   notify: supervisord update
 
 - supervisor_process_mod:
@@ -76,6 +96,8 @@
     command="/my/site/photo/bin/python watchmail.py"
     directory=/my/site/photo
     user=drewp
+    stopsignal=KILL
+    startsecs=10
   notify: supervisord update
 
 - supervisor_process_mod:
@@ -83,6 +105,8 @@
     command="/my/site/photo/bin/python /my/site/photo/flickrupload.py 9036"
     directory=/my/site/photo
     user=drewp
+    stopsignal=KILL
+    startsecs=10
   notify: supervisord update
 
 - supervisor_process_mod:
@@ -90,6 +114,8 @@
     command="/my/site/photo/v2/randoms/run"
     directory=/my/site/photo
     user=drewp
+    stopsignal=KILL
+    startsecs=10
   notify: supervisord update
 
 - supervisor_process_mod:
@@ -97,6 +123,8 @@
     command="/my/site/photo/bin/python /my/site/photo/findbymap/findbymap.py"
     directory=/my/site/photo/findbymap
     user=drewp
+    stopsignal=KILL
+    startsecs=10
   notify: supervisord update
 
 - supervisor_process_mod:
@@ -104,6 +132,7 @@
     command="/bin/sh /my/site/photo/sync_dropbox_kelsi.sh"
     directory=/my/site/photo
     user=drewp
+    startsecs=10
   notify: supervisord update
 
 - supervisor_process_mod:
@@ -111,6 +140,8 @@
     command="/my/site/photo/bin/python /my/site/photo/worker.py"
     directory=/my/site/photo
     user=drewp
+    stopsignal=KILL
+    startsecs=10
   notify: supervisord update
 
 - supervisor_process_mod:
@@ -118,5 +149,7 @@
     command="/my/site/photo/bin/python /my/site/photo/worker.py"
     directory=/my/site/photo
     user=drewp
+    stopsignal=KILL
+    startsecs=10
   notify: supervisord update
   

@@ -2,13 +2,15 @@
 - file: path=/var/cache/photo state=directory
 
 - apt: pkg=nfs-common
+- apt: pkg=libxslt1.1
+- apt: pkg=libav-tools-links
 
 - mount: fstype=nfs name=/var/cache/photo src=bang:/var/cache/photo state=mounted
+  when: inventory_hostname != "bang"
+
 - supervisor_process_mod:
     name=photo_worker
     directory=/my/site/photo/
-    process_name=%(program_name)s_%(process_num)s
-    command="/my/site/photo/bin/python /my/site/photo/worker.py"
+    command="/my/site/photo/bin/celery worker"
     user=drewp
-    numprocs={{ansible_processor_vcpus}}
   notify: supervisord update
