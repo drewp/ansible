@@ -1,25 +1,40 @@
 ---
-- set_fact:
-    top: /opt/apache-tomcat-6.0.18
-    sesame_tgz: openrdf-sesame-2.7.3-sdk.tar.gz
-- set_fact:
-    sesame_outdir: "{{top}}/openrdf-sesame-2.7.3"
 
-- command: /usr/bin/curl -L -o {{top}}/{{sesame_tgz}} http://sourceforge.net/projects/sesame/files/Sesame%202/2.7.3/{{sesame_tgz}}/download creates={{top}}/{{sesame_tgz}}
+- apt: pkg=openjdk-8-jre-headless
+- apt: pkg=tomcat8
+- command: systemctl disable tomcat8.service
+- service: name=tomcat8 enabled=no
+
+- set_fact:
+    tomcat_webapps: /var/lib/tomcat8/webapps
+    sesame_url: "http://downloads.sourceforge.net/project/sesame/Sesame%204/4.0.0/openrdf-sesame-4.0.0-sdk.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fsesame%2F&ts=1448869429&use_mirror=iweb"
+    sesame_tgz: "openrdf-sesame-4.0.0-sdk.tar.gz"
+    sesame_top: /opt/sesame
+    sesame_unpack: /opt/sesame/openrdf-sesame-4.0.0
+    
+- file: path={{sesame_top}} state=directory
+
+- command: /usr/bin/curl -L -o {{sesame_top}}/{{sesame_tgz}} {{sesame_url}} creates={{sesame_top}}/{{sesame_tgz}}
 
 - name: sesame_unpack
-  command: /bin/tar xzf {{sesame_tgz}} chdir={{top}} creates={{sesame_outdir}}/war/openrdf-sesame.war
+  command: /bin/tar xzf {{sesame_tgz}} chdir={{sesame_top}} creates={{sesame_unpack}}/war/openrdf-sesame.war
 
 - name: install sesame war
-  command: cp {{sesame_outdir}}/war/openrdf-sesame.war {{top}}/webapps/openrdf-sesame.war
+  command: cp {{sesame_unpack}}/war/openrdf-sesame.war {{tomcat_webapps}}/openrdf-sesame.war
 
 - name: install workbench war
-  command: cp {{sesame_outdir}}/war/openrdf-workbench.war {{top}}/webapps/openrdf-workbench.war
+  command: cp {{sesame_unpack}}/war/openrdf-workbench.war {{tomcat_webapps}}/openrdf-workbench.war
 
-  # ... missing the part that restarts tomcat if the war files changed
+- file: path=/opt/sesame-data state=directory owner=tomcat8 group=tomcat8
 
+- copy: dest=/etc/tomcat8/server.xml src=server.xml
+
+#  # ... missing the part that restarts tomcat if the war files changed
+#
 - supervisor_process_mod:
     name=sesame_8080
-    directory="{{top}}"
-    command="{{top}}/bin/catalina.sh run"
-    user=drewp
+    directory="/tmp"
+    environment="JAVA_OPTS='-Dinfo.aduna.platform.appdata.basedir=/opt/sesame-data/',JRE_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64,CATALINA_BASE=/var/lib/tomcat8,CATALINA_HOME=/usr/share/tomcat8,CATALINA_TMPDIR=/tmp/tomcat8-tomcat8-tmp,CLASSPATH=/usr/share/tomcat8/bin/bootstrap.jar:/usr/share/tomcat8/bin/tomcat-juli.jar"
+    command="/usr/share/tomcat8/bin/catalina.sh run"
+    user=tomcat8
+  notify: supervisord update
