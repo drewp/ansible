@@ -1,18 +1,23 @@
 ---
 
+- apt: pkg=python-rdflib
+  tags: ['map']
+
 - supervisor_process_mod: 
     name=map_update_9033
     directory=/my/site/maps 
     command="/my/site/maps/bin/python update.py"
     user=drewp
   notify: supervisord update
-
+  tags: ['map']
+  
 - supervisor_process_mod: 
     name=map_notifier_9098
     directory=/my/site/maps 
     command="/my/site/maps/bin/python notifier.py"
     user=drewp
   notify: supervisord update
+  tags: ['map']
 
 - supervisor_process_mod: 
     name=map_places_9084
@@ -20,6 +25,7 @@
     command="/my/site/maps/bin/python places.py"
     user=drewp
   notify: supervisord update
+  tags: ['map']
 
 - supervisor_process_mod: 
     name=map_trails_9099
@@ -27,6 +33,7 @@
     command="/my/site/maps/bin/python trails.py"
     user=drewp
   notify: supervisord update
+  tags: ['map']
 
 - supervisor_process_mod: 
     name=map_history_9034
@@ -34,11 +41,13 @@
     command="/my/site/maps/bin/python history.py"
     user=drewp
   notify: supervisord update
+  tags: ['map']
 
 - supervisor_process_mod: 
     name=map_9085
     directory=/my/site/maps 
     environment="NODE_ENV=production"
-    command="/usr/bin/node map3.js"
+    command="/usr/bin/nodejs map3.js"
     user=drewp
   notify: supervisord update
+  tags: ['map']

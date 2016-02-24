@@ -3,6 +3,20 @@
   gather_facts: no
   handlers:
     - include: handlers/main.yml
+  tags: ['sites']
+  tasks:
+    # for homepage
+    - apt: pkg=darcs
+    - apt: pkg=xsltproc
+    # for arduinonode
+    - apt: pkg=arduino-mk
+    - apt: pkg=indent
+    # for heist
+    - apt: pkg=uuid-runtime
+    # for blog feeds
+    - apt: pkg=python-dateutil
+    # for firedata
+    - apt: pkg=coffeescript
   roles:
     - role: site
       name: 'heist_querytransactions'
@@ -13,7 +27,7 @@
       process:
         directory: "/my/proj/heist"
         command: "/my/proj/heist/bin/python querytransactions.py"
-
+        
     - role: site
       name: 'darcsweb'
       path: "/darcs/"
@@ -82,16 +96,6 @@
         command: "/my/proj/bigfoaf/bin/python bigfoaf.py"
         
     - role: site
-      name: 'activity'
-      path: "/activity/"
-      openid: "admin"
-      serverHost: "bang"
-      port: "9067"
-      process:
-        directory: "/my/site/magma/activityMerge"
-        command: "/my/site/magma/buildout_bin/python ./activity_merge.py 9067"
-        
-    - role: site
       name: 'diarybot'
       path: "/diary/"
       openid: "admin"
@@ -100,6 +104,7 @@
       process:
         directory: "/my/proj/diarybot"
         command: "/my/proj/diarybot/start"
+      tags: ['diary']
         
     - role: site
       name: 'wesabe'
@@ -146,7 +151,7 @@
       process:
         directory: "/my/site/whopickedthis"
         command: "/my/site/whopickedthis/whopickedthis.py"
-
+        
     - role: site
       name: 'qrnotifyme'
       path: "/qrnotifyme/"
@@ -260,6 +265,7 @@
       openid: "admin"
       serverHost: "bang"
       port: "9059"
+      useWebsocketPath: "yes"
       process:
         directory: "/my/proj/homeauto/service/arduinoNode/"
         command: "/my/proj/homeauto/service/arduinoNode/bin/python arduinoNode.py"
@@ -272,21 +278,27 @@
       serverHost: "bang"
       port: "9105"
       process:
+        environment: "HOME=/home/drewp"
         directory: "/my/proj/pimscreen"
         command: "/my/proj/pimscreen/bin/python gcalendarwatch"
       tags: ['gcalendarwatch']
 
-- hosts: dash
+- hosts: brace
   gather_facts: no
   handlers:
     - include: handlers/main.yml
+  tasks:
+    # for arduinonode
+    - apt: pkg=arduino-mk
+    - apt: pkg=indent
   roles:
     - role: site
-      name: 'arduinoNodeDash'
-      path: "/arduino/dash/"
+      name: 'arduinoNodeBrace'
+      path: "/arduino/brace/"
       openid: "admin"
-      serverHost: "dash"
+      serverHost: "brace"
       port: "9059"
+      useWebsocketPath: "yes"
       process:
         directory: "/my/proj/homeauto/service/arduinoNode/"
         command: "/my/proj/homeauto/service/arduinoNode/bin/python arduinoNode.py"
@@ -303,6 +315,7 @@
       openid: "admin"
       serverHost: "slash"
       port: "9059"
+      useWebsocketPath: "yes"
       process:
         directory: "/my/proj/homeauto/service/arduinoNode/"
         command: "/my/proj/homeauto/service/arduinoNode/bin/python arduinoNode.py"

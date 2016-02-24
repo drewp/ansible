@@ -16,13 +16,15 @@
     command="/my/proj/gasuse/bin/python /usr/bin/twistd -noy serve"
     user=drewp
   notify: supervisord update
+  tags: ['sites']
     
 - supervisor_process_mod: 
-    name=semfile_8005
+    name=semfile_9112
     directory=/my/proj/semfile
     command="/my/site/homepage/bin/python /usr/bin/twistd -noy serve"
     user=drewp
   notify: supervisord update
+  tags: ['sites', 'semfile']
     
 - supervisor_process_mod: 
     name=leafupdate_9058
@@ -31,7 +33,12 @@
     user=drewp
     autostart=true
   notify: supervisord update
+  tags: ['sites']
 
+- apt: pkg=python-bottle
+  tags: ['sites']
+- apt: pkg=python-genshi
+  tags: ['sites']
 - supervisor_process_mod: 
     name=recentPostFiles_9006
     directory=/my/site/homepage
@@ -39,6 +46,7 @@
     user=drewp
     autostart=true
   notify: supervisord update
+  tags: ['sites']
 
 - supervisor_process_mod: 
     name=recentReviews_9007
@@ -47,6 +55,7 @@
     user=drewp
     autostart=true
   notify: supervisord update
+  tags: ['sites']
 
 - supervisor_process_mod: 
     name=twitterFavorites_9106
@@ -55,7 +64,11 @@
     user=drewp
     autostart=true
   notify: supervisord update
+  tags: ['sites']
 
+# for /my/site/blog/updateFeeds cron
+- apt: pkg=python-librdf
+  tags: ['sites', 'blog']
 - supervisor_process_mod: 
     name=newsbruiser_9008
     directory=/my/site/blog
@@ -63,12 +76,14 @@
     user=newsbru
     autostart=true
   notify: supervisord update
+  tags: ['sites', 'blog']
 
 - supervisor_process_mod: 
     name=adkins_9021
     command="thttpd -p 9021 -d /my/site/adkinslawgroup/cgi -c * -D -l /tmp/adkins-thttpd.log -nos"
     user=drewp
   notify: supervisord update
+  tags: ['sites']
 
 - supervisor_process_mod: 
     name=sfd_9024
@@ -76,6 +91,7 @@
     command="/my/proj/sfd/bin/python /my/proj/sfd/sfd.py"
     user=drewp
   notify: supervisord update
+  tags: ['sites', 'sfd']
 
 - supervisor_process_mod: 
     name=webcamserve_9047
@@ -83,7 +99,7 @@
     user=drewp
     command="/my/proj/webcam3/bin/python webcamserve.py"
   notify: supervisord update
-  tags: ['debug', 'webcamserve']
+  tags: ['sites', 'webcamserve']
 
 - supervisor_process_mod: 
     name=blaster_9052
@@ -93,6 +109,7 @@
     stdout_logfile_backups=2
     stderr_logfile_backups=2
   notify: supervisord update
+  tags: ['sites', 'blog']
 
 - supervisor_process_mod: 
     name=commentServe_9031
@@ -102,26 +119,30 @@
     stdout_logfile_backups=2
     stderr_logfile_backups=2
   notify: supervisord update
+  tags: ['sites']
 
 - supervisor_process_mod: 
     name=pimscreen_9035
     directory=/my/proj/pimscreen/pimscreen3
-    command="/usr/bin/node pimscreen.js"
+    command="/usr/bin/nodejs pimscreen.js"
     user=drewp
     stdout_logfile_maxbytes=2MB
     stdout_logfile_backups=2
     stderr_logfile_maxbytes=2MB
     stderr_logfile_backups=2
   notify: supervisord update
+  tags: ['sites', 'pim']
 
 
+- apt: pkg=webfs
+  tags: ['sites', 'countdown']
 - supervisor_process_mod: 
     name=countdown_10005
     directory=/my/proj/countdown
-    command="/usr/sbin/thttpd -p 10005 -D"
+    command="/usr/bin/webfsd -F -p 10005 -r /my/proj/countdown"
     user=drewp
   notify: supervisord update
-  tags: ['countdown']
+  tags: ['sites', 'countdown']
   
 - supervisor_process_mod: 
     name=webcam_snapshot_9057
@@ -129,13 +150,22 @@
     command="/my/proj/httpsnapshot/bin/spawning -p 9057 -s 1 -t 0 snapshot.application"
     user=drewp
   notify: supervisord update
+  tags: ['sites']
 
+# see netbars/setup.py
+- apt: pkg=python-webpy
+  tags: ['sites', 'netbars']
+- apt: pkg=python-libpcap
+  tags: ['sites', 'netbars']
+- apt: pkg=python-docopt
+  tags: ['sites', 'netbars']
 - supervisor_process_mod: 
     name=netbars_3001
-    directory=/tmp
-    command="/usr/local/bin/netbars"
+    directory=/my/proj/netbars
+    command="/my/proj/netbars/install-env/bin/python install-env/bin/netbars --port 3001 --iface enp2s0 --local 10.1.10.10"
     user=root
   notify: supervisord update
+  tags: ['sites', 'netbars']
 
 - supervisor_process_mod: 
     name=computeracronym_9063
@@ -143,6 +173,7 @@
     command="python2.7 ./acronymdecoder.py"
     user=drewp
   notify: supervisord update
+  tags: ['sites']
 
 - supervisor_process_mod: 
     name=envgraph_9075
@@ -150,13 +181,7 @@
     command="/my/proj/homeauto/service/environment/bin/python environment.py"
     user=drewp
   notify: supervisord update
-
-- supervisor_process_mod: 
-    name=shortener_9079
-    directory=/my/site/shortener
-    command="/usr/bin/python2.7 shortener.py 9079"
-    user=drewp
-  notify: supervisord update
+  tags: ['sites']
 
 - supervisor_process_mod: 
     name=timelinereview_9087
@@ -164,6 +189,7 @@
     command="/my/site/timeline/timelinereview/bin/python timelinereview.py"
     user=drewp
   notify: supervisord update
+  tags: ['sites']
 
 - supervisor_process_mod: 
     name=gametag_3200
@@ -171,6 +197,7 @@
     directory=/my/proj/gametag
     command="/usr/bin/make run_server"
   notify: supervisord update
+  tags: ['sites']
 
 - supervisor_process_mod:
     name=collabs_9065
@@ -178,5 +205,5 @@
     command="/my/proj/collabs/bin/python collabs.py"
     user=drewp
   notify: supervisord update
-  tags: ['collabs']
+  tags: ['sites', 'collabs']
     

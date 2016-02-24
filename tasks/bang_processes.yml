@@ -1,38 +1,56 @@
 ---
 
+- include: "../roles/nginx_forward/tasks/static_nginx_conf.yml"
+
 - command: /my/proj/openid_proxy/bin/python build_nginx_conf.py /etc/nginx/nginx.conf bang chdir=/my/proj/openid_proxy
+  notify: nginx restart
   tags: ['nginx', 'nginx_conf']
     
 - supervisor_process_mod:
     name=nginx
     command="/usr/local/bin/pidproxy /var/log/nginx.pid /usr/sbin/nginx -c /etc/nginx/nginx.conf"
     user=root
-    autostart=false
+    autostart=true
   notify: supervisord update
   tags: ['nginx']
-    
+
+- apt: pkg=tahoe-lafs
+  tags: ['tahoe']
 - supervisor_process_mod: 
     name=tahoe_home_8123
-    directory=/tahoe/home
-    command="/usr/bin/tahoe run -C /tahoe/home"
+    directory=/opt/tahoe/home
+    command="/usr/bin/tahoe run -C /opt/tahoe/home"
     user=drewp
     autostart=true
   notify: supervisord update
+  tags: ['tahoe']
 
+ 
 - supervisor_process_mod: 
     name=tahoe_home_introducer_54260
-    command=/tahoe/home-introducer/run
+    command=/opt/tahoe/home-introducer/run
     user=drewp
     autostart=true
   notify: supervisord update
+  tags: ['tahoe']
 
-- supervisor_process_mod: 
-    name=ffgDarcs_11009
-    directory=/my/proj/ffg/darcsweb
-    command=/my/proj/ffg/darcsweb/serve
+# unused
+#- supervisor_process_mod: 
+#    name=ffgDarcs_11009
+#    directory=/my/proj/ffg/darcsweb
+#    command=/my/proj/ffg/darcsweb/serve
+#    user=drewp
+#    autostart=true
+#  notify: supervisord update
+
+- supervisor_process_mod:
+    name=powerEagleReader
+    directory=/my/proj/homeauto/service/powerEagle
+    command="/my/proj/homeauto/service/powerEagle/bin/python reader.py"
     user=drewp
     autostart=true
   notify: supervisord update
+  tags: ['ha']
 
 - supervisor_process_mod:
     name=whatsplayingnext_9110
@@ -41,8 +59,10 @@
     user=drewp
     autostart=true
   notify: supervisord update
+  tags: ['whatsplayingnext']
 
 - cron: name=whatsplayingnext_update hour=3 minute=25 user=drewp job="/my/site/whatsplayingnext/scrape/update"
+  tags: ['whatsplayingnext']
   
 - supervisor_process_mod: 
     name=moinmoin_9011
@@ -51,6 +71,7 @@
     user=drewp
     autostart=true
   notify: supervisord update
+  tags: ['moin']
 
 - supervisor_process_mod: 
     name=openid_proxy_9023
@@ -60,6 +81,7 @@
     stdout_logfile_backups=2
     stderr_logfile_backups=2
   notify: supervisord update
+  tags: ['openid_proxy']
 
 - supervisor_process_mod: 
     name=openid_proxy_nginx_9028
@@ -67,52 +89,23 @@
     command="/my/proj/openid_proxy/openid_proxy_nginx"
     user=drewp
   notify: supervisord update
+  tags: ['openid_proxy']
 
 - supervisor_process_mod: 
-    name=atomojo_9025
-    directory=/opt/atomojo-server-0.12.1
-    command="java -Xmx2048m -jar /opt/atomojo-server-0.12.1/atomojo-server.jar /my/site/blog/mojo"
-    user=drewp
-  notify: supervisord update
-
-- supervisor_process_mod: 
-    name=wp2atom_9026
-    command="/my/site/blog/bin/python /my/site/blog/baby/wp2atom"
-    user=drewp
-  notify: supervisord update
-
-- supervisor_process_mod: 
-    name=blogrender_9027
-    directory=/my/site/blog/baby
-    command="/my/site/blog/bin/python blogrender.py"
-    user=drewp
-  notify: supervisord update
-
-- supervisor_process_mod: 
-    name=twitterwatch
+    name=pim_twitterwatch
     directory=/my/proj/pimscreen
     command="/my/proj/pimscreen/bin/python twitterwatch"
     user=drewp
   notify: supervisord update
+  tags: ['pim']
 
 - supervisor_process_mod: 
-    name=deliciouswatch
+    name=pim_deliciouswatch
     directory=/my/proj/pimscreen
     command="/my/proj/pimscreen/bin/python deliciouswatch"
     user=drewp
   notify: supervisord update
-
-- supervisor_process_mod: 
-    name=cgi_9038
-    command="thttpd -p 9038 -d /my/post/cgi -c * -D -l /tmp/cgi-thttpd.log -nos"
-    user=nobody
-  notify: supervisord update
-
-- supervisor_process_mod: 
-    name=proctask
-    command=/home/drewp/mailprocess/proctask_loop
-    user=drewp
-  notify: supervisord update
+  tags: ['pim']
 
 # for wedding-john-karin
 - supervisor_process_mod: 
@@ -120,6 +113,8 @@
     command="/bin/zsh /my/site/zope4/bin/runzope"
     user=drewp
   notify: supervisord update
+  tags: ['zope']
+
 
 # for harlan photos, maybe more
 - supervisor_process_mod: 
@@ -127,13 +122,7 @@
     command="/bin/zsh /my/site/zope6/bin/runzope"
     user=drewp
   notify: supervisord update
-
-- supervisor_process_mod: 
-    name=mongo_29017
-    command="/opt/mongodb-linux-x86_64-ubuntu1404-3.0.6/bin/mongod --dbpath /opt/mongodb/data --rest --httpinterface --journal"
-    user=drewp
-  notify: supervisord update
-  tags: ['mongo']
+  tags: ['zope']
 
 - supervisor_process_mod: 
     name=ffg_trafficGen
@@ -143,20 +132,23 @@
     stdout_logfile_backups=2
     stderr_logfile_backups=2
   notify: supervisord update
+  tags: ['ffg']
 
-- supervisor_process_mod: 
-    name=squid_mgr_9050
-    directory=/usr/lib/cgi-bin
-    command="thttpd -p 9050 -c cachemgr.cgi -D"
-    user=drewp
-  notify: supervisord update
+# needs new cgi solution
+#- supervisor_process_mod: 
+#    name=squid_mgr_9050
+#    directory=/usr/lib/cgi-bin
+#    command="thttpd -p 9050 -c cachemgr.cgi -D"
+#    user=drewp
+#  notify: supervisord update
 
 - supervisor_process_mod: 
     name=c3po_9040
     directory=/my/proj/c3po
-    command="/my/proj/c3po/bin/python c3po"
+    command="/my/proj/c3po/env/bin/python c3po"
     user=drewp
   notify: supervisord update
+  tags: ['pim']
 
 - supervisor_process_mod: 
     name=cmd_photoBuildCache
@@ -166,6 +158,7 @@
     autostart=false
     autorestart=false
   notify: supervisord update
+  tags: ['cmd']
 
 - supervisor_process_mod: 
     name=cmd_backupDrewNote
@@ -175,6 +168,7 @@
     autostart=false
     autorestart=false
   notify: supervisord update
+  tags: ['cmd']
 
 - supervisor_process_mod: 
     name=cmd_seenlists
@@ -186,6 +180,7 @@
     startsecs=0
     exitcodes=0
   notify: supervisord update
+  tags: ['cmd']
 
 - supervisor_process_mod: 
     name=cmd_trainnewspam
@@ -195,21 +190,25 @@
     autostart=false
     autorestart=false
   notify: supervisord update
+  tags: ['cmd']
 
 - supervisor_process_mod: 
-    name=netbars2graphite
+    name=pim_netbars2graphite
     directory=/tmp
-    command="/usr/local/bin/netbars2graphite"
+    command="/my/proj/netbars/install-env/bin/python /my/proj/netbars/install-env/bin/netbars2graphite"
     user=drewp
     autorestart=true
   notify: supervisord update
+  tags: ['pim']
 
 - supervisor_process_mod: 
     name=pim_maildirwatch
     directory=/my/proj/pimscreen
-    command="/my/proj/pimscreen/bin/python ./maildirwatch"
+    command="ionice -c 3 /my/proj/pimscreen/bin/python ./maildirwatch"
     user=drewp
+    
   notify: supervisord update
+  tags: ['pim']
 
 - supervisor_process_mod: 
     name=openid_recentvisitors_9068
@@ -217,6 +216,7 @@
     command="/my/proj/openid_proxy/bin/python recentvisitors.py 9068"
     user=drewp
   notify: supervisord update
+  tags: ['pim']
 
 - supervisor_process_mod: 
     name=csigen_9064
@@ -224,13 +224,15 @@
     command="/my/proj/csigen/bin/python csigen.py"
     user=drewp
   notify: supervisord update
-
+  tags: ['csigen']
+  
 - supervisor_process_mod: 
     name=csigen_worker
     directory=/my/proj/csigen
     command="/my/proj/csigen/runworker"
     user=drewp
   notify: supervisord update
+  tags: ['csigen']
 
 - supervisor_process_mod: 
     name=reasoning_9071
@@ -240,13 +242,15 @@
     stdout_logfile_backups=2
     stderr_logfile_backups=2
   notify: supervisord update
+  tags: ['ha']
 
 - supervisor_process_mod: 
-    name=newlist_summary_9090
+    name=pim_newlist_summary_9090
     directory=/home/drewp/mailprocess
     command="/home/drewp/mailprocess/bin/python newlist-summary"
     user=drewp
   notify: supervisord update
+  tags: ['pim']
 
 - supervisor_process_mod: 
     name=messagerule_9097
@@ -254,6 +258,7 @@
     command="/home/drewp/mailprocess/bin/python messagerule.py"
     user=drewp
   notify: supervisord update
+  tags: ['ha']
 
 - supervisor_process_mod: 
     name=wallscreen_9102
@@ -261,17 +266,18 @@
     directory=/my/proj/homeauto/service/wallscreen
     command="/my/proj/homeauto/service/wallscreen/bin/python wallscreen.py "
   notify: supervisord update
+  tags: ['ha']
 
 - supervisor_process_mod:
-    name=vist2rdf
+    name=pim_vist2rdf
     directory=/my/proj/pimscreen
     command="/my/proj/pimscreen/bin/python vist2rdf.py"
     user=drewp
   notify: supervisord update
-  
-- supervisor_process_mod: 
-    name=supervisorCommander_9072
-    directory=/my/site/magma/supervisorCommander
-    command="/my/site/magma/buildout_bin/python-rdflib2 supervisorCommander.py http://bang:9001 http://bang:9002 http://dash:9001 http://slash:9001 http://slash:11000 http://prime:9001"
-    user=drewp
-  notify: supervisord update
+  tags: ['pim']
+
+- apt: pkg=ruby
+  tags: ['reposync']
+- cron: name="reposync" user="drewp" minute="0" hour="2" job="(cd /my/proj/reposync; ./quietsync)"
+  tags: ['reposync']
+

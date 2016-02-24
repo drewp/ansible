@@ -1,10 +1,4 @@
 ---
-- supervisor_process_mod:
-    name=frontDoorArduino_9080
-    directory=/my/proj/homeauto/service/frontDoorArduino
-    command="/my/proj/homeauto/service/frontDoorArduino/bin/python frontDoorArduino.py"
-    user=drewp
-  notify: supervisord update
 
 - supervisor_process_mod:
     name=ffg_prod
@@ -20,42 +14,6 @@
   notify: supervisord update
   tags: ['ffg']
       
-- supervisor_process_mod:
-    name=mpd_garage_6601
-    directory=/tmp
-    command="mpd --no-daemon /etc/mpd-garage.conf"
-    user=drewp
-  notify: supervisord update
-
-- supervisor_process_mod:
-    name=powerInverter_9078
-    directory=/my/proj/homeauto/service/powerInverter
-    command="/my/proj/homeauto/service/powerInverter/bin/python powerInverter.py"
-    user=drewp
-  notify: supervisord update
-
-- supervisor_process_mod:
-    name=garageArduino_9050
-    directory=/my/proj/homeauto/service/garageArduino
-    command="/my/proj/homeauto/service/garageArduino/bin/python garageArduino.py"
-    user=drewp
-  notify: supervisord update
-
-- supervisor_process_mod:
-    name=nightlight_9051
-    directory=/my/proj/pixel
-    command="/my/proj/pixel/bin/python nightlight.py"
-    user=drewp
-    startretries=50
-  notify: supervisord update
-
-- supervisor_process_mod:
-    name=shuttlepro
-    directory=/my/proj/homeauto/service/shuttlepro
-    command="/my/proj/homeauto/service/shuttlepro/bin/python shuttlepro.py"
-    user=root # root only to read the dev
-  notify: supervisord update
-  
 # - supervisor_process_mod: 
 #     name=ozwcp_9083
 #     directory=/my/dl/modified/py-openzwave/openzwave-control-panel
