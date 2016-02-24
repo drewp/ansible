@@ -1,0 +1,12 @@
+@prefix : <http://bigasterisk.com/openid_proxy#> .
+@prefix site: <http://bigasterisk.com/openidProxySite/> .
+@prefix acl: <http://www.w3.org/ns/auth/acl#> .
+
+#site:magma :host "bigasterisk.com"; :requestPrefix "/magma/"; :proxyUrlPrefix "http://bang.bigasterisk.com:8010/" .
+#site:magmaChat         a :Websocket; :host "bigasterisk.com"; :requestPrefix "/magma/chat/";          :proxyUrlPrefix "http://bang.bigasterisk.com:8015/chat/" .
+#site:magmaImgCat                     :host "bigasterisk.com"; :requestPrefix "/magma/imgCat/";        :proxyUrlPrefix "http://bang.bigasterisk.com:8013/cat/" .
+#site:magmaInput                      :host "bigasterisk.com"; :requestPrefix "/magma/input/";         :proxyUrlPrefix "http://bang.bigasterisk.com:9074/" .
+#site:magmaDynCommands                :host "bigasterisk.com"; :requestPrefix "/magma/dynCommands/";   :proxyUrlPrefix "http://bang.bigasterisk.com:8007/" .
+
+#:admin1 acl:accessTo site:magma .
+#:admin2 acl:accessTo site:magma .
