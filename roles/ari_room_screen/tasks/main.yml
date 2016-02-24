@@ -1,17 +1,16 @@
 ---
 
-- copy: dest="/etc/lightdm/lightdm.conf" content="[SeatDefaults]\nautologin-user=drewp\nautologin-user-timeout=0"
+- apt: pkg=lightdm state=absent
+- apt: pkg=slim
 
-#- copy: dest="/usr/share/xsessions/qtile_remote.desktop" content="[Desktop Entry]\nName=qtile_remote\nExec=/my/proj/qtile/bin/qtile -s /tmp/qtile.sock -c /my/proj/qtile/remote.py"
-#- copy: dest="/home/drewp/.dmrc" content="[Desktop]\nSession=qtile_remote\nLanguage=en_US.utf8\nLayout=us\nLanglist=en_US:en\nLCMess=en_US.UTF-8"
-- copy: dest="/home/drewp/.dmrc" content="[Desktop]\nSession=fvwm\nLanguage=en_US.utf8\nLayout=us\nLanglist=en_US:en\nLCMess=en_US.UTF-8"
+- copy: dest=/etc/slim.conf src=slim.conf
 
 # /etc/init/pulseaudio.conf enable line with: start on
 
 - supervisor_process_mod:
     name=pulseaudio
     directory=/tmp
-    environment="DISPLAY=:0"
+    environment="DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority"
     command="pulseaudio"
     user=drewp
   notify: supervisord update
@@ -25,7 +24,7 @@
   
 - supervisor_process_mod:
     name=display_console
-    environment="DISPLAY=:0"
+    environment="DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority"
     command="/usr/bin/google-chrome-unstable --app=https://bigasterisk.com/room/ari/"
     directory="/home/drewp"
     user=drewp
@@ -34,7 +33,7 @@
 
 - supervisor_process_mod:
     name=display_minetest
-    environment="DISPLAY=:0"
+    environment="DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority"
     command="/home/drewp/start_minetest 30000"
     directory="/home/drewp"
     user=drewp
@@ -44,7 +43,7 @@
 
 - supervisor_process_mod:
     name=display_minetest_oakland
-    environment="DISPLAY=:0"
+    environment="DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority"
     command="/home/drewp/start_minetest 30001"
     directory="/home/drewp"
     user=drewp
@@ -54,7 +53,7 @@
 
 - supervisor_process_mod:
     name=display_minecraft
-    environment="DISPLAY=:0"
+    environment="DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority"
     command="/usr/bin/java -jar /home/drewp/Minecraft.jar"
     directory="/home/drewp"
     user=drewp
@@ -64,8 +63,18 @@
 
 - supervisor_process_mod:
     name=display_stopmotion
-    environment="DISPLAY=:0"
+    environment="DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority"
     command="/home/drewp/linuxstopmotion-code/build/stopmotion"
+    directory="/home/drewp"
+    user=drewp
+    autostart=false
+    stopasgroup=true
+  notify: supervisord update
+
+- supervisor_process_mod:
+    name=display_blender
+    environment="DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority"
+    command="/usr/bin/blender --window-borderless"
     directory="/home/drewp"
     user=drewp
     autostart=false
