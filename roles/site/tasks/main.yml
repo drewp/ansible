@@ -2,10 +2,13 @@
 
 - set_fact: openidProxyAddr="http://bang:9023"
   tags: ['ruler-check']
-  
-- set_fact: upstreamTarget="http://{{serverHost}}:{{port}}{{upstreamPath}}"
+
+- set_fact: upstreamTarget="http://{{serverHost}}.bigasterisk.com:{{port}}{{upstreamPath}}"
   tags: ['ruler-check']
-  
+
+- set_fact: upstreamTarget="http://[fc9d:ce7a:c40:7dac:439b:289c:dd2d:5101]:{{port}}{{upstreamPath}}"
+  when: serverHost == "brace"
+
 - set_fact: proxyTarget="{{openidProxyAddr}}{{path}}"
   tags: ['ruler-check']
 - set_fact: proxyTarget="{{upstreamTarget}}"
@@ -21,7 +24,8 @@
 
 - include: setup_directories.yml
   tags: ['ruler-check']
-  
+
+- file: path="/var/lib/nginx.d/{{domain}}/no-nfs/" state=directory
 - copy:
     dest="/var/lib/nginx.d/{{domain}}/no-nfs/{{name}}.conf"
     content="location {{path}} { {{nginxLocation}} {{accessLogLine}} }"
@@ -37,8 +41,6 @@
     user=drewp
     arg_dict_string="{{process}}"
   notify: supervisord update
-
-- set_fact: useWebsocketPath="no"
 
 - template:
     dest=/var/lib/openid_proxy.d/{{name}}.n3

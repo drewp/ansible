@@ -1,6 +1,6 @@
 ---
 - name: dhcpd reload
-  service: name=isc-dhcp-server state=reloaded
+  service: name=isc-dhcp-server state=restarted
 
 - name: tinydns data
   command: make chdir=/etc/tinydns/root

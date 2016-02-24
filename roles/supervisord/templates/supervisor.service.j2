@@ -1,0 +1,13 @@
+[Unit]
+Description=supervisord - Supervisor process control system for UNIX
+Documentation=http://supervisord.org
+After=remote-fs.target
+
+[Service]
+Type=forking
+ExecStart=/usr/local/bin/supervisord -c /etc/%i.conf
+ExecReload=/usr/local/bin/supervisorctl -c /etc/%i.conf reload
+ExecStop=/usr/local/bin/supervisorctl -c /etc/%i.conf shutdown
+
+[Install]
+WantedBy=multi-user.target

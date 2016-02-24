@@ -7,18 +7,27 @@
     owner=root
     group=root
     mode=0644
-  notify: eth2 reset
+  notify: wifi net reset
 
 - name: external address for nginx config
   copy:
     dest=/etc/nginx/external_address_mapping.conf
-    content="# written by /my/proj/puppet/ansible/roles/network_bigasterisk_gateway/tasks/main.yml{{'\n'}}  {{ext}}/32 bang;{{'\n'}}"
+    content="# written by /my/proj/ansible/roles/network_bigasterisk_gateway/tasks/main.yml{{'\n'}}  {{ext}}/32 bang;{{'\n'}}"
     owner=root
     group=root
   notify: nginx update
   # this could perhaps go in /var/lib/nginx.d but watch out for a
   # cleaner removing all non-website files from there
 
+- apt: pkg=iptables
+  
+- template:
+    dest=/etc/network/firewall-setup
+    src=firewall-setup.j2
+    owner=root
+    group=root
+    mode=0755
+  
 - name: external address for firewall-setup
   copy:
     dest=/etc/network/firewall-setup.publicaddr
@@ -30,8 +39,8 @@
 
 - copy: dest=/etc/resolv.conf content="nameserver 10.2.0.1{{'\n'}}domain bigasterisk.com{{'\n'}}"
   tags: ['resolvconf']
-  
-# not yet reworked for berkeley setup
+
+# unused, with prime serving public dns?
 #- include: dns.yml
   
 # also when the IP changes:
@@ -46,3 +55,14 @@
 
 - include: house_dns.yml
   tags: ['house_dns']
+
+- apt: pkg=openntpd
+- apt: pkg=ntpdate
+
+- copy: dest=/etc/timezone content="America/Los_Angeles"
+- command: "dpkg-reconfigure --frontend noninteractive tzdata"
+
+- apt: pkg=nfs-kernel-server
+  tags: ['nfs']
+- copy: dest=/etc/exports content="/var/cache/photo dash(sync,rw,no_subtree_check) 10.1.0.229(sync,rw,no_subtree_check) 10.1.0.21(sync,rw,no_subtree_check)\n"
+  tags: ['nfs']

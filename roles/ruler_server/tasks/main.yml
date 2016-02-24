@@ -1,7 +1,7 @@
 ---
 
-
-- apt: pkg=libleveldb1
+- apt: pkg=swap-cwm
+- apt: pkg=libleveldb1v5
 - file: path=/opt/ruler/server_store state=directory owner=drewp
 - supervisor_process_mod:
     name=ruler_server_8102

@@ -91,7 +91,7 @@ def writeRulerCheck(module, name):
            ':runHost host:bang; '
            ':samplePeriod "900sec"; '
            ':observedHost host:%(host)s; '
-           ':argv ("/etc/sensu/plugins/supervisor_check" "%(host)s" "%(supervisorPort)s" "%(name)s") .' % vars())
+           ':argv ("/my/proj/ruler/check/supervisor_check" "%(host)s" "%(supervisorPort)s" "%(name)s") .' % vars())
 
     old = getOldContents(checkPath)
     changed = out != old

@@ -2,11 +2,13 @@
 dash
 bang
 slash
-star
 stor
 prime
 drewnote
 brace
+kitchen
+living
+changing
 
 [big]
 dash
@@ -24,8 +26,10 @@ btv
 #grapes ansible_ssh_user=pi
 #laundry-ext ansible_ssh_user=pi
 #cactuscar ansible_ssh_user=pi
-#tower-ext
 sticker
+kitchen
+living
+changing
 
 [with_speakers]
 dash
@@ -33,12 +37,14 @@ slash
 plus
 brace
 bang
+sticker
+kitchen
+living
 
 [with_x11]
 dash
 slash
 brace
-star
 
 [with_removable_storage]
 dash
@@ -55,18 +61,14 @@ slash
 
 [sshfs_client]
 brace
-star
 
 [vpn_client]
-#tower-ext vpn_remote_addr=10.3.0.35
 fantasy3 vpn_remote_addr=10.3.0.41
 dash vpn_remote_addr=10.3.0.39
 drewnote vpn_remote_addr=10.3.0.23 openvpn_log_dir=/tmp
-btv vpn_remote_addr=10.3.0.33
 bang vpn_remote_addr=10.3.0.37
 plus vpn_remote_addr=10.3.0.5
 brace vpn_remote_addr=10.3.0.43
-bling vpn_remote_addr=10.3.0.45
 
 [hosted]
 prime

@@ -5,6 +5,7 @@
 - supervisor_process_mod:
     name=pulseaudio
     user=drewp
+    environment="USER=drewp,HOME=/home/drewp,XDG_RUNTIME_DIR=/run/user/501"
     command="/usr/bin/pulseaudio"
   notify:
     - supervisord update

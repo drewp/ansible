@@ -10,11 +10,13 @@
 - unarchive: src=/home/dropbox/dropbox-lnx.x86_64.tgz dest=/home/dropbox
 - file: path=/home/dropbox/.dropbox-dist state=directory recurse=yes owner=dropbox
 
+- file: path=/home/dropbox/Dropbox state=directory owner=dropbox group=drewp mode=0750
+  
 # This works in /home/dropbox/.dropbox and /home/dropbox/Dropbox
 - supervisor_process_mod: 
     name=dropbox
     environment="HOME=/home/dropbox"
-    command="/home/dropbox/.dropbox-dist/dropbox-lnx.x86_64-3.8.6/dropbox"
+    command="/home/dropbox/.dropbox-dist/dropbox-lnx.x86_64-3.12.6/dropbox"
     user=dropbox
     stopasgroup=true
   notify: supervisord update

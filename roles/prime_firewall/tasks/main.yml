@@ -25,6 +25,9 @@
 - name: internal, bling openvpn
   ufw: rule=allow from_ip=10.5.0.0/24
 
+- name: smtp send from cjdns
+  ufw: rule=allow proto=tcp to_port=587 
+
 
 - ufw: state=enabled
   

@@ -1,0 +1,8 @@
+---
+
+- template: dest=/etc/hosts src=hosts.j2
+
+- apt: pkg=resolvconf
+- copy: dest="/etc/resolvconf/resolv.conf.d/base" content="nameserver 10.2.0.1\ndomain bigasterisk.com\n"
+- command: resolvconf -u
+  

@@ -3,9 +3,9 @@
 - apt: pkg=procmail
 - copy: dest=/etc/postfix/main.cf src=main.cf owner=root group=root mode=0644
   notify: postfix reload
-- copy: dest=/etc/ssl/certs/self1-ca.crt src=/etc/ssl/certs/self1-ca.crt mode=0600
+- copy: dest=/etc/ssl/certs/self1-ca.crt src=self1-ca.crt mode=0600
   notify: postfix reload
-- copy: dest=/etc/ssl/certs/self1-ca.key src=/etc/ssl/certs/self1-ca.key mode=0600
+- copy: dest=/etc/ssl/certs/self1-ca.key src=self1-ca.key mode=0600
   notify: postfix reload
 
 # checkvistpost modifies /etc/aliases, so you have to run this after that one somehow
@@ -16,7 +16,7 @@
   notify: postfix reload
 - copy: dest=/etc/postfix/mydestination src=mydestination mode=0644
   notify: postfix reload
-- copy: dest=/etc/postfix/virtual src=/etc/postfix/virtual mode=0644
+- copy: dest=/etc/postfix/virtual src=virtual mode=0644
   notify: rebuild virtual
 - copy: dest=/etc/postfix/sender_access src=sender_access mode=0644
   notify: rebuild sender_access

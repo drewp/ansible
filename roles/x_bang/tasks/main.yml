@@ -1,5 +1,7 @@
 ---
 
+- apt: pkg=lightdm
+
 - copy: dest="/etc/lightdm/lightdm.conf" content="[SeatDefaults]\nautologin-user=drewp\nautologin-user-timeout=0"
 
 - supervisor_process_mod:

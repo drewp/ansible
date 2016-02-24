@@ -1,7 +1,8 @@
 ---
 - apt: pkg=mpd
 - service: name=mpd enabled=no
-- file: path=/lib/systemd/system/mpd.service state=absent
+- command: systemctl disable mpd.service
+- command: systemctl disable mpd.socket
 
 - set_fact: isAdminHost=false
 - set_fact: isAdminHost=true
@@ -19,7 +20,7 @@
 - supervisor_process_mod:
     name=mpd
     user=drewp
-    environment="DISPLAY=:0.0,XDG_RUNTIME_DIR=/run/user/501"
+    environment="DISPLAY=:0.0,HOME=/home/drewp,XDG_RUNTIME_DIR=/run/user/501"
     command="/usr/bin/mpd --no-daemon --stderr /etc/mpd.conf"
   notify:
     - supervisord update

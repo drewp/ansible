@@ -14,9 +14,15 @@
   with_items: site_paths
   
 - name: sync
-  local_action: command rsync -az --delete {{ item }} {{ inventory_hostname }}:{{ item }}
+  synchronize: delete=yes archive=yes src="{{ item }}" dest="{{ item }}"
   with_items: site_paths
 
 - name: leave rsync warning
   copy: dest="{{ item }}/RSYNC_DELETE_RUNS_IN_HERE" content="don't add files on this side!"
   with_items: site_paths
+
+# for /usr/share/graphite-web/static
+- apt: name=graphite-web
+  tags: ['graphite']
+- file: path=/var/lib/graphite/whisper state=directory owner=_graphite group=_graphite
+  tags: ['graphite']

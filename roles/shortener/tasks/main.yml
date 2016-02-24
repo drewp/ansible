@@ -1,0 +1,10 @@
+---
+
+- apt: pkg=python-pymongo
+- apt: pkg=python-genshi
+- supervisor_process_mod: 
+    name=shortener_9079
+    directory=/my/site/shortener
+    command="/usr/bin/python2.7 shortener.py 9079"
+    user=drewp
+  notify: supervisord update

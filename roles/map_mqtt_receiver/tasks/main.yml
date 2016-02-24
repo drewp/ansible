@@ -5,11 +5,12 @@
 - copy: dest=/etc/mosquitto/mosquitto.conf src=mosquitto.conf
   notify: reload mosquitto
 
-- name: hack zc/buildout/easy_install.py to support python version containing +
-  lineinfile:
-    dest=/usr/lib/python2.7/dist-packages/zc/buildout/easy_install.py
-    regexp='re\.match'
-    line="        version = re.match('(\d[.]\d)([.].*\d)?\+?$', version).group(1)"
+# not needed ubuntu 15.10:
+#- name: hack zc/buildout/easy_install.py to support python version containing +
+#  lineinfile:
+#    dest=/usr/lib/python2.7/dist-packages/zc/buildout/easy_install.py
+#    regexp='re\.match'
+#    line="        version = re.match('(\d[.]\d)([.].*\d)?\+?$', version).group(1)"
 
 - apt: pkg=python-zc.buildout
 

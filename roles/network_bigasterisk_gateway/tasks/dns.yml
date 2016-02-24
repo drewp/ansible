@@ -8,15 +8,12 @@
 
 - assemble: dest=/etc/tinydns/root/data src={{partDir}}
 - command: /usr/bin/tinydns-data chdir=/etc/tinydns/root
-- copy: dest=/etc/tinydns/env/IP content="{{ext}}{{'\n'}}" owner=root group=root
+- copy: dest=/etc/tinydns/env/IP content="127.0.0.1{{'\n'}}" owner=root group=root
 - name: tinydns-restart
   command: /usr/local/bin/supervisorctl -c /etc/supervisord-local.conf restart tinydns
 
 
 - copy: dest=/etc/dnscache/root/servers/bigasterisk.com content="{{ext}}{{'\n'}}" owner=root group=root
 
-# not in use, albany setup 2014
-#- name: dnscache-restart
-#  command: /usr/bin/killall /usr/bin/dnscache
-
-- service: name=squid3 state=restarted
+- name: dnscache-restart
+  command: /usr/bin/killall /usr/bin/dnscache

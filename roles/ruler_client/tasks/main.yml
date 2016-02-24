@@ -12,7 +12,9 @@
   notify:
    - supervisord update
 
-  
+
+- file: path=/var/lib/openid_proxy.d state=directory
+   
 - template:
     dest=/var/lib/openid_proxy.d/ruler_client_{{inventory_hostname}}.n3
     src=openid_proxy_statements.n3.j2
@@ -21,6 +23,6 @@
 
 - copy:
     dest=/etc/sudoers.d/ruler
-    content="sensu ALL = (drewp) NOPASSWD{{':'}} /usr/bin/paplay, /usr/bin/pacmd, /my/proj/ruler/check/pulseaudio_sink\n"
+    content="sensu ALL = (drewp) SETENV:NOPASSWD{{':'}} /usr/bin/paplay, /usr/bin/pacmd, /my/proj/ruler/check/pulseaudio_sink\nsensu ALL = (root) SETENV:NOPASSWD{{':'}} /sbin/mii-tool\n"
     owner=root
     group=root

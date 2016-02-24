@@ -1,4 +1,7 @@
 ---
+- apt: pkg=python-gst0.10
+- apt: pkg=gstreamer0.10-plugins-good
+
 - name: webcam {{ camName }} serving on {{ port }} with -c {{ config }}
   supervisor_process_mod:
     name=webcam_{{ camName }}_{{ port }}

@@ -1,7 +1,7 @@
 ---
 
 - apt_repository: repo=ppa:nginx/stable
-- apt: update_cache=yes pkg=nginx=1.6.2-5+trusty0 state=present
+- apt: update_cache=yes pkg=nginx=1.8.0-1+trusty1 state=present
 - name: do not use init.d to launch nginx
   service: name=nginx enabled=no
 
@@ -16,24 +16,7 @@
   tags:
     - nginx_conf
 
-- name: install the other standard nginx conf files
-  copy:
-    src=/my/proj/openid_proxy/build_nginx/{{ item }}
-    dest=/etc/nginx/{{ item }}
-    owner=root
-    group=root
-    mode=0644
-  with_items:
-    - gzip.conf
-    - http-proxy-header.conf
-    - http.conf
-    - mime.types
-    - top.conf
-    - tiny.conf
-    - default_server.conf
-  notify: nginx update
-  tags:
-    - nginx_conf
+- include: "static_nginx_conf.yml"
 
 - supervisor_process_mod:
     name=nginx

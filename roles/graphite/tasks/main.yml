@@ -25,8 +25,9 @@
 
 
 # patch in https://github.com/graphite-project/graphite-web/commit/14a75ffb6c93901a2c9839296ca9b56c92aba6bc?diff=split
-- patch: patchfile=/my/proj/ansible/roles/graphite/files/patch-functions basedir=/
-- patch: patchfile=/my/proj/ansible/roles/graphite/files/patch-composer_widgets basedir=/
+# seems present in wily version.
+#- patch: patchfile=/my/proj/ansible/roles/graphite/files/patch-functions basedir=/
+#- patch: patchfile=/my/proj/ansible/roles/graphite/files/patch-composer_widgets basedir=/
 
 - command: sudo -u _graphite /usr/bin/graphite-manage syncdb --settings=graphite.settings --noinput
   
@@ -37,3 +38,5 @@
     user=_graphite
   notify: supervisord update
 
+# for /home/drewp/bin/fetch_noaa_temperatures
+- apt: pkg=xmlstarlet

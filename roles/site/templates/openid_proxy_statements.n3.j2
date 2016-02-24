@@ -16,6 +16,11 @@ site:{{name}}
   :admin2 acl:accessTo site:{{name}} .
 {% endif %}
       
-{% if useWebsocketPath == 'yes' %}
+{% if (useWebsocketPath | default('no')) == 'yes' %}
   site:{{name}} a :Websocket .
 {% endif %}
+
+{% for origin in (accessControlAllowOrigin | default([])) %}
+site:{{name}} :accessControlAllowOrigin "{{origin}}" .
+{% endfor %}
+

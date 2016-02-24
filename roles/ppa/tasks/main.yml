@@ -8,17 +8,17 @@
   
 # note that some of these don't have packages for the newest ubuntu release
 - apt_repository: repo='deb http://dl.google.com/linux/chrome/deb/ stable main'
-  when: ansible_architecture != "armv7l"
+  when: ansible_distribution != "Debian"
 - apt_repository: repo='deb http://ppa.launchpad.net/anatol/tup/ubuntu precise main'
-  when: ansible_architecture != "armv7l"
+  when: ansible_distribution != "Debian"
 # consider https://launchpad.net/~minetestdevs/+archive/ubuntu/daily-builds
-- apt_repository: repo='deb http://ppa.launchpad.net/minetestdevs/stable/ubuntu trusty main'
-  when: ansible_architecture != "armv7l"
-- apt_repository: repo='deb http://ppa.launchpad.net/sunab/kdenlive-release/ubuntu utopic main'
-  when: ansible_architecture != "armv7l"
+- apt_repository: repo='deb http://ppa.launchpad.net/minetestdevs/stable/ubuntu wily main'
+  when: ansible_distribution != "Debian"
+#- apt_repository: repo='deb http://ppa.launchpad.net/sunab/kdenlive-release/ubuntu vivid main'
+#  when: ansible_distribution != "Debian"
 - apt_repository: repo='ppa:thomas-schiex/blender'
-  when: ansible_architecture != "armv7l"
+  when: ansible_distribution != "Debian"
 - apt_repository: repo='ppa:inkscape.dev/stable'
-  when: ansible_architecture != "armv7l"
+  when: ansible_distribution != "Debian"
 - apt_repository: repo='ppa:zfs-native/stable'
-  when: ansible_architecture != "armv7l"
+  when: ansible_distribution != "Debian"

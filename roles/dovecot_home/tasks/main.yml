@@ -9,9 +9,23 @@
 - command: make -j 4 chdir=/opt/dovecot/dovecot-2.2.16/
 - command: make install chdir=/opt/dovecot/dovecot-2.2.16/
 
+- file: path=/etc/dovecot state=directory
+  
 - copy: dest=/etc/dovecot/dovecot.conf src=dovecot.conf
   notify: dovecot reload
- 
+
+- user: name=dovecot
+- user: name=dovenull
+  
+- group: name=postfix
+- user: name=postfix
+
+- apt: pkg=postfix
+- apt: pkg=procmail
+
+- file: path=/var/indexes/ state=directory
+- file: path=/var/indexes/drewp state=directory owner=drewp group=drewp
+  
 - supervisor_process_mod: 
     name=dovecot
     command="/opt/dovecot/install/sbin/dovecot -F -c /etc/dovecot/dovecot.conf"
