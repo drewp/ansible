@@ -7,11 +7,12 @@
   file: path=/var/lib/supervisor.d state=directory
 - copy: dest=/etc/supervisord.conf src=supervisord.conf
 
-# then you run 'sudo supervisord -c /etc/supervisord.conf' when it's
-# safe. This is not in upstart yet because I have some supervisor
-# tasks that need NFS which wasn't getting started in advance, and
-# this made boots stall.
-#
-# in an upstart definition, this might be enough to time it after NFS:
-  # start on (local-filesystems and net-device-up)
-  # stop on [!12345]
+- template: dest=/etc/systemd/system/supervisor@supervisord.service src=supervisor.service.j2
+- template: dest=/etc/systemd/system/supervisor@supervisord-local.service src=supervisor.service.j2
+  when: ansible_hostname == 'bang'
+- command: systemctl enable /etc/systemd/system/supervisor@supervisord.service
+  # sticker needs an upgrade to get systemctl
+  when: ansible_hostname != 'sticker'
+- command: systemctl enable /etc/systemd/system/supervisor@supervisord-local.service
+  when: ansible_hostname == 'bang'
+  
