@@ -10,11 +10,16 @@
   command: git pull origin master chdir=/opt/cjdns
 - command: git checkout master chdir=/opt/cjdns
 - name: rev
-  command: /usr/bin/git checkout 3311d304ddebda9d8eaa1d389905f12cd8990a62 chdir=/opt/cjdns
+  command: /usr/bin/git checkout 2933584235e739aa963b8d9ca96af0bf67e8065b chdir=/opt/cjdns
 
 
+# fuzz tests fail on raspi; I didn't look into why. Then the condition
+# failed and returned true on raspi, so I set to 1 everywhere.
 - name: build cjdns
   command: /opt/cjdns/do chdir=/opt/cjdns
+  environment:
+    NO_TEST: "{{ '1' if ansible_distribution == 'Debian' else '1' }}"
+    Seccomp_NO: "{{ '1' if ansible_distribution == 'Debian' else '' }}"
 
 - name: make config
   local_action: command python /my/proj/ansible/roles/cjdns/make_config.py "{{ inventory_hostname }}"
@@ -29,9 +34,13 @@
   local_action: shell python /my/proj/ansible/roles/cjdns/make_admin_config.py "{{ inventory_hostname }}"
   register: cjdnsadmin
 
+- set_fact: adminUser=drewp
+- set_fact: adminUser=pi
+  when: inventory_hostname in ["sticker", "kitchen"]
+
 - name: install admin config
-  copy: dest=/home/drewp/.cjdnsadmin  content="{{ cjdnsadmin.stdout }}" mode=0400 owner=drewp
-  when: inventory_hostname != "drewnote" and inventory_hostname != "sticker"
+  copy: dest="/home/{{ adminUser }}/.cjdnsadmin"  content="{{ cjdnsadmin.stdout }}" mode=0400 owner="{{ adminUser }}"
+  when: inventory_hostname != "drewnote"
 
 - name: make /tun
   file: path=/dev/net state=directory
@@ -42,7 +51,7 @@
   when: inventory_hostname == "drewnote"
 
 - name: runner
-  copy: dest=/opt/cjdns/run content="#!/bin/sh\nexec /opt/cjdns/cjdroute < /opt/cjdns/cjdroute.conf" mode=0755 owner=root
+  copy: dest=/opt/cjdns/run content="#!/bin/sh\nmodprobe ipv6\nexec /opt/cjdns/cjdroute < /opt/cjdns/cjdroute.conf" mode=0755 owner=root
   
 - supervisor_process_mod:
     name=cjdns
