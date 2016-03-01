@@ -25,12 +25,12 @@
 - lineinfile: dest=/etc/modules line="ipv6"
 
 - lineinfile: dest=/boot/config.txt line="dtoverlay=w1-gpio,gpiopin=17,pullup=y"
-  
+
 - supervisor_process_mod:
     name=piNode_9059
     directory=/opt/piNode
     autostart=true
-    user=pi
+    user=root
     command="/opt/piNode_env/bin/python piNode.py"
   notify: supervisord update
-   
+
