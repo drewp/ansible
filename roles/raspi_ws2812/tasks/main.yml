@@ -1,0 +1,13 @@
+---
+
+- set_fact: ws=/opt/piNode_ws28128-rpi/ws28128-rpi-master
+- apt: pkg=libboost-python-dev
+- file: path={{ws}} state=directory
+- unarchive: src=ws28128-rpi-e18ea58.zip dest={{ws}}
+
+- command: g++ -c ws2812-rpi.cpp                                                        chdir={{ws}} creates=ws2812-rpi.o
+# this needs CONF_SWAPSIZE=300 in /etc/dphys-swapfile and a swap reset
+- command: g++ -c -I/usr/include/python2.7 -I/usr/include -fPIC  ws2812-rpi-python.cpp  chdir={{ws}} creates=ws2812-rpi-python.o
+# archive comes with a NeoPixel.so whose libs don't resolve. Run this instead:
+- command: g++ -shared ws2812-rpi.o ws2812-rpi-python.o -L/usr/lib -lboost_python-py27 -L/usr/lib/python2.7/config -lpython2.7 -o NeoPixel.so chdir={{ws}}
+- command: cp {{ws}}/NeoPixel.so /opt/piNode_env/lib/python2.7/site-packages/ creates=/opt/piNode_env/lib/python2.7/site-packages/NeoPixel.so

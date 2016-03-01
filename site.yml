@@ -196,6 +196,8 @@
     - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
     - {role: raspi_airport_speaker, tags: ['raspi_speaker']}
     - {role: pigpio, tags: ['pigpio']}
+    - {role: raspi_ws2812, tags: ['raspi_ws2812']}
+    - {role: raspi_cam, tags: ['raspi_cam']}
     - {role: raspi_io_node, tags: ['raspi_io_node']}    
   
 - hosts: with_x11

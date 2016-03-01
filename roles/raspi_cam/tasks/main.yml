@@ -1,0 +1,20 @@
+---
+
+- apt: pkg=build-essential
+- apt: pkg=python-dev
+
+- set_fact: remoteDir="{{ inventory_hostname }}:/opt/cam"
+- file: state=directory path={{remoteDir}}
+- local_action: command rsync -az --delete --exclude=_darcs /my/proj/webcam_pi/ {{remoteDir}}
+- pip:
+    chdir=/opt/cam
+    requirements=/opt/cam/requirements.txt
+    virtualenv=/opt/cam_env
+
+- supervisor_process_mod:
+    name=cam_8208
+    directory=/opt/cam
+    autostart=true
+    user=root
+    command="/opt/cam_env/bin/python picamserve"
+  notify: supervisord update
