@@ -3,11 +3,11 @@
   
 - file: path=/opt/dovecot state=directory
 - file: path=/opt/dovecot/install state=directory
-- get_url: url=http://dovecot.org/releases/2.2/dovecot-2.2.16.tar.gz dest=/opt/dovecot/dovecot-2.2.16.tar.gz
-- command: tar xzf dovecot-2.2.16.tar.gz chdir=/opt/dovecot creates=/opt/dovecot/dovecot-2.2.16/configure
-- command: ./configure --with-pam --prefix /opt/dovecot/install chdir=/opt/dovecot/dovecot-2.2.16/ creates=/opt/dovecot/dovecot-2.2.16/Makefile
-- command: make -j 4 chdir=/opt/dovecot/dovecot-2.2.16/
-- command: make install chdir=/opt/dovecot/dovecot-2.2.16/
+- get_url: url=http://dovecot.org/releases/2.2/dovecot-2.2.21.tar.gz dest=/opt/dovecot/dovecot-2.2.21.tar.gz
+- command: tar xzf dovecot-2.2.21.tar.gz chdir=/opt/dovecot creates=/opt/dovecot/dovecot-2.2.21/configure
+- command: ./configure --with-pam --prefix /opt/dovecot/install chdir=/opt/dovecot/dovecot-2.2.21/ creates=/opt/dovecot/dovecot-2.2.21/Makefile
+- command: make -j 4 chdir=/opt/dovecot/dovecot-2.2.21/
+- command: make install chdir=/opt/dovecot/dovecot-2.2.21/
 
 - file: path=/etc/dovecot state=directory
   
