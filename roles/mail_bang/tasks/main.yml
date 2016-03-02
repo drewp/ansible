@@ -1,0 +1,15 @@
+---
+
+- apt: pkg=postfix
+
+- template: dest=/etc/postfix/main.cf src=main.cf.j2
+- template: dest=/etc/aliases src=aliases.j2
+
+- command: newaliases
+- service: name=postfix state=reloaded
+
+- supervisor_process_mod: 
+    name=proctask
+    command=/home/drewp/mailprocess/proctask_loop
+    user=drewp
+  notify: supervisord update
