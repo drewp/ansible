@@ -81,4 +81,14 @@
     stopasgroup=true
   notify: supervisord update
 
+- supervisor_process_mod:
+    name=display_lmms
+    environment="DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority"
+    command="/usr/bin/lmms"
+    directory="/home/drewp"
+    user=drewp
+    autostart=false
+    stopasgroup=true
+  notify: supervisord update
+
 
