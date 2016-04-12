@@ -9,15 +9,52 @@ then copy lines into secrets.json:
 """
 
 
-import json, sys, string, os
+import json, sys, string, subprocess
 from Crypto.Random import random
+from twisted.python.filepath import FilePath
 
 publicPort = 9878
-secretsPath = os.path.join(os.path.dirname(sys.argv[0]), 'secrets.json')
-secrets = json.load(open(secretsPath))
+secretsPath = FilePath(sys.argv[0]).sibling('secrets.json')
+secrets = json.load(secretsPath.open())
+
+def randomString(n):
+    return ''.join(random.choice(string.printable[:10+26+26]) for i in range(n))
+    
+def parseCjdConf(jsonish):
+    confJson = ''
+    lines = iter(jsonish.splitlines())
+    for line in lines:
+        line = line.strip()
+        if line.startswith('//'):
+            continue
+        if line == '/*':
+            while lines.next().strip() != '*/':
+                pass
+            continue
+        if line == '"ETHInterface":':
+            line = ',' + line
+        if line == '"noBackground":0,':
+            line = '"noBackground":0'
+        confJson += line + '\n'
+    return json.loads(confJson)
+
+def newHost(host, localInterfaces=[]):
+    conf = parseCjdConf(subprocess.check_output(['/opt/cjdns/cjdroute', '--genconf']))
+    return {
+        "adminPassword": randomString(32),
+        "ipv6": conf['ipv6'], 
+        "localInterfaces": localInterfaces,
+        "privateKey": conf['privateKey'], 
+        "publicKey": conf['publicKey'],
+    } 
+    
 
 def getConfig(host):
-    sh = secrets['host'][host]
+    try:
+        sh = secrets['host'][host]
+    except KeyError:
+        sh = secrets['host'][host] = newHost(host)
+        secretsPath.setContent(json.dumps(secrets, indent=4))
     auths = []
     if 'publicAddress' in sh:
         for otherHost, oh in secrets['host'].items():
@@ -86,11 +123,9 @@ def getConnectPassword(fromHost, toHost):
         return th['passwordFrom'][fromHost]
     except KeyError:
         pass
-    password = '%s-%s-%s' % (fromHost, toHost, ''.join(random.choice(string.printable[:10+26+26])
-                                                       for i in range(64)))
+    password = '%s-%s-%s' % (fromHost, toHost, randomString(64))
     th.setdefault('passwordFrom', {})[fromHost] = password
-    with open(secretsPath, 'w') as out:
-        json.dump(secrets, out, indent=4, sort_keys=True)
+    secretsPath.setContent(json.dumps(secrets, indent=4, sort_keys=True))
     return password
 
 
