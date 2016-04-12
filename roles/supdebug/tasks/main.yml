@@ -1,5 +1,6 @@
 ---
 - file: state=directory path=/opt/supdebug
+- file: state=directory path=/opt/supdebug_env
 
 # for later when this is in its own repo
 #- name: initial checkout
@@ -15,17 +16,17 @@
 - apt: pkg=libffi-dev state=installed
 - apt: pkg=libssl-dev state=installed
 
-- command: virtualenv --system-site-packages /opt/supdebug creates=/opt/supdebug/bin
-- command: /opt/supdebug/bin/pip install -U pip
+- command: virtualenv --system-site-packages /opt/supdebug_env creates=/opt/supdebug_env/bin
+- command: /opt/supdebug_env/bin/pip install -U pip
 
 - apt: pkg=build-essential
 
-- command: /opt/supdebug/bin/pip install cyclone tailer
+- command: /opt/supdebug_env/bin/pip install cyclone tailer
 
 - supervisor_process_mod:
     name=supdebug_10004
     directory=/opt/supdebug
-    command="/opt/supdebug/bin/python supdebug.py"
+    command="/opt/supdebug_env/bin/python supdebug.py"
     user=drewp
     autostart=true
   notify: supervisord update
