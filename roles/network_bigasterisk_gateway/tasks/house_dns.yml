@@ -4,7 +4,7 @@
 - user: name=Gtinydns
 - user: name=Gdnslog
   
-- command: tinydns-conf Gtinydns Gdnslog /etc/tinydns 127.0.0.1 creates=/etc/tinydns
+- command: tinydns-conf Gtinydns Gdnslog /etc/tinydns 0.0.0.0 creates=/etc/tinydns
 
 - copy: dest=/etc/tinydns/root/data src=tinydns_data owner="root" group="root"
   notify: tinydns data
