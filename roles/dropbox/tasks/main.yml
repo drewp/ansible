@@ -16,7 +16,7 @@
 - supervisor_process_mod: 
     name=dropbox
     environment="HOME=/home/dropbox"
-    command="/home/dropbox/.dropbox-dist/dropbox-lnx.x86_64-3.12.6/dropbox"
+    command="/home/dropbox/.dropbox-dist/dropbox-lnx.x86_64-3.16.1/dropbox"
     user=dropbox
     stopasgroup=true
   notify: supervisord update
