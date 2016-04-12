@@ -6,10 +6,7 @@
 # descriptions. And it's so slow, it should probably be a single
 # custom tool.
 
-# REMEMBER TRAILING SLASH
-- set_fact:
-    site_paths:
-      - "/my/site/homepage/www/"
+- include: site_paths.yml
 
 - name: prep dir for serving
   file: path="{{ item }}" state=directory
