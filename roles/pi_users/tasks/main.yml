@@ -4,9 +4,3 @@
   tags: ['users']
 - user: name=pi uid=1000 group=7 groups=lp,adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,netdev,i2c,input,spi,gpio,fuse
   tags: ['users']
-- group: name=drewp gid=501
-  tags: ['users']
-- user: name=drewp uid=501 group=drewp groups=lp,adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,netdev,i2c,input,spi,gpio,fuse
-  tags: ['users']
-- file: path=/home/drewp state=directory owner=drewp group=drewp
-  tags: ['users']

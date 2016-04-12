@@ -9,15 +9,6 @@
 - group: name=plugdev gid=46
 
 
-# raspbian took 1000 for 'pi' group, but drewp is rarely used on pi
-# setups so hopefully it won't matter much that drew group has a
-# different id.
-# Note some redundant rules in site.yml "hosts: pi"
-- group: name=drewp gid=1000
-  when: ansible_distribution != "Debian"
-- group: name=drewp gid=501
-  when: ansible_distribution == "Debian"
-- file: path=/home/drewp state=directory owner=drewp group=drewp
   
 - group: name=damon gid=3011
 - group: name=ffg gid=3008
@@ -37,3 +28,18 @@
 
 - user: name=ffg uid=3013 group=ffg
 - file: path=/home/ffg/.ssh state=directory owner=ffg group=ffg mode=700
+
+- user: name=darcsweb
+
+- user: name=newsbru uid=1019
+- user: name=dmcc uid=1013
+
+
+- group: name=_graphite gid=3017
+- user: name=_graphite uid=3017 group=_graphite
+
+- group: name=elastic gid=3018
+- user: name=elastic uid=3018 group=elastic
+  
+- group: name=kelsi gid=1008
+- user: name=kelsi uid=1008 group=elastic

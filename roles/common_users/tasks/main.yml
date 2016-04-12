@@ -1,0 +1,21 @@
+---
+
+# used on pi and non-pi
+
+# raspbian took 1000 for 'pi' group, but drewp is rarely used on pi
+# setups so hopefully it won't matter much that drew group has a
+# different id.
+- set_fact: drewp_gid={{1000 if ansible_distribution != "Debian" else 501}}
+
+- group: name=fuse
+- group: name=spi
+- group: name=gpio
+- group: name=i2c
+- group: name=input
+
+- group: name=drewp gid={{drewp_gid}}
+  tags: ['users']
+- user: name=drewp uid=501 group=drewp groups=lp,adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,netdev,i2c,input,spi,gpio,fuse
+  tags: ['users']
+- file: path=/home/drewp state=directory owner=drewp group=drewp
+  tags: ['users']
