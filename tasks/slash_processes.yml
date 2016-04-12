@@ -13,6 +13,14 @@
     user=drewp
   notify: supervisord update
   tags: ['ffg']
+
+- supervisor_process_mod:
+    name=octoprint_5000
+    directory=/home/drewp/OctoPrint
+    command="/home/drewp/OctoPrint/bin/python run"
+    user=drewp
+  notify: supervisord update
+  tags: ['octoprint']
       
 # - supervisor_process_mod: 
 #     name=ozwcp_9083
