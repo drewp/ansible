@@ -1,16 +1,19 @@
 ---
+- apt: pkg=swig
+- apt: pkg=scons
+- apt: pkg=python-dev
+- apt: pkg=build-essential
+
 
 - set_fact: wsParent=/opt/piNode_ws2812-rpi
-# sic: 'ws28128'
-- set_fact: ws={{wsParent}}/ws28128-rpi-master
-- apt: pkg=libboost-python-dev
+  name: start ws2812 build
 - file: path={{wsParent}} state=directory
-# sic: 'ws28128'
-- unarchive: src=ws28128-rpi-e18ea58.zip dest={{wsParent}}
+- unarchive: src=rpi_ws281x-master.zip dest={{wsParent}}
+- set_fact: ws={{wsParent}}/rpi_ws281x-master
 
-- command: g++ -c ws2812-rpi.cpp                                                        chdir={{ws}} creates=ws2812-rpi.o
-# this needs CONF_SWAPSIZE=300 in /etc/dphys-swapfile and a swap reset
-- command: g++ -c -I/usr/include/python2.7 -I/usr/include -fPIC  ws2812-rpi-python.cpp  chdir={{ws}} creates=ws2812-rpi-python.o
-# archive comes with a NeoPixel.so whose libs don't resolve. Run this instead:
-- command: g++ -shared ws2812-rpi.o ws2812-rpi-python.o -L/usr/lib -lboost_python-py27 -L/usr/lib/python2.7/config -lpython2.7 -o NeoPixel.so chdir={{ws}}
-- command: cp {{ws}}/NeoPixel.so /opt/piNode_env/lib/python2.7/site-packages/ creates=/opt/piNode_env/lib/python2.7/site-packages/NeoPixel.so
+- command: scons          chdir={{ws}} creates={{ws}}/libws2811.a
+- command: /opt/piNode_env/bin/easy_install -U setuptools
+- name: absolute paths in python build files
+  replace: dest={{ws}}/python/rpi_ws281x.i regexp="\.\./ws2811\.h" replace="{{ws}}/ws2811.h"
+- replace: dest={{ws}}/python/setup.py regexp="\.\./\." replace="{{ws}}"
+- command: /opt/piNode_env/bin/pip install . chdir={{ws}}/python 
