@@ -1,9 +1,12 @@
 ---
 
-- set_fact: ws=/opt/piNode_ws28128-rpi/ws28128-rpi-master
+- set_fact: wsParent=/opt/piNode_ws2812-rpi
+# sic: 'ws28128'
+- set_fact: ws={{wsParent}}/ws28128-rpi-master
 - apt: pkg=libboost-python-dev
-- file: path={{ws}} state=directory
-- unarchive: src=ws28128-rpi-e18ea58.zip dest={{ws}}
+- file: path={{wsParent}} state=directory
+# sic: 'ws28128'
+- unarchive: src=ws28128-rpi-e18ea58.zip dest={{wsParent}}
 
 - command: g++ -c ws2812-rpi.cpp                                                        chdir={{ws}} creates=ws2812-rpi.o
 # this needs CONF_SWAPSIZE=300 in /etc/dphys-swapfile and a swap reset
