@@ -20,12 +20,8 @@ plus
 [remote]
 plus
 drewnote
-btv
 
 [pi]
-#grapes ansible_ssh_user=pi
-#laundry-ext ansible_ssh_user=pi
-#cactuscar ansible_ssh_user=pi
 sticker
 kitchen
 living
