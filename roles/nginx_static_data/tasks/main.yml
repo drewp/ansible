@@ -1,5 +1,7 @@
 ---
 
+# see tasks/bang_sites.yml for cron that runs this.
+
 # this could just read all the :serveRoot paths from the site
 # descriptions. And it's so slow, it should probably be a single
 # custom tool.

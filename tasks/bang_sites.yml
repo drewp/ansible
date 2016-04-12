@@ -2,6 +2,13 @@
 # haven't been moved to websites.yml yet
 
 
+- cron:
+    user=root
+    name="nginx_static_data"
+    job="/my/proj/ansible/playbook -t nginx_static_data"
+    special_time=hourly
+  tags: ['nginx_static_data']
+
 - supervisor_process_mod:
     name=picinput_11008
     directory=/my/proj/ffg
