@@ -7,20 +7,25 @@
 
 - apt: pkg=build-essential
 - apt: pkg=python-dev
+- apt: pkg=libffi-dev
 
-- set_fact: remoteDir="{{ inventory_hostname }}:/opt/piNode"
+- synchronize:
+    src=/my/proj/homeauto/service/piNode/
+    dest=/opt/piNode
+    archive=yes
+    delete=yes
   
-- local_action: command rsync -az --delete /my/proj/homeauto/service/piNode/ {{remoteDir}}
 - pip:
     chdir=/opt/piNode_env
     requirements=/opt/piNode/requirements.txt
     virtualenv=/opt/piNode_env
 
-- local_action: command rsync -az --delete /my/proj/homeauto/service/arduinoNode/ {{ inventory_hostname }}:/opt/arduinoNode
-- local_action: command rsync -az --delete /my/proj/homeauto/lib/                 {{ inventory_hostname }}:/opt/homeauto_lib
-- local_action: command rsync -az  /my/site/magma/stategraph.py                   {{ inventory_hostname }}:/opt/homeauto_lib
-- local_action: command rsync -az  /my/proj/room/carbondata.py                    {{ inventory_hostname }}:/opt/homeauto_lib
-- local_action: command rsync -az  /my/proj/light9/light9                         {{ inventory_hostname }}:/opt/homeauto_lib
+
+- synchronize: src=/my/proj/homeauto/service/arduinoNode/ dest=/opt/arduinoNode archive=yes delete=yes
+- synchronize: src=/my/proj/homeauto/lib/ dest=/opt/homeauto_lib archive=yes delete=yes
+- copy: src=/my/site/magma/stategraph.py dest=/opt/homeauto_lib
+- copy: src=/my/proj/room/carbondata.py dest=/opt/homeauto_lib
+- synchronize: src=/my/proj/light9/light9 dest=/opt/homeauto_lib archive=yes
   
 - lineinfile: dest=/etc/modules line="ipv6"
 

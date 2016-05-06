@@ -7,9 +7,8 @@
 #  command: darcs get ... creates=/opt/supdebug/_darcs
 #- name: update
 #  command: darcs pull ...
-- apt: pkg=rsync
 
-- local_action: command rsync -az --delete /my/proj/supdebug/ {{ inventory_hostname }}:/opt/supdebug
+- synchronize: src=/my/proj/supdebug/ dest=/opt/supdebug archive=yes delete=yes 
 
 - apt: pkg=python-virtualenv state=installed
 - apt: pkg=python2.7-dev state=installed

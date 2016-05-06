@@ -3,9 +3,8 @@
 - apt: pkg=build-essential
 - apt: pkg=python-dev
 
-- set_fact: remoteDir="{{ inventory_hostname }}:/opt/cam"
-- file: state=directory path={{remoteDir}}
-- local_action: command rsync -az --delete --exclude=_darcs /my/proj/webcam_pi/ {{remoteDir}}
+- file: state=directory path=/opt/cam
+- synchronize: src=/my/proj/webcam_pi/ dest=/opt/cam archive=yes delete=yes
 - pip:
     chdir=/opt/cam
     requirements=/opt/cam/requirements.txt
