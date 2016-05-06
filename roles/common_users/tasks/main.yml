@@ -12,6 +12,7 @@
 - group: name=gpio
 - group: name=i2c
 - group: name=input
+- group: name=netdev
 
 - group: name=drewp gid={{drewp_gid}}
   tags: ['users']
