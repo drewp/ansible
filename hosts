@@ -9,6 +9,8 @@ brace
 kitchen
 living
 changing
+piedmont ansible_ssh_host=10.2.0.40
+bling
 
 [big]
 dash
@@ -22,10 +24,11 @@ plus
 drewnote
 
 [pi]
-sticker
+bed
 kitchen
 living
 changing
+piedmont
 
 [with_speakers]
 dash
@@ -33,7 +36,7 @@ slash
 plus
 brace
 bang
-sticker
+bed
 kitchen
 living
 
@@ -41,6 +44,9 @@ living
 dash
 slash
 brace
+
+[with_pi_cam]
+changing
 
 [with_removable_storage]
 dash

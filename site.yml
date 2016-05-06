@@ -50,7 +50,6 @@
     - {role: docker, tags: ['docker']}
     - {role: map_mqtt_receiver, tags: ['map_mqtt_receiver']}
     - {role: openvpn_server, tags: ['openvpn_server']}
-#    - {role: openvpn_bling_server, tags: ['openvpn_bling_server']}
     - {role: prime_firewall, tags: ['prime_firewall']}
   tasks:
     - hostname: name=prime
@@ -133,13 +132,10 @@
     - {role: laptop_x11, tags: ['laptop_x11']}
 
 - hosts: brace
-  gather_facts: no
   handlers:
     - include: handlers/main.yml
   roles:
     - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
-#    - {role: openzwave, tags: ['openzwave']}
-#    - {role: openzwave_lightctl, tags: ['openzwave_lightctl']}
     - {role: ari_room_screen, tags: ['ari_room_screen']}
 
 - hosts: star
@@ -173,8 +169,6 @@
   gather_facts: no
   handlers:
     - include: handlers/main.yml
-  roles:
-    - {role: openvpn_client, tags: ['openvpn_client']}
 
 - hosts: with_speakers
   handlers:
