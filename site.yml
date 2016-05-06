@@ -197,8 +197,13 @@
     - {role: raspi_airport_speaker, tags: ['raspi_speaker']}
     - {role: pigpio, tags: ['pigpio']}
     - {role: raspi_ws2812, tags: ['raspi_ws2812']}
-    - {role: raspi_cam, tags: ['raspi_cam']}
     - {role: raspi_io_node, tags: ['raspi_io_node']}    
+
+- hosts: pi
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - {role: raspi_cam, tags: ['raspi_cam']}
   
 - hosts: with_x11
   handlers:
@@ -246,3 +251,7 @@
   roles:
     - {role: openvpn_client, tags: ['openvpn_client']}
 
+- hosts: piedmont
+  roles:
+    - {role: raspi_kiosk, tags: ['raspi_kiosk']}
+    

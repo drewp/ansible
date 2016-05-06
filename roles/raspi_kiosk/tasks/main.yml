@@ -1,0 +1,21 @@
+---
+
+- apt: pkg=iceweasel
+
+- copy: src=firefox.desktop dest=/home/pi/.config/autostart/firefox.desktop
+- copy: src=pir_screen.desktop dest=/home/pi/.config/autostart/pir_screen.desktop
+
+# somehow install https://addons.mozilla.org/en-US/firefox/addon/r-kiosk/?src=api
+- copy: src=user.js dest=/home/pi/.mozilla/firefox/i4k3m1mm.default/user.js
+
+
+# in prefs.js
+# user_pref("browser.startup.homepage", "https://bigasterisk.com/");
+
+# move url to priv.yml
+- lineinfile:
+    dest=/home/pi/.mozilla/firefox/i4k3m1mm.default/prefs.js
+    line='user_pref("browser.startup.homepage", "https://bigasterisk.com/");'
+
+- copy: src=/my/proj/raspberry_pi_kiosk/pir_screen.jl dest=/home/pi/
+  
