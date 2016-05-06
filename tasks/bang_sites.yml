@@ -5,7 +5,7 @@
 - cron:
     user=root
     name="nginx_static_data"
-    job="/my/proj/ansible/playbook -t nginx_static_data"
+    job="/bin/zsh -c '/my/proj/ansible/playbook -t nginx_static_data >&/dev/null'"
     special_time=hourly
   tags: ['nginx_static_data']
 
