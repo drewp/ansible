@@ -11,12 +11,13 @@
 - file: path=/home/dropbox/.dropbox-dist state=directory recurse=yes owner=dropbox
 
 - file: path=/home/dropbox/Dropbox state=directory owner=dropbox group=drewp mode=0750
+- copy: dest=/home/dropbox/run_dropbox mode=a+rx content="#!/bin/sh\nexec /home/dropbox/.dropbox-dist/dropbox-lnx.x86_64-*/dropbox"
   
 # This works in /home/dropbox/.dropbox and /home/dropbox/Dropbox
 - supervisor_process_mod: 
     name=dropbox
     environment="HOME=/home/dropbox"
-    command="/home/dropbox/.dropbox-dist/dropbox-lnx.x86_64-3.16.1/dropbox"
+    command="/home/dropbox/run_dropbox"
     user=dropbox
     stopasgroup=true
   notify: supervisord update
