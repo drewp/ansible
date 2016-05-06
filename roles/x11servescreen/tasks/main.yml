@@ -1,0 +1,8 @@
+---
+- supervisor_process_mod:
+    name=x11servescreen_9060
+    directory=/my/proj/x11servescreen
+    command="/my/proj/x11servescreen/bin/python x11servescreen.py"
+    user=drewp
+  notify: supervisord update
+

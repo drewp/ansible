@@ -137,6 +137,8 @@
   roles:
     - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
     - {role: ari_room_screen, tags: ['ari_room_screen']}
+    - {role: x11servescreen, tags: ['x11servescreen']}
+#    - {role: raspi_airport_speaker, tags: ['raspi_airport_speaker']}
 
 - hosts: star
   handlers:
