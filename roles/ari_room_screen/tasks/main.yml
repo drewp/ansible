@@ -51,6 +51,7 @@
     stopasgroup=true
   notify: supervisord update
 
+- apt: pkg=openjdk-7-jre-headless
 - supervisor_process_mod:
     name=display_minecraft
     environment="DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority"
@@ -71,6 +72,7 @@
     stopasgroup=true
   notify: supervisord update
 
+- apt: pkg=blender-edge
 - supervisor_process_mod:
     name=display_blender
     environment="DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority"
@@ -81,6 +83,18 @@
     stopasgroup=true
   notify: supervisord update
 
+- apt: pkg=scratch
+- supervisor_process_mod:
+    name=display_scratch
+    environment="DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority"
+    command="/usr/bin/scratch"
+    directory="/home/drewp"
+    user=drewp
+    autostart=false
+    stopasgroup=true
+  notify: supervisord update
+  
+- apt: pkg=lmms
 - supervisor_process_mod:
     name=display_lmms
     environment="DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority"

@@ -31,17 +31,17 @@
 - file: path=/opt/minetest/mods state=link src=/home/drewp/.minetest/mods
 
   
-- supervisor_process_mod:
-    name=minetest_30000
-    directory=/home/drewp
-    user=drewp
-    command="/opt/minetest/bin/minetestserver --config /home/drewp/.minetest/minetest.conf --gameid minetest --port 30000 --world /home/drewp/.minetest/worlds/minecraft"
-  notify: supervisord update
+#- supervisor_process_mod:
+#    name=minetest_30000
+#    directory=/home/drewp
+#    user=drewp
+#    command="/opt/minetest/bin/minetestserver --config /home/drewp/.minetest/minetest.conf --gameid minetest --port 30000 --world /home/drewp/.minetest/worlds/minecraft"
+#  notify: supervisord update
   
 - supervisor_process_mod:
     name=minetest_30001
     directory=/home/drewp
     user=drewp
-    command="/opt/minetest/bin/minetestserver --config /home/drewp/.minetest/minetest.conf --gameid minetest --port 30001 --world /home/drewp/.minetest/worlds/oakland"
+    command="/opt/minetest/bin/minetestserver --config /home/drewp/.minetest/minetest.conf --gameid minetest --port 30001 --world /home/drewp/.minetest/worlds/dont_break_anything_in_this_place"
   notify: supervisord update
 
