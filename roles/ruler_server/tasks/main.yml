@@ -10,3 +10,12 @@
     user=drewp
   notify:
    - supervisord update
+
+# assume servers are also hosts where you might edit the config     
+- supervisor_process_mod:
+    name=ruler_reloader
+    directory=/my/proj/ruler
+    command="/my/proj/ruler/bin/python /my/proj/ruler/reloader.py"
+    user=drewp
+  notify:
+   - supervisord update
