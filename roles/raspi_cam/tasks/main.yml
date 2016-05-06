@@ -10,6 +10,11 @@
     requirements=/opt/cam/requirements.txt
     virtualenv=/opt/cam_env
 
+# these in /boot/config.txt
+# gpu_mem=128 
+# start_x=1
+
+
 - supervisor_process_mod:
     name=cam_8208
     directory=/opt/cam

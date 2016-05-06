@@ -29,13 +29,15 @@
   
 - lineinfile: dest=/etc/modules line="ipv6"
 
-- lineinfile: dest=/boot/config.txt line="dtoverlay=w1-gpio,gpiopin=17,pullup=y"
+# using 1-wire? (piNode program knows if this is the case)
+#- lineinfile: dest=/boot/config.txt line="dtoverlay=w1-gpio,gpiopin=17,pullup=y"
 
 - supervisor_process_mod:
     name=piNode_9059
     directory=/opt/piNode
     autostart=true
     user=root
+    startsecs=30
     command="/opt/piNode_env/bin/python piNode.py"
   notify: supervisord update
 
