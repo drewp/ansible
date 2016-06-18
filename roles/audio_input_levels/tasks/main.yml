@@ -1,0 +1,13 @@
+---
+- supervisor_process_mod:
+    name=audio_input_levels
+    directory=/my/proj/homeauto/service/audioInputLevels
+    command="/my/proj/homeauto/service/audioInputLevels/bin/python audioInputLevelsPulse.py --source alsa_input.pci-0000_00_07.0.analog-stereo"
+    user=drewp
+    autostart=true
+
+- copy:
+    dest="/var/lib/ruler.d/audio_input_levels_{{ansible_hostname}}.n3"
+    content="@prefix {{':'}} <http://bigasterisk.com/ruler/ns#> .\n@prefix check{{':'}} <http://bigasterisk.com/ruler/check/> .\n@prefix host{{':'}} <http://bigasterisk.com/ruler/host/> .\ncheck:{{ansible_hostname}}_audio a :Check; :runHost host:bang; :samplePeriod \"600sec\"; :observedHost host:{{ansible_hostname}}; :argv (\"/my/proj/ruler/check/graphite_check\" \"system.house.audio.{{ansible_hostname}}.max\" \"-600sec\") ."
+  delegate_to: bang
+#  notify: ruler update
