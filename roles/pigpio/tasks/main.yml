@@ -1,18 +1,8 @@
 ---
 
-- apt: pkg=git
-- git:
-    force=yes
-    repo=https://github.com/joan2937/pigpio.git
-    version=2ceab346b94782f7c6c95dbd82480836a128b320
-    dest=/opt/pigpio
-- command: make chdir=/opt/pigpio
- 
-- supervisor_process_mod:
-    name=pigpiod_8888
-    user=root
-    directory=/
-    environment="LD_LIBRARY_PATH=/opt/pigpio"
-    command="/usr/local/bin/pidproxy /var/run/pigpio.pid /opt/pigpio/pigpiod"
-  notify:
-    - supervisord update
+# was in supervisor; now the package comes with systemd service
+- file: path=/var/lib/supervisor.d/pigpiod_8888.conf state=absent
+  notify: supervisord update
+
+- apt: pkg=pigpio
+- service: name=pigpiod enabled=yes state=started
