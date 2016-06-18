@@ -37,7 +37,8 @@
     group="root"
   notify: firewall setup
 
-- copy: dest=/etc/resolv.conf content="nameserver 10.2.0.1{{'\n'}}domain bigasterisk.com{{'\n'}}"
+- name: write resolv.conf
+  copy: dest=/etc/resolv.conf content="nameserver 10.2.0.1{{'\n'}}domain bigasterisk.com{{'\n'}}" force=yes
   tags: ['resolvconf']
 
 # unused, with prime serving public dns?

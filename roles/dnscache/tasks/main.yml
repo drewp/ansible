@@ -5,12 +5,14 @@
 
 - apt: name=dnscache-run state=present
 
+- file: path=/etc/service state=directory
+- file: path=/etc/service/dnscache state=link src=/etc/sv/dnscache
+  
 - file: dest=/etc/dnscache/root/ip/192.168 state=absent
 - copy: dest=/etc/dnscache/env/IP content="10.2.0.1"
 - file: dest=/etc/dnscache/root/ip/10 state=touch
-  
+
 - name: send bigasterisk.com requests to local tinydns
-  notify: house dns restart
   copy: dest=/etc/dnscache/root/servers/{{ item }} content="127.0.0.1"
   with_items:
     - bigasterisk.com
