@@ -258,6 +258,17 @@
         directory: "/my/proj/homeauto/service/tomatoWifi/"
         command: "/my/proj/homeauto/service/tomatoWifi/bin/python tomatoWifi.py"
       tags: ['wifi']
+
+    - role: site
+      name: 'magma'
+      path: "/magma/"
+      openid: "admin"
+      serverHost: "bang"
+      port: "8010"
+      process:
+        directory: "/my/site/magma/"
+        command: "/my/site/magma/env/bin/python serve_magma.py"
+      tags: ['magma']
       
     - role: site
       name: 'arduinoNodeBang'

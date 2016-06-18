@@ -83,7 +83,6 @@
     - {role: elastic, tags: ['elastic']}
     - {role: blog, tags: ['blog']}
     - {role: photo_worker, tags: ['photo_worker']}
-    - {role: magma, tags: ['magma']}
     
   tasks:
     - apt: pkg=nginx
