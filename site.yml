@@ -67,6 +67,7 @@
     - {role: blog, tags: ['blog']}
     - {role: checkvistpost, tags: ['checkvistpost']}
     - {role: collectd, tags: ['collectd']}
+    - {role: dnscache, tags: ['dnscache']}
     - {role: dovecot_home, tags: ['dovecot_home']}
     - {role: dropbox, tags: ['dropbox']}
     - {role: hosts, tags: ['hosts']}

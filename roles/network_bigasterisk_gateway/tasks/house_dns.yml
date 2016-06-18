@@ -17,26 +17,7 @@
 #user=root
 
 
-- user: name=Gdnscache
 - user: name=Gdnslog
-- apt: name=dnscache-run state=present
-
-- file: dest=/etc/dnscache/root/ip/192.168 state=absent
-  notify: house dns restart
-
-- copy: dest=/etc/dnscache/env/IP content="10.2.0.1"
-  notify: house dns restart
-- file: dest=/etc/dnscache/root/ip/10 state=touch
-  notify: house dns restart
-  
-- name: send bigasterisk.com requests to local tinydns
-  notify: house dns restart
-  copy: dest=/etc/dnscache/root/servers/{{ item }} content="127.0.0.1"
-  with_items:
-    - bigasterisk.com
-    - whatsplayingnext.com
-    - whopickedthis.com
-    - quickwitretort.com
 
   
 #  still not answering the override answer for bigasterisk. maybe authority problem. maybe dnsmasq will just do it
@@ -44,11 +25,3 @@
 #  write tests for the dns requests i want to see. add filtered view in ruler for these tests and a run-all-in-view button
 
 # house-host rule that sends them to here. openvpn control?
-
-# /etc/supervisord-local.conf needs this:
-#[program:dnscache]
-#directory=/etc/dnscache
-#command=/etc/dnscache/run
-#user=root
-## log is very noisy and boring- led to lots of disk activity
-#stdout_logfile=/dev/null

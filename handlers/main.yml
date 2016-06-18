@@ -16,7 +16,7 @@
   command: "/usr/local/bin/supervisorctl restart nginx"
 
 - name: house dns restart
-  command: "/usr/local/bin/supervisorctl -c /etc/supervisord-local.conf restart tinydns dnscache"
+  command: "/usr/local/bin/supervisorctl -c /etc/supervisord-local.conf restart tinydns"
   
 - name: wifi net reset
   shell: "/sbin/ifdown enp6s2; /sbin/ifup enp6s2"
