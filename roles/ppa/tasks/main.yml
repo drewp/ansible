@@ -5,20 +5,23 @@
 - apt_key: keyserver=keyserver.ubuntu.com id=46830400C4A100CF
 - apt_key: keyserver=keyserver.ubuntu.com id=B5115B98AA836CA8
 - apt_key: keyserver=keyserver.ubuntu.com id=0CD0F565F8CDAB41
+- apt_key: url=https://dl-ssl.google.com/linux/linux_signing_key.pub
   
-# note that some of these don't have packages for the newest ubuntu release
-- apt_repository: repo='deb http://dl.google.com/linux/chrome/deb/ stable main'
+- apt_repository: repo='deb [arch=amd64] https://dl-ssl.google.com/linux/chrome/deb/ stable main'
   when: ansible_distribution != "Debian"
-- apt_repository: repo='deb http://ppa.launchpad.net/anatol/tup/ubuntu precise main'
-  when: ansible_distribution != "Debian"
+
 # consider https://launchpad.net/~minetestdevs/+archive/ubuntu/daily-builds
-- apt_repository: repo='deb http://ppa.launchpad.net/minetestdevs/stable/ubuntu wily main'
+- apt_repository: repo='deb http://ppa.launchpad.net/minetestdevs/stable/ubuntu xenial main'
   when: ansible_distribution != "Debian"
-#- apt_repository: repo='deb http://ppa.launchpad.net/sunab/kdenlive-release/ubuntu vivid main'
-#  when: ansible_distribution != "Debian"
+- apt_repository: repo='deb http://ppa.launchpad.net/sunab/kdenlive-release/ubuntu xenial main'
+  when: ansible_distribution != "Debian"
 - apt_repository: repo='ppa:thomas-schiex/blender'
   when: ansible_distribution != "Debian"
 - apt_repository: repo='ppa:inkscape.dev/stable'
   when: ansible_distribution != "Debian"
-- apt_repository: repo='ppa:zfs-native/stable'
-  when: ansible_distribution != "Debian"
+
+# not yet for 16.04
+#- apt_repository: repo='ppa:zfs-native/stable'
+#  when: ansible_distribution != "Debian"
+#- apt_repository: repo='deb http://ppa.launchpad.net/anatol/tup/ubuntu precise main'
+#  when: ansible_distribution != "Debian"
