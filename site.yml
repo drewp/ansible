@@ -58,31 +58,30 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: hosts, tags: ['hosts']}
-    - {role: x_bang, tags: ['x_bang']}
-    - {role: sesame, tags: ['sesame']}
-    - {role: mongo, tags: ['mongo']}
-# for phone talking to bigasterisk.com at home
-    - {role: map_mqtt_receiver, tags: ['map_mqtt_receiver']}
-    - {role: checkvistpost, tags: ['checkvistpost']}
     - {role: supervisord_local, tags: ['supervisord_local']}
-    - {role: photo, tags: ['photo']}
+    - {role: elastic, tags: ['elastic']}
+    - {role: graphite, tags: ['graphite']}
+    - {role: mongo, tags: ['mongo']}
+    - {role: sesame, tags: ['sesame']}
+    - {role: ajaxterm, tags: ['ajaxterm']}
+    - {role: blog, tags: ['blog']}
+    - {role: checkvistpost, tags: ['checkvistpost']}
+    - {role: collectd, tags: ['collectd']}
+    - {role: dovecot_home, tags: ['dovecot_home']}
+    - {role: dropbox, tags: ['dropbox']}
+    - {role: hosts, tags: ['hosts']}
+    - {role: mail_bang, tags: ['mail']}
+    - {role: map_mqtt_receiver, tags: ['map_mqtt_receiver']} # for phone talking to bigasterisk.com at home
+    - {role: minetest_server, tags: ['minetest_server']}
     - {role: network_bigasterisk_gateway, tags: ['network_bigasterisk_gateway']}
     - {role: nginx_ssl_certs, tags: ['nginx_ssl_certs']}
-    - {role: dropbox, tags: ['dropbox']}
-    - {role: dovecot_home, tags: ['dovecot_home']}
-    - {role: ruler, tags: ['ruler']}
-    - {role: ruler_server, tags: ['ruler']}
-    - {role: ruler_client, tags: ['ruler']}
-    - {role: ajaxterm, tags: ['ajaxterm']}
-    - {role: shortener, tags: ['shortener']}
-    - {role: collectd, tags: ['collectd']}
-    - {role: graphite, tags: ['graphite']}
-    - {role: minetest_server, tags: ['minetest_server']}
-    - {role: mail_bang, tags: ['mail']}
-    - {role: elastic, tags: ['elastic']}
-    - {role: blog, tags: ['blog']}
+    - {role: photo, tags: ['photo']}
     - {role: photo_worker, tags: ['photo_worker']}
+    - {role: ruler, tags: ['ruler']}
+    - {role: ruler_client, tags: ['ruler']}
+    - {role: ruler_server, tags: ['ruler']}
+    - {role: shortener, tags: ['shortener']}
+    - {role: x_bang, tags: ['x_bang']}
     
   tasks:
     - apt: pkg=nginx-extras
@@ -99,15 +98,20 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: cups, tags: ['cups']}
     - {role: supervisord, tags: ['supervisord']}
+    - {role: collectd, tags: ['collectd']}
+    - {role: cups, tags: ['cups']}
     - {role: mail_relay, tags: ['mail_relay']}
     - {role: photo_worker, tags: ['photo_worker']}
-    - {role: ruler_server, tags: ['ruler']}
     - {role: ruler_client, tags: ['ruler']}
-    - {role: collectd, tags: ['collectd']}
+    - {role: ruler_server, tags: ['ruler']}
   tasks:
-    - include: tasks/dash_processes.yml
+    - supervisor_process_mod:
+        name=picinput_11008
+        directory=/home/drewp/projects-local/ffg
+        command=/home/drewp/projects-local/ffg/bin/picInput
+        user=drewp
+      notify: supervisord update
 
 - hosts: slash
   handlers:
@@ -136,17 +140,15 @@
   roles:
     - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
     - {role: ari_room_screen, tags: ['ari_room_screen']}
-    - {role: x11servescreen, tags: ['x11servescreen']}
     - {role: audio_input_levels, tags: ['audio_input_levels']}
-#    - {role: raspi_airport_speaker, tags: ['raspi_airport_speaker']}
+    - {role: x11servescreen, tags: ['x11servescreen']}
+
 
 - hosts: star
   handlers:
     - include: handlers/main.yml
   roles:
     - { role: webcam, camName: 'printer', port: 9016, config: 'star.json', tags: ['webcam'] }
-  tasks:
-    - include: tasks/star_processes.yml
       
 - hosts: stor
   gather_facts: no
@@ -189,12 +191,12 @@
     - include: handlers/main.yml
   roles:
     - {role: pi_users, tags: ['pi_users']}    
-    - {role: hosts, tags: ['hosts']}
     - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
-    - {role: raspi_airport_speaker, tags: ['raspi_speaker']}
+    - {role: hosts, tags: ['hosts']}
     - {role: pigpio, tags: ['pigpio']}
-    - {role: raspi_ws2812, tags: ['raspi_ws2812']}
+    - {role: raspi_airport_speaker, tags: ['raspi_speaker']}
     - {role: raspi_io_node, tags: ['raspi_io_node']}    
+    - {role: raspi_ws2812, tags: ['raspi_ws2812']}
 
 - hosts: pi
   handlers:
