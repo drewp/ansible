@@ -85,7 +85,7 @@
     - {role: photo_worker, tags: ['photo_worker']}
     
   tasks:
-    - apt: pkg=nginx
+    - apt: pkg=nginx-extras
       tags: ['nginx']
     - service: name=nginx enabled=no
       tags: ['nginx']
