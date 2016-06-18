@@ -182,6 +182,7 @@
     - {role: speech_music, tags: ['speech_music']}
     - {role: mpdweb, tags: ['mpdweb']}
     # - mpdpandorafeeder # not working yet
+    - {role: pianobar_web, tags: ['pianobar_web']}
 
 - hosts: pi
   handlers:

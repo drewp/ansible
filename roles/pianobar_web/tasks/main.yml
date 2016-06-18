@@ -1,0 +1,3 @@
+---
+- apt: pkg=pianobar
+- git: repo=https://github.com/david4shure/Pianobar-Web.git dest=/opt/pianobar_web
