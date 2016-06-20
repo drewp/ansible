@@ -1,25 +1,32 @@
 ---
 
 - set_fact: openidProxyAddr="http://bang:9023"
+  name: set openidProxyAddr
   tags: ['ruler-check']
 
-- set_fact: upstreamTarget="http://{{serverHost}}.bigasterisk.com:{{port}}{{upstreamPath}}"
+- set_fact: upstreamTarget="http://{{serverHost}}.bigasterisk.com:{{internalPort}}{{upstreamPath}}"
+  name: set upstreamTarget  
   tags: ['ruler-check']
 
-- set_fact: upstreamTarget="http://[fc9d:ce7a:c40:7dac:439b:289c:dd2d:5101]:{{port}}{{upstreamPath}}"
+- set_fact: upstreamTarget="http://[fc9d:ce7a:c40:7dac:439b:289c:dd2d:5101]:{{internalPort}}{{upstreamPath}}"
+  name: set upstreamTarget to brace  
   when: serverHost == "brace"
 
 - set_fact: proxyTarget="{{openidProxyAddr}}{{path}}"
+  name: set proxyTarget   
   tags: ['ruler-check']
 - set_fact: proxyTarget="{{upstreamTarget}}"
+  name: set proxyTarget   
   when: openid == "no"
   tags: ['ruler-check']
 
 - set_fact: nginxLocation="proxy_pass {{proxyTarget}}; "
+  name: set nginxLocation  
   tags: ['ruler-check']
 - debug: msg="accessLog={{ accessLog }} openid={{ openid }}"
   tags: ['ruler-check']
 - set_fact: accessLogLine="{{'' if accessLog else 'access_log off; '}}"
+  name: set accessLogLine
   tags: ['ruler-check']
 
 - include: setup_directories.yml
@@ -35,9 +42,9 @@
 
   # this might end up on another host
 
-# note that user may be overridden by arg_dict_string sometimes
+# note that user may be overridden by arg_dict sometimes
 - supervisor_process_mod:
-    name="{{ name }}_{{ port }}"
+    name="{{ name }}_{{ internalPort }}"
     user=drewp
     arg_dict="{{process}}"
   notify: supervisord update

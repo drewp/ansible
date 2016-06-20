@@ -20,7 +20,7 @@
   roles:
     - role: site
       name: 'heist_querytransactions'
-      port: "10003"
+      internalPort: "10003"
       path: "/heist/"
       openid: "admin"
       serverHost: "bang"
@@ -33,7 +33,7 @@
       path: "/darcs/"
       openid: "anonymous"
       serverHost: "bang"
-      port: "8004"
+      internalPort: "8004"
       root_page_timeout_secs: 10
       process:
         directory: "/my/site/darcsweb"
@@ -45,7 +45,7 @@
       path: "/href/"
       openid: "anonymous"
       serverHost: "bang"
-      port: "10002"
+      internalPort: "10002"
       process:
         directory: "/my/proj/href"
         command: "/my/proj/href/run"
@@ -56,7 +56,7 @@
 #      openid: "admin"
 #      serverHost: "bang"
 #      accessLog: false
-#      port: "10001"
+#      internalPort: "10001"
 #      process:
 #        directory: "/my/proj/homeauto/service/thermostat"
 #        command: "/my/proj/homeauto/service/thermostat/bin/python thermostat.py"
@@ -67,7 +67,7 @@
       path: "/babysitcoop/"
       openid: "anonymous"
       serverHost: "bang"
-      port: "3002"
+      internalPort: "3002"
       process:
         directory: "/my/proj/babysitcoop"
         command: "/my/proj/babysitcoop/bin/python babysitcoop.py"
@@ -78,7 +78,7 @@
       path: "/jmbc/"
       openid: "anonymous"
       serverHost: "bang"
-      port: "3004"
+      internalPort: "3004"
       process:
         directory: "/my/proj/babysitcoop_jm"
         environment: "BABYSIT_INSTANCE=jm"
@@ -86,11 +86,12 @@
         
     - role: site
       name: 'bigfoaf'
+      tags: ['bigfoaf']
       path: "/foaf/"
       upstreamPath: "/foaf/"
       openid: "admin"
       serverHost: "bang"
-      port: "3003"
+      internalPort: "3003"
       process:
         directory: "/my/proj/bigfoaf"
         command: "/my/proj/bigfoaf/bin/python bigfoaf.py"
@@ -100,7 +101,7 @@
       path: "/diary/"
       openid: "admin"
       serverHost: "bang"
-      port: "9048" # also talks jabber
+      internalPort: "9048" # also talks jabber
       process:
         directory: "/my/proj/diarybot"
         command: "/my/proj/diarybot/start"
@@ -111,7 +112,7 @@
       path: "/wesabe/"
       openid: "admin"
       serverHost: "bang"
-      port: "9044"
+      internalPort: "9044"
       root_page_timeout_secs: 10
       process:
         directory: "/my/proj/wesabe-rdf"
@@ -122,7 +123,7 @@
       path: "/search/"
       openid: "admin"
       serverHost: "bang"
-      port: "9096"
+      internalPort: "9096"
       process:
         directory: "/my/proj/search"
         command: "java -jar /my/proj/search/target/search-assembly-1.7.jar 9096"
@@ -134,7 +135,7 @@
       path: "/search/files/"
       openid: "admin"
       serverHost: "bang"
-      port: "9089"
+      internalPort: "9089"
       process:
         directory: "/my/proj/fsindex"
         command: "/my/proj/fsindex/bin/python fsindex.py"
@@ -145,7 +146,7 @@
       path: "/"
       openid: "anonymous"
       serverHost: "bang"
-      port: "9109"
+      internalPort: "9109"
       domain: "whopickedthis.com"
       useWebsocketPath: "yes"
       process:
@@ -157,7 +158,7 @@
       path: "/qrnotifyme/"
       openid: "anonymous"
       serverHost: "bang"
-      port: "9107"
+      internalPort: "9107"
       process:
         directory: "/my/proj/qrnotifyme"
         command: "/my/proj/qrnotifyme/bin/python qrnotifyme.py"
@@ -167,7 +168,7 @@
       path: "/heist/"
       openid: "admin"
       serverHost: "bang"
-      port: "10003"
+      internalPort: "10003"
       process:
         directory: "/my/proj/heist"
         command: "/my/proj/heist/bin/python querytransactions.py"
@@ -177,7 +178,7 @@
       path: "/jessicaanddavidswedding/"
       openid: "no"
       serverHost: "bang"
-      port: "3190"
+      internalPort: "3190"
       process:
         directory: "/home/dmcc/wedding"
         command: "/home/dmcc/wedding/env/bin/python server_http.py"
@@ -188,7 +189,7 @@
       path: "/firedata/"
       openid: "no"
       serverHost: "bang"
-      port: "3191"
+      internalPort: "3191"
       root_page_timeout_secs: 5
       process:
         directory: "/my/proj/firedata"
@@ -199,7 +200,7 @@
       name: 'firedata_zipborders'
       path: '/firedata/zipborders/'
       serverHost: "bang"
-      port: "3192"
+      internalPort: "3192"
       process:
         directory: "/my/proj/firedata"
         command: "/usr/bin/coffee zipborders.coffee"
@@ -209,7 +210,7 @@
       name: 'colorcast'
       path: '/colorcast/'
       serverHost: "bang"
-      port: "9094"
+      internalPort: "9094"
       process:
         directory: "/my/proj/colorcast"
         command: "/my/proj/colorcast/bin/python getcolors.py"
@@ -219,7 +220,7 @@
       name: 'daily'
       path: '/daily/'
       serverHost: "bang"
-      port: "9111"
+      internalPort: "9111"
       process:
         directory: "/my/proj/pimscreen/daily"
         command: "/my/proj/pimscreen/bin/python daily.py"
@@ -231,7 +232,7 @@
       path: "/timebank/"
       openid: "admin"
       serverHost: "bang"
-      port: "10006"
+      internalPort: "10006"
       process:
         directory: "/my/proj/ariRoom"
         command: "/my/proj/ariRoom/bin/python timebank.py"
@@ -242,7 +243,7 @@
       path: "/dhcpleases/"
       openid: "admin"
       serverHost: "bang"
-      port: "9073"
+      internalPort: "9073"
       process:
         directory: "/my/proj/homeauto/service/dhcpleases/"
         command: "/my/proj/homeauto/service/dhcpleases/bin/python dhcpleases.py"
@@ -253,7 +254,7 @@
       path: "/wifi/"
       openid: "admin"
       serverHost: "bang"
-      port: "9070"
+      internalPort: "9070"
       process:
         directory: "/my/proj/homeauto/service/tomatoWifi/"
         command: "/my/proj/homeauto/service/tomatoWifi/bin/python tomatoWifi.py"
@@ -264,7 +265,7 @@
       path: "/magma/"
       openid: "admin"
       serverHost: "bang"
-      port: "8010"
+      internalPort: "8010"
       process:
         directory: "/my/site/magma/"
         command: "/my/site/magma/env/bin/python serve_magma.py"
@@ -275,7 +276,7 @@
       path: "/arduino/bang/"
       openid: "admin"
       serverHost: "bang"
-      port: "9059"
+      internalPort: "9059"
       useWebsocketPath: "yes"
       process:
         directory: "/my/proj/homeauto/service/arduinoNode/"
@@ -287,7 +288,7 @@
       path: "/gcalendarwatch/"
       openid: "admin"
       serverHost: "bang"
-      port: "9105"
+      internalPort: "9105"
       process:
         environment: "HOME=/home/drewp"
         directory: "/my/proj/pimscreen"
@@ -308,7 +309,7 @@
       path: "/arduino/brace/"
       openid: "admin"
       serverHost: "brace"
-      port: "9059"
+      internalPort: "9059"
       useWebsocketPath: "yes"
       process:
         directory: "/my/proj/homeauto/service/arduinoNode/"
@@ -325,7 +326,7 @@
       path: "/arduino/slash/"
       openid: "admin"
       serverHost: "slash"
-      port: "9059"
+      internalPort: "9059"
       useWebsocketPath: "yes"
       process:
         directory: "/my/proj/homeauto/service/arduinoNode/"
