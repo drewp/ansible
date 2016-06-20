@@ -191,19 +191,15 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: pi_users, tags: ['pi_users']}    
+    - {role: pi_users, tags: ['pi_users']}
     - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
     - {role: hosts, tags: ['hosts']}
     - {role: pigpio, tags: ['pigpio']}
     - {role: raspi_airport_speaker, tags: ['raspi_speaker']}
     - {role: raspi_io_node, tags: ['raspi_io_node']}    
     - {role: raspi_ws2812, tags: ['raspi_ws2812']}
-
-- hosts: pi
-  handlers:
-    - include: handlers/main.yml
-  roles:
     - {role: raspi_cam, tags: ['raspi_cam']}
+    - {role: raspi_shell, tags: ['raspi_shell']}
   
 - hosts: with_x11
   handlers:
