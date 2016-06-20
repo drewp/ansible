@@ -120,9 +120,9 @@
   roles:
     - {role: supervisord, tags: ['supervisord']}
     - {role: photo_worker, tags: ['photo_worker']}
-    - { role: webcam, camName: 'c0', port: 9020, config: 'slash.json' }
-#    - { role: webcam, camName: 'frontDoor', port: 9023, config: 'slash4.json' }
-#    - { role: webcam, camName: 'livingRoom', port: 9025, config: 'slash5.json' }
+    - { role: webcam, tags: ['webcam'], camName: 'c0', internalPort: 9020, config: 'slash.json' }
+#    - { role: webcam, tags: ['webcam'], camName: 'frontDoor', internalPort: 9023, config: 'slash4.json' }
+#    - { role: webcam, tags: ['webcam'], camName: 'livingRoom', internalPort: 9025, config: 'slash5.json' }
   tasks:
     - include: tasks/slash_processes.yml
 
@@ -149,7 +149,7 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - { role: webcam, camName: 'printer', port: 9016, config: 'star.json', tags: ['webcam'] }
+    - { role: webcam, camName: 'printer', internalPort: 9016, config: 'star.json', tags: ['webcam'] }
       
 - hosts: stor
   gather_facts: no
