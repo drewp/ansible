@@ -39,7 +39,7 @@
 - supervisor_process_mod:
     name="{{ name }}_{{ port }}"
     user=drewp
-    arg_dict_string="{{process}}"
+    arg_dict="{{process}}"
   notify: supervisord update
 
 - template:

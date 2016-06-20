@@ -113,16 +113,13 @@ def main():
     for p in process_params:
         args[p] = dict()
     args['name'] = {'required': True}
-    args['arg_dict_string'] = dict(
-        doc='string of python code that evaluates to a '
-        'dictionary. These dict keys will replace other '
-        'param values.')
+    args['arg_dict'] = dict(doc='dict of additional params')
     module = AnsibleModule(
         argument_spec = args,
         supports_check_mode=True
     )
-    if module.params['arg_dict_string']:
-        module.params.update(ast.literal_eval(module.params['arg_dict_string']))
+    if module.params['arg_dict']:
+        module.params.update(module.params['arg_dict'])
 
     changed1, outPath = writeSupervisorProcessDescription(module)
 
