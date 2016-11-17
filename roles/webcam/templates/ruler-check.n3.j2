@@ -1,0 +1,8 @@
+@prefix : <http://bigasterisk.com/ruler/ns#> .
+@prefix check: <http://bigasterisk.com/ruler/check/> .
+@prefix host: <http://bigasterisk.com/ruler/host/> .
+
+check:webcam{{camName.capitalize()}}
+  a :HttpCheck;
+  :testUri "https://bigasterisk.com/cam/source/{{camName}}/{{camName}}"
+.

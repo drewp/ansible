@@ -1,0 +1,13 @@
+@prefix : <http://bigasterisk.com/openid_proxy#> .
+@prefix site: <http://bigasterisk.com/openidProxySite/> .
+@prefix acl: <http://www.w3.org/ns/auth/acl#> .
+
+site:webcam{{camName.capitalize()}}
+  a :Websocket;
+  :host "bigasterisk.com";
+  :requestPrefix "/cam/source/{{camName}}/";
+  :proxyUrlPrefix "http://{{ansible_hostname}}.bigasterisk.com:{{internalPort}}/" .
+
+:admin1 acl:accessTo site:webcam{{camName.capitalize()}} .
+:admin2 acl:accessTo site:webcam{{camName.capitalize()}} .
+

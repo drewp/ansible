@@ -1,0 +1,32 @@
+---
+
+- file: state=directory path=/opt/beacon_env
+- apt: pkg=build-essential
+- apt: pkg=python-dev
+- apt: pkg=bluez
+- apt: pkg=libbluetooth-dev
+
+- synchronize:
+    src=/my/proj/homeauto/service/beacon/
+    dest=/opt/beacon
+    archive=yes
+    delete=yes
+
+- pip:
+    chdir=/opt/beacon_env
+    requirements=/opt/beacon/requirements.txt
+    virtualenv=/opt/beacon_env
+
+- set_fact: bang_addr="bang6"
+
+- set_fact: bang_addr="bang"
+  when: "ansible_default_ipv4['network'] == '10.1.0.0'"
+
+- supervisor_process_mod:
+    name=rssiscan
+    user=root
+    directory=/opt/beacon
+    command="/opt/beacon_env/bin/python /opt/beacon/rssiscan.py {{bang_addr}} {{ansible_hostname}}"
+  notify:
+    - supervisord update
+  
