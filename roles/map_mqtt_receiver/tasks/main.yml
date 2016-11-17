@@ -21,7 +21,11 @@
   when: inventory_hostname == "prime"
 - copy: dest="/my/site/maps/RSYNC_DELETE_RUNS_IN_HERE" content="don't add files on this side!"
   when: inventory_hostname == "prime"
-- command: make chdir=/my/site/maps
+
+
+- apt: pkg=npm
+- name: make
+  command: make chdir=/my/site/maps
   when: inventory_hostname == "prime"
 
 # this can be run on bang too, but I'm trying it on prime since I had

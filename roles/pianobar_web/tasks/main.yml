@@ -1,3 +1,38 @@
 ---
-- apt: pkg=pianobar
+
+- set_fact: music_playing_user=drewp
+- set_fact: music_playing_user=pi
+  when: ansible_distribution == "Debian"
+
+- file: state=directory path=/opt/pianobar_env
+- copy: dest=/opt/pianobar_env/requirements.txt src=requirements.txt
+- pip:
+    chdir=/opt/pianobar_env
+    requirements=/opt/pianobar_env/requirements.txt
+    virtualenv=/opt/pianobar_env
+
 - git: repo=https://github.com/david4shure/Pianobar-Web.git dest=/opt/pianobar_web
+- file: path=/home/{{music_playing_user}}/.config state=directory owner={{music_playing_user}}
+- file: path=/home/{{music_playing_user}}/.config/pianobar state=directory owner={{music_playing_user}}
+- copy: dest=/home/{{music_playing_user}}/.config/pianobar/config src=config
+
+- copy: dest=/opt/pianobar_web/pianobar_web_local.py src=pianobar_web.py
+- copy: dest=/opt/pianobar_web/login.secret src=login.secret
+
+- copy: dest=/etc/libao.conf content="default_driver=pulse\nquiet\n"
+
+- supervisor_process_mod:
+    name=pianobar_web_8080
+    directory=/opt/pianobar_web
+    autostart=true
+    user={{music_playing_user}}
+    startsecs=5
+    command="/opt/pianobar_env/bin/python pianobar_web_local.py"
+  notify: supervisord update
+
+- template:
+    dest=/var/lib/openid_proxy.d/pianobar_{{ansible_hostname}}.n3
+    src=openid_proxy_statements.n3.j2
+  notify: openid_proxy restart    
+  delegate_to: bang
+

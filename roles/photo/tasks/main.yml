@@ -1,7 +1,7 @@
 ---
 
 - apt: pkg=python-twisted
-- apt: pkg=libav-tools-links
+- apt: pkg=libav-tools
 - apt: pkg=exif
 - apt: pkg=libimage-exiftool-perl
 

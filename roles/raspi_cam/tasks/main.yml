@@ -19,6 +19,7 @@
     name=cam_8208
     directory=/opt/cam
     autostart=true
+    startretries=3
     user=root
     command="/opt/cam_env/bin/python picamserve"
   notify: supervisord update

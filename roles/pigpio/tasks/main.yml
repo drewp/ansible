@@ -6,3 +6,5 @@
 
 - apt: pkg=pigpio
 - service: name=pigpiod enabled=yes state=started
+- apt: pkg=python-pigpio
+  

@@ -83,6 +83,7 @@
     - {role: ruler_server, tags: ['ruler']}
     - {role: shortener, tags: ['shortener']}
     - {role: x_bang, tags: ['x_bang']}
+    - {role: influxdb, tags: ['influxdb']}
     
   tasks:
     - apt: pkg=nginx-extras
@@ -106,6 +107,7 @@
     - {role: photo_worker, tags: ['photo_worker']}
     - {role: ruler_client, tags: ['ruler']}
     - {role: ruler_server, tags: ['ruler']}
+    - { role: webcam, tags: ['webcam'], camName: 'dash', internalPort: 9016, config: 'dash.json' }
   tasks:
     - supervisor_process_mod:
         name=picinput_11008
@@ -120,9 +122,7 @@
   roles:
     - {role: supervisord, tags: ['supervisord']}
     - {role: photo_worker, tags: ['photo_worker']}
-    - { role: webcam, tags: ['webcam'], camName: 'c0', internalPort: 9020, config: 'slash.json' }
-#    - { role: webcam, tags: ['webcam'], camName: 'frontDoor', internalPort: 9023, config: 'slash4.json' }
-#    - { role: webcam, tags: ['webcam'], camName: 'livingRoom', internalPort: 9025, config: 'slash5.json' }
+    - { role: webcam, tags: ['webcam'], camName: 'printer', internalPort: 9020, config: 'slash.json' }
   tasks:
     - include: tasks/slash_processes.yml
 
@@ -191,6 +191,7 @@
   handlers:
     - include: handlers/main.yml
   roles:
+    - {role: raspi_network, tags: ['raspi_network']}
     - {role: pi_users, tags: ['pi_users']}
     - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
     - {role: hosts, tags: ['hosts']}
@@ -200,7 +201,26 @@
     - {role: raspi_ws2812, tags: ['raspi_ws2812']}
     - {role: raspi_cam, tags: ['raspi_cam']}
     - {role: raspi_shell, tags: ['raspi_shell']}
-  
+
+- hosts: living
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - {role: audio_input_levels, tags: ['audio_input_levels']}
+    - { role: webcam, tags: ['webcam'], camName: 'livingRoom', internalPort: 9016, config: 'living.json' }
+
+- hosts: changing
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - { role: webcam, tags: ['webcam'], camName: 'crib', internalPort: 9016, config: 'changing.json' }
+
+- hosts: with_ble
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - {role: beacon_scan, tags: ['beacon_scan']}  
+    
 - hosts: with_x11
   handlers:
     - include: handlers/main.yml

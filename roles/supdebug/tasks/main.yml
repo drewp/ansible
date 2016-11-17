@@ -6,8 +6,12 @@
 #- name: initial checkout
 #  command: darcs get ... creates=/opt/supdebug/_darcs
 #- name: update
-#  command: darcs pull ...
+#  command: darcs pull...
 
+# for first-time install
+- apt: update_cache=yes
+  
+- apt: pkg=rsync 
 - synchronize: src=/my/proj/supdebug/ dest=/opt/supdebug archive=yes delete=yes 
 
 - apt: pkg=python-virtualenv state=installed

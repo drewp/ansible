@@ -77,7 +77,7 @@ smtpd_tls_auth_only = yes
 
 queue_directory = /var/spool/postfix
 
-virtual_alias_domains = adkinslawgroup.com iveseenyoubefore.com fantasyfamegame.com maxradi.us whopickedthis.com quickwitretort.com drewp.quickwitretort.com kelsi.quickwitretort.com photo.bigasterisk.com whatsplayingnext.com         
+virtual_alias_domains = adkinslawgroup.com iveseenyoubefore.com fantasyfamegame.com maxradi.us whopickedthis.com quickwitretort.com drewp.quickwitretort.com kelsi.quickwitretort.com photo.bigasterisk.com whatsplayingnext.com williamperttula.com        
 
 virtual_alias_maps = hash:/etc/postfix/virtual
 

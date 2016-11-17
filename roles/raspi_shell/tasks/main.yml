@@ -2,3 +2,8 @@
 - file: owner=pi dest=/home/pi/.aptitude state=directory
 - copy: owner=pi dest=/home/pi/.aptitude/config src=aptitude-config
 - copy: owner=pi dest=/home/pi/.bash_aliases src=bash_aliases
+
+- copy: content="America/Los_Angeles" dest=/etc/timezone
+  notify:
+    - update timezone
+

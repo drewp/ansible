@@ -5,7 +5,7 @@
 site:supdebug{{ansible_hostname.capitalize()}}
   :host "bigasterisk.com";
   :requestPrefix "/supdebug/{{ansible_hostname}}/";
-  :proxyUrlPrefix "http://{{ansible_hostname}}:10004/" .
+  :proxyUrlPrefix "http://{{ansible_hostname}}.bigasterisk.com:10004/" .
 
 :admin1 acl:accessTo site:supdebug{{ansible_hostname.capitalize()}} .
 :admin2 acl:accessTo site:supdebug{{ansible_hostname.capitalize()}} .

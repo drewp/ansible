@@ -8,13 +8,16 @@
 - apt: pkg=build-essential
 - apt: pkg=python-dev
 - apt: pkg=libffi-dev
-
+- apt: pkg=git
+  
 - synchronize:
     src=/my/proj/homeauto/service/piNode/
     dest=/opt/piNode
     archive=yes
     delete=yes
-  
+
+
+# may need to 'pip install -U setuptools' in here first
 - pip:
     chdir=/opt/piNode_env
     requirements=/opt/piNode/requirements.txt
@@ -30,7 +33,9 @@
 - lineinfile: dest=/etc/modules line="ipv6"
 
 # using 1-wire? (piNode program knows if this is the case)
-#- lineinfile: dest=/boot/config.txt line="dtoverlay=w1-gpio,gpiopin=17,pullup=y"
+- lineinfile: dest=/boot/config.txt line="dtoverlay=w1-gpio,gpiopin=17,pullup=y"
+  when: inventory_hostname in ["kitchen", "living", "garage"]
+
 
 - supervisor_process_mod:
     name=piNode_9059

@@ -96,19 +96,25 @@ LoadPlugin users
 {% endif %}
 </Plugin>
 
-<Plugin write_graphite>
-	<Node "bang">
-		Host "bang"
-		Port "2003"
-		Protocol "tcp"
-		LogSendErrors true
-		Prefix "collectd."
-		Postfix ""
-		StoreRates false
-		AlwaysAppendDS false
-		EscapeCharacter "_"
-	</Node>
+
+LoadPlugin network
+<Plugin "network">
+    Server "bang" "9066"
 </Plugin>
+
+#<Plugin write_graphite>
+#	<Node "bang">
+#		Host "bang"
+#		Port "2003"
+#		Protocol "tcp"
+#		LogSendErrors true
+#		Prefix "collectd."
+#		Postfix ""
+#		StoreRates false
+#		AlwaysAppendDS false
+#		EscapeCharacter "_"
+#	</Node>
+#</Plugin>
 
 #<Plugin java>
 #	JVMArg "-verbose:jni"

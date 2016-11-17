@@ -14,25 +14,25 @@
   notify: supervisord update
   tags: ['nginx']
 
-- apt: pkg=tahoe-lafs
-  tags: ['tahoe']
-- supervisor_process_mod: 
-    name=tahoe_home_8123
-    directory=/opt/tahoe/home
-    command="/usr/bin/tahoe run -C /opt/tahoe/home"
-    user=drewp
-    autostart=true
-  notify: supervisord update
-  tags: ['tahoe']
+#- apt: pkg=tahoe-lafs
+#  tags: ['tahoe']
+#- supervisor_process_mod: 
+#    name=tahoe_home_8123
+#    directory=/opt/tahoe/home
+#    command="/usr/bin/tahoe run -C /opt/tahoe/home"
+#    user=drewp
+#    autostart=true
+#  notify: supervisord update
+#  tags: ['tahoe']
 
  
-- supervisor_process_mod: 
-    name=tahoe_home_introducer_54260
-    command=/opt/tahoe/home-introducer/run
-    user=drewp
-    autostart=true
-  notify: supervisord update
-  tags: ['tahoe']
+#- supervisor_process_mod: 
+#    name=tahoe_home_introducer_54260
+#    command=/opt/tahoe/home-introducer/run
+#    user=drewp
+#    autostart=true
+#  notify: supervisord update
+#  tags: ['tahoe']
 
 # unused
 #- supervisor_process_mod: 
@@ -193,9 +193,9 @@
   tags: ['cmd']
 
 - supervisor_process_mod: 
-    name=pim_netbars2graphite
+    name=pim_netbars2influxdb
     directory=/tmp
-    command="/my/proj/netbars/install-env/bin/python /my/proj/netbars/install-env/bin/netbars2graphite"
+    command="/my/proj/netbars/install-env/bin/python /my/proj/netbars/install-env/bin/netbars2influxdb"
     user=drewp
     autorestart=true
   notify: supervisord update
@@ -207,14 +207,6 @@
     command="ionice -c 3 /my/proj/pimscreen/bin/python ./maildirwatch"
     user=drewp
     
-  notify: supervisord update
-  tags: ['pim']
-
-- supervisor_process_mod: 
-    name=openid_recentvisitors_9068
-    directory=/my/proj/openid_proxy
-    command="/my/proj/openid_proxy/bin/python recentvisitors.py 9068"
-    user=drewp
   notify: supervisord update
   tags: ['pim']
 

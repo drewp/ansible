@@ -113,13 +113,13 @@ def main():
     for p in process_params:
         args[p] = dict()
     args['name'] = {'required': True}
-    args['arg_dict'] = dict(doc='dict of additional params')
+    args['arg_dict'] = dict(doc='dict of additional params') # or a repr sometimes; it's changed twice with ansible versions so far
     module = AnsibleModule(
         argument_spec = args,
         supports_check_mode=True
     )
     if module.params['arg_dict']:
-        module.params.update(module.params['arg_dict'])
+        module.params.update(ast.literal_eval(module.params['arg_dict']))
 
     changed1, outPath = writeSupervisorProcessDescription(module)
 

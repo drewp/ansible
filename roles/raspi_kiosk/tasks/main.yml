@@ -1,8 +1,20 @@
 ---
 
+# boot-to-x:
+# Created symlink from /etc/systemd/system/default.target to /lib/systemd/system/graphical.target.
+
+
+# for chromium instead, per https://drive.google.com/file/d/0B2X5T2P-KI8mUVNGSlVhYjVnNGc/view
+#  wget -qO - http://bintray.com/user/downloadSubjectPublicKey\?username\=bintray | sudo apt-key add -
+#  echo "deb http://dl.bintray.com/kusti8/chromium-rpi jessie main" | sudo tee -a /etc/apt/sources.list
+#  aptitude install chromium-browser
+
+
 - apt: pkg=iceweasel
 
 - copy: src=firefox.desktop dest=/home/pi/.config/autostart/firefox.desktop
+
+# need julia for this one
 - copy: src=pir_screen.desktop dest=/home/pi/.config/autostart/pir_screen.desktop
 
 # somehow install https://addons.mozilla.org/en-US/firefox/addon/r-kiosk/?src=api
@@ -18,4 +30,5 @@
     line='user_pref("browser.startup.homepage", "https://bigasterisk.com/");'
 
 - copy: src=/my/proj/raspberry_pi_kiosk/pir_screen.jl dest=/home/pi/
-  
+
+- copy: src=wpa_supplicant.conf dest=/etc/wpa_supplicant/wpa_supplicant.conf

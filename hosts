@@ -11,6 +11,10 @@ living
 changing
 piedmont ansible_ssh_host=10.2.0.40
 bling
+garage ansible_ssh_host=10.1.0.124
+#downbath  ansible_ssh_host=10.1.0.103
+frontdoor 
+bed
 
 [big]
 dash
@@ -29,6 +33,19 @@ kitchen
 living
 changing
 piedmont
+headbot
+garage
+#downbath
+frontdoor
+
+[with_ble]
+changing
+bed
+dash
+bang
+living
+garage
+kitchen
 
 [with_speakers]
 dash
@@ -39,6 +56,7 @@ bang
 bed
 kitchen
 living
+headbot  ansible_ssh_host=10.1.0.104
 
 [with_x11]
 dash
@@ -47,6 +65,7 @@ brace
 
 [with_pi_cam]
 changing
+garage
 
 [with_removable_storage]
 dash

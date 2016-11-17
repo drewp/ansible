@@ -1,13 +1,35 @@
 ---
 - apt: pkg=python-gst0.10
 - apt: pkg=gstreamer0.10-plugins-good
+- apt: pkg=python-pil
+
+- file: state=directory path=/opt/webcam2
+- synchronize: src=/my/proj/webcam2/ dest=/opt/webcam2 archive=yes delete=yes 
+
 
 - name: webcam {{ camName }} serving on {{ internalPort }} with -c {{ config }}
   supervisor_process_mod:
     name=webcam_{{ camName }}_{{ internalPort }}
-    directory=/my/proj/webcam2
+    directory=/opt/webcam2
     user=drewp
     autostart=true
     autorestart=true
-    command="/my/proj/webcam2/{{ 'bin/python' if ansible_architecture == 'x86_64' else 'env32/bin/python' }} /my/proj/webcam2/gstgrab -c {{ config }}"
+    command="/opt/webcam2/{{ 'bin/python' if ansible_architecture == 'x86_64' else 'env32/bin/python' }} /opt/webcam2/gstgrab -c {{ config }}"
   notify: supervisord update
+  
+- name: route under /cam
+  template:
+    dest=/var/lib/openid_proxy.d/webcam_{{camName}}.n3
+    src=openid_proxy_statements.n3.j2
+  notify: openid_proxy restart    
+  delegate_to: bang
+
+- file: path=/var/lib/ruler.d/cam/ state=directory
+  delegate_to: bang
+
+- name: ruler check
+  template:
+    dest="/var/lib/ruler.d/cam/{{camName}}.n3"
+    src=ruler-check.n3.j2
+  delegate_to: bang
+# maybe also a ruler check on the local host

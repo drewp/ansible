@@ -6,14 +6,20 @@
 - apt_key: keyserver=keyserver.ubuntu.com id=B5115B98AA836CA8
 - apt_key: keyserver=keyserver.ubuntu.com id=0CD0F565F8CDAB41
 - apt_key: url=https://dl-ssl.google.com/linux/linux_signing_key.pub
-  
+- apt_key: url=https://repos.influxdata.com/influxdb.key
+
+- apt: pkg=apt-transport-https
+    
 - apt_repository: repo='deb [arch=amd64] https://dl-ssl.google.com/linux/chrome/deb/ stable main'
+  when: ansible_distribution != "Debian"
+
+- apt_repository: repo='deb https://repos.influxdata.com/ubuntu xenial stable'
   when: ansible_distribution != "Debian"
 
 # consider https://launchpad.net/~minetestdevs/+archive/ubuntu/daily-builds
 - apt_repository: repo='deb http://ppa.launchpad.net/minetestdevs/stable/ubuntu xenial main'
   when: ansible_distribution != "Debian"
-- apt_repository: repo='deb http://ppa.launchpad.net/sunab/kdenlive-release/ubuntu xenial main'
+- apt_repository: repo='ppa:kdenlive/kdenlive-testing'
   when: ansible_distribution != "Debian"
 - apt_repository: repo='ppa:thomas-schiex/blender'
   when: ansible_distribution != "Debian"

@@ -5,7 +5,7 @@
 site:rulerClient{{inventory_hostname.capitalize()}}
   :host "bigasterisk.com";
   :requestPrefix "/ruler/client/{{inventory_hostname}}/";
-  :proxyUrlPrefix "http://{{inventory_hostname}}:8101/" .
+  :proxyUrlPrefix "http://{{inventory_hostname}}.bigasterisk.com:8101/" .
 
 :admin1 acl:accessTo site:rulerClient{{inventory_hostname.capitalize()}} .
 :admin2 acl:accessTo site:rulerClient{{inventory_hostname.capitalize()}} .

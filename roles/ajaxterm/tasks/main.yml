@@ -1,6 +1,8 @@
 ---
+
+# consider switching to https://github.com/fgallaire/achilterm
+
 - apt: pkg=ajaxterm
-- command: systemctl disable ajaxterm.service
 - file: state=absent path=/etc/init.d/ajaxterm
 - file: state=absent path=/etc/default/ajaxterm
 - replace:

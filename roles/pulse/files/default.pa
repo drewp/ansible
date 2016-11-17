@@ -83,7 +83,7 @@ load-module module-native-protocol-unix auth-anonymous=1 socket=/tmp/pulseaudio
 ### Network access (may be configured with paprefs, so leave this commented
 ### here if you plan to use paprefs)
 #load-module module-esound-protocol-tcp
-#load-module module-native-protocol-tcp
+load-module module-native-protocol-tcp
 #load-module module-zeroconf-publish
 
 ### Load the RTP receiver module (also configured via paprefs, see above)
@@ -92,6 +92,12 @@ load-module module-native-protocol-unix auth-anonymous=1 socket=/tmp/pulseaudio
 ### Load the RTP sender module (also configured via paprefs, see above)
 #load-module module-null-sink sink_name=rtp format=s16be channels=2 rate=44100 sink_properties="device.description='RTP Multicast Sink'"
 #load-module module-rtp-send source=rtp.monitor
+#load-module module-rtp-send source=rtp.monitor destination=127.0.0.1 port=46998 loop=1
+# then, per https://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Network/RTP/#index6h2
+# keep this running
+# cvlc rtp://@127.0.0.1:46998 ":sout=#transcode{acodec=mp3,ab=256,channels=2}:duplicate{dst=rtp{dst=225.0.0.1,mux=ts,port=46999}}"
+# and listen with
+# vlc rtp://@225.0.0.1:46999
 
 ### Load additional modules from GConf settings. This can be configured with the paprefs tool.
 ### Please keep in mind that the modules configured by paprefs might conflict with manually
@@ -165,4 +171,27 @@ load-module module-filter-apply
 
 
 # serve config and sound streams on http://localhost:4714/
-#load-module module-http-protocol-tcp
+load-module module-http-protocol-tcp
+
+load-module module-cli-protocol-unix
+
+
+# 2016-06-02 stream solution so far
+# curl  http://localhost:4714/status
+# to learn 'alsa_input.pci-0000_00_1b.0.analog-stereo'
+# run this forever:
+#  cvlc -vvvv pulse://alsa_input.pci-0000_00_07.0.analog-stereo ':sout=#transcode{vcodec=none,acodec=vorb,ab=32,channels=2,samplerate=22050}:rtp{sdp=rtsp://:8554/}' ':sout-keep'
+# this touches the other side but then gives up
+#  vlc rtsp://brace6:8554/
+# But android version works.
+## live555 demux debug: connection timeout
+## live555 demux error: Failed to connect with rtsp://brace6:8554/
+## core demux debug: no access_demux modules matched
+## core input debug: creating access 'rtsp' location='brace6:8554/', path='(null)'
+## core access debug: looking for access module matching "rtsp": 25 candidates
+## core access debug: net: connecting to brace6 port 8554
+## core access debug: connection succeeded (socket = 17)
+## access_realrtsp access debug: rtsp connected
+## access_realrtsp access warning: only real/helix rtsp servers supported for now
+## core access debug: no access modules matched
+## core input error: open of `rtsp://brace6:8554/' failed

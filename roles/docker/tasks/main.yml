@@ -1,4 +1,4 @@
 ---
 - apt_key: url="http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xD8576A8BA88D21E9" state=present
 - apt_repository: repo="deb http://get.docker.io/ubuntu docker main" state=present
-- apt: update_cache=yes pkg=lxc-docker=1.2.0
+- apt: update_cache=yes pkg=lxc-docker=1.9.1

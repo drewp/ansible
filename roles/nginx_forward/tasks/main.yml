@@ -1,7 +1,6 @@
 ---
 
-- apt_repository: repo=ppa:nginx/stable
-- apt: update_cache=yes pkg=nginx=1.8.0-1+trusty1 state=present
+- apt: pkg=nginx-extras state=present
 - name: do not use init.d to launch nginx
   service: name=nginx enabled=no
 

@@ -85,12 +85,14 @@
   notify: supervisord update
   tags: ['sites', 'blog']
 
+- apt: pkg=mini-httpd
+  tags: ['sites', 'adkins']
 - supervisor_process_mod: 
     name=adkins_9021
-    command="thttpd -p 9021 -d /my/site/adkinslawgroup/cgi -c * -D -l /tmp/adkins-thttpd.log -nos"
+    command="mini_httpd -p 9021 -d /my/site/adkinslawgroup/cgi -c * -D -l /tmp/adkins-thttpd.log"
     user=drewp
   notify: supervisord update
-  tags: ['sites']
+  tags: ['sites', 'adkins']
 
 - supervisor_process_mod: 
     name=sfd_9024
@@ -154,7 +156,7 @@
 - supervisor_process_mod: 
     name=webcam_snapshot_9057
     directory=/my/proj/httpsnapshot
-    command="/my/proj/httpsnapshot/bin/spawning -p 9057 -s 1 -t 0 snapshot.application"
+    command="/my/proj/httpsnapshot/bin/python snapshot.py"
     user=drewp
   notify: supervisord update
   tags: ['sites']

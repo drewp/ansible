@@ -4,18 +4,18 @@
 - file: path=/opt/mongo state=directory
 # https cert not working, maybe from https://github.com/ansible/ansible/issues/11579
 - get_url:
-    url=http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.0.7.tgz
-    dest=/opt/mongo/mongodb-linux-x86_64-3.0.7.tgz
+    url=http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.2.7.tgz
+    dest=/opt/mongo/mongodb-linux-x86_64-3.2.7.tgz
     validate_certs=False
-    sha256sum=823d78cba25d4aefe9a7aa150a6eefe4ae28d6b84a0af629c52af0d0921734ac
+    sha256sum=2161f7998e4c52faa999fbc1de1cb769efcaf8c3006abd9678ee8ecbf7ea625f
 - unarchive:
-    src=/opt/mongo/mongodb-linux-x86_64-3.0.7.tgz
+    src=/opt/mongo/mongodb-linux-x86_64-3.2.7.tgz
     dest=/opt/mongo
-    creates=/opt/mongo/mongodb-linux-x86_64-3.0.7/bin/mongod
+    creates=/opt/mongo/mongodb-linux-x86_64-3.2.7/bin/mongod
 
 - supervisor_process_mod: 
     name=mongo_29017
-    command="/opt/mongo/mongodb-linux-x86_64-3.0.7/bin/mongod --dbpath /opt/mongo-data --rest --httpinterface --journal"
+    command="/opt/mongo/mongodb-linux-x86_64-3.2.7/bin/mongod --dbpath /opt/mongo-data --httpinterface --ipv6 --smallfiles --wiredTigerCacheSizeGB 2"
     user=drewp
   notify: supervisord update
   tags: ['mongo']

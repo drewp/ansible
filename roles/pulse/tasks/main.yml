@@ -2,16 +2,30 @@
 
 - apt: pkg=pulseaudio
 - apt: pkg=pulseaudio-module-x11 state=absent
-- supervisor_process_mod:
-    name=pulseaudio
-    user=drewp
-    environment="USER=drewp,HOME=/home/drewp,XDG_RUNTIME_DIR=/run/user/501"
-    command="/usr/bin/pulseaudio"
-  notify:
-    - supervisord update
 
 - copy: dest=/etc/pulse/client.conf src=client.conf owner=root mode=0644
 - copy: dest=/etc/pulse/daemon.conf src=daemon.conf owner=root mode=0644
 - copy: dest=/etc/pulse/default.pa src=default.pa owner=root mode=0644
-
   
+- copy: dest=/etc/libao.conf content="default_driver=pulse\n"
+
+- set_fact: user="drewp"
+- set_fact: user="pi"
+  when: ansible_distribution == "Debian"
+
+- copy: dest=/opt/start_pulse content="#!/bin/sh\nexport USER=drewp HOME=/home/drewp XDG_RUNTIME_DIR=/run/user/501\nexec /usr/bin/pulseaudio\n" mode=755
+
+- copy: dest=/opt/start_pulse content="#!/bin/sh\nsudo install --directory /run/user/1000/pulse --owner=pi\nexport USER=pi HOME=/home/pi XDG_RUNTIME_DIR=/run/user/1000\nexec /usr/bin/pulseaudio\n" mode=755
+  when: ansible_distribution == "Debian"
+
+- name: fix bang's output from getting mysteriously flipped to IEC958
+  cron: minute=*/5 user=drewp job="/usr/bin/pactl set-card-profile 0 output:analog-surround-51+input:analog-stereo"
+  when: ansible_hostname == 'bang'
+
+- supervisor_process_mod:
+    name=pulseaudio
+    user="{{user}}"
+    command="/opt/start_pulse"
+    autorestart=true
+  notify:
+    - supervisord update

@@ -36,21 +36,29 @@
       - linuxmovies.bigasterisk.com
       - computeracronym.quickwitretort.com
       - snappletronics.quickwitretort.com
+      - johnmuir.bigasterisk.com
 
-- shell: /my/doc/ssl/combine_cert {{ item }} > /my/doc/ssl/build/{{ item }}-full.crt
+#- shell: /my/doc/ssl/combine_cert {{ item }} > /my/doc/ssl/build/{{ item }}-full.crt
+#  delegate_to: bang
+#  with_items: site_with_certs
+#
+#- file: path=/var/lib/nginx.d/ssl state=directory
+#- copy: dest="/var/lib/nginx.d/ssl/bigasterisk-2012-nopassphrase-key.pem"
+#    src="/my/doc/ssl/bigasterisk-2012-nopassphrase-key.pem"
+#    owner=root
+#    mode=0400
+#- copy:
+#    dest="/var/lib/nginx.d/ssl/{{ item }}-full.crt"
+#    src="/my/doc/ssl/build/{{ item }}-full.crt"
+#    owner=root
+#    mode=0400
+#  with_items: site_with_certs
+#  notify: nginx restart
+
+- command: zsh run chdir=/my/doc/ssl/letsencrypt
+  become: true
+  become_user: drewp
   delegate_to: bang
-  with_items: site_with_certs
 
-- file: path=/var/lib/nginx.d/ssl state=directory
-- copy: dest="/var/lib/nginx.d/ssl/bigasterisk-2012-nopassphrase-key.pem"
-    src="/my/doc/ssl/bigasterisk-2012-nopassphrase-key.pem"
-    owner=root
-    mode=0400
-- copy:
-    dest="/var/lib/nginx.d/ssl/{{ item }}-full.crt"
-    src="/my/doc/ssl/build/{{ item }}-full.crt"
-    owner=root
-    mode=0400
-  with_items: site_with_certs
+- synchronize: dest=/var/lib/nginx.d/ssl/site/ src=/my/doc/ssl/letsencrypt/site/
   notify: nginx restart
-  

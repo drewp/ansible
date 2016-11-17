@@ -22,6 +22,7 @@
     user=drewp
   notify: supervisord update
   
+# then, FvwmCommand 'All ("*") ResizeMove 1440p 900p 0p 0p'
 - supervisor_process_mod:
     name=display_console
     environment="DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority"
@@ -51,7 +52,7 @@
     stopasgroup=true
   notify: supervisord update
 
-- apt: pkg=openjdk-7-jre-headless
+- apt: pkg=openjdk-8-jre-headless
 - supervisor_process_mod:
     name=display_minecraft
     environment="DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority"
@@ -99,6 +100,18 @@
     name=display_lmms
     environment="DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority"
     command="/usr/bin/lmms"
+    directory="/home/drewp"
+    user=drewp
+    autostart=false
+    stopasgroup=true
+  notify: supervisord update
+
+
+- apt: pkg=crack-attack
+- supervisor_process_mod:
+    name=display_crackattack
+    environment="DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority,HOME=/home/drewp"
+    command="/usr/games/crack-attack"
     directory="/home/drewp"
     user=drewp
     autostart=false

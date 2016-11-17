@@ -12,13 +12,7 @@
 - git: repo=https://github.com/hendrikw82/shairport.git dest=/opt/shairport
 - command: make chdir=/opt/shairport
 
-- set_fact: ao_dev=0
-- set_fact: ao_dev=1
-  when: ansible_hostname == 'kitchen'
-- set_fact: ao_dev=1
-  when: ansible_hostname == 'living'
-
-- copy: dest=/opt/shairport/start content="#!/bin/sh\nsystemctl restart avahi-daemon.service\nexec sudo -u drewp perl ./shairport.pl -a {{ansible_hostname}} --ao_deviceid={{ao_dev}}\n" mode=755
+- copy: dest=/opt/shairport/start content="#!/bin/sh\nsystemctl restart avahi-daemon.service\nexec sudo -u pi perl ./shairport.pl -a {{ansible_hostname}}\n" mode=755
 
 - supervisor_process_mod:
     name=shairport

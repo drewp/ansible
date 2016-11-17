@@ -1,13 +1,38 @@
 ---
+
+- set_fact:
+    src=/my/proj/homeauto/service/audioInputLevels/
+    root=/opt/audioInputLevels
+    venv=/opt/audioInputLevels_env
+
+- file: state=directory path={{root}}
+# put this outside {{root}} since we rsync --delete in there.
+- file: state=directory path={{venv}}
+- synchronize: src={{src}} dest={{root}} archive=yes delete=yes
+- pip: chdir={{venv}} requirements={{root}}/requirements.txt virtualenv={{venv}}
+
+- file: state=directory path={{venv}}/lib/python2.7/site-packages/pulseaudio
+- copy:
+    src=/my/proj/homeauto/service/audioInputLevels/python-pulseaudio/pulseaudio/lib_pulseaudio.py
+    dest={{venv}}/lib/python2.7/site-packages/pulseaudio/
+- copy:
+    src=/my/proj/homeauto/service/audioInputLevels/python-pulseaudio/pulseaudio/__init__.py
+    dest={{venv}}/lib/python2.7/site-packages/pulseaudio/
+
+
+- set_fact: pulse_input=alsa_input.pci-0000_00_07.0.analog-stereo
+- set_fact: pulse_input="alsa_input.usb-Generic_FULL_HD_1080P_Webcam_200901010001-02-Webcam.analog-stereo"
+  when: "{{ansible_hostname == 'living'}}"
+
 - supervisor_process_mod:
     name=audio_input_levels
-    directory=/my/proj/homeauto/service/audioInputLevels
-    command="/my/proj/homeauto/service/audioInputLevels/bin/python audioInputLevelsPulse.py --source alsa_input.pci-0000_00_07.0.analog-stereo"
+    directory=/opt/audioInputLevels
+    command="/opt/audioInputLevels_env/bin/python audioInputLevelsPulse.py --source {{pulse_input}}"
     user=drewp
     autostart=true
 
 - copy:
     dest="/var/lib/ruler.d/audio_input_levels_{{ansible_hostname}}.n3"
-    content="@prefix {{':'}} <http://bigasterisk.com/ruler/ns#> .\n@prefix check{{':'}} <http://bigasterisk.com/ruler/check/> .\n@prefix host{{':'}} <http://bigasterisk.com/ruler/host/> .\ncheck:{{ansible_hostname}}_audio a :Check; :runHost host:bang; :samplePeriod \"600sec\"; :observedHost host:{{ansible_hostname}}; :argv (\"/my/proj/ruler/check/graphite_check\" \"system.house.audio.{{ansible_hostname}}.max\" \"-600sec\") ."
+    content="@prefix {{':'}} <http://bigasterisk.com/ruler/ns#> .\n@prefix check{{':'}} <http://bigasterisk.com/ruler/check/> .\n@prefix host{{':'}} <http://bigasterisk.com/ruler/host/> .\ncheck:influx_audioLevel_{{ansible_hostname}}        a :InfluxDbCheck; :runHost host:bang; :measurement \"audioLevel\";    :where \"location = '{{ansible_hostname}}'\"; :dataSince \"2m\" ."
   delegate_to: bang
 #  notify: ruler update

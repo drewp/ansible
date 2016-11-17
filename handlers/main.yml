@@ -35,3 +35,7 @@
 
 - name: cups restart
   service: name=cups enabled=yes state=reloaded
+
+- name: update timezone
+  command: dpkg-reconfigure --frontend noninteractive tzdata
+

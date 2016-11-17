@@ -10,7 +10,7 @@
   command: git pull origin master chdir=/opt/cjdns
 - command: git checkout master chdir=/opt/cjdns
 - name: rev
-  command: /usr/bin/git checkout 2933584235e739aa963b8d9ca96af0bf67e8065b chdir=/opt/cjdns
+  command: /usr/bin/git checkout 8afe708153b283332b1368915660108c13e8cd1c chdir=/opt/cjdns
 
 
 # fuzz tests fail on raspi; I didn't look into why. Then the condition
@@ -42,16 +42,14 @@
   copy: dest="/home/{{ adminUser }}/.cjdnsadmin"  content="{{ cjdnsadmin.stdout }}" mode=0400 owner="{{ adminUser }}"
   when: inventory_hostname != "drewnote"
 
-- name: make /tun
-  file: path=/dev/net state=directory
-  when: inventory_hostname == "drewnote"
-- shell: creates=/dev/net/tun mknod /dev/net/tun c 10 200
-  when: inventory_hostname == "drewnote"
-- file: path=/dev/net/tun mode=0666
-  when: inventory_hostname == "drewnote"
 
 - name: runner
   copy: dest=/opt/cjdns/run content="#!/bin/sh\nmodprobe ipv6\nexec /opt/cjdns/cjdroute < /opt/cjdns/cjdroute.conf" mode=0755 owner=root
+
+- name: runner_with_tun
+  copy: dest=/opt/cjdns/run content="#!/bin/sh\nmodprobe ipv6\nmkdir -p /dev/net\nmknod /dev/net/tun c 10 200\nchmod 0666 /dev/net/tun\nexec /opt/cjdns/cjdroute < /opt/cjdns/cjdroute.conf" mode=0755 owner=root
+  when: inventory_hostname == "drewnote"
+
   
 - supervisor_process_mod:
     name=cjdns

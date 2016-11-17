@@ -29,7 +29,8 @@
 #- patch: patchfile=/my/proj/ansible/roles/graphite/files/patch-functions basedir=/
 #- patch: patchfile=/my/proj/ansible/roles/graphite/files/patch-composer_widgets basedir=/
 
-- command: sudo -u _graphite /usr/bin/graphite-manage syncdb --settings=graphite.settings --noinput
+# first time only, I think
+#- command: sudo -u _graphite /usr/bin/graphite-manage syncdb --settings=graphite.settings --noinput
   
 - supervisor_process_mod: 
     name=graphite_9037
