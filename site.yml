@@ -145,13 +145,6 @@
     - {role: audio_input_levels, tags: ['audio_input_levels']}
     - {role: x11servescreen, tags: ['x11servescreen']}
 
-
-- hosts: star
-  handlers:
-    - include: handlers/main.yml
-  roles:
-    - { role: webcam, camName: 'printer', internalPort: 9016, config: 'star.json', tags: ['webcam'] }
-      
 - hosts: stor
   gather_facts: no
   handlers:
