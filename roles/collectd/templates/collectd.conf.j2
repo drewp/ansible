@@ -90,9 +90,11 @@ LoadPlugin users
 	Process "dropbox"
     	Process "netbars"
         Process "mongod"
+        Process "influxd"
         ProcessMatch "reasoning" "/my/proj/homeauto/service/reasoning/bin/python reasoning.py"
         ProcessMatch "wallscreen" "/my/proj/homeauto/service/wallscreen/bin/python wallscreen.py"
         ProcessMatch "pimscreen" "/usr/bin/node pimscreen.js"
+        ProcessMatch "sse_collector" "/my/proj/homeauto/service/reasoning/bin/python sse_collector.py"
 {% endif %}
 </Plugin>
 

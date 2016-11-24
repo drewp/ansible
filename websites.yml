@@ -17,9 +17,6 @@
     - apt: pkg=python-dateutil
     # for firedata
     - apt: pkg=coffeescript
-    # for grafana
-    - user: name=grafana
-    - file: path=/opt/grafana state=directory owner=grafana
   roles:
     - role: site
       name: 'heist_querytransactions'
@@ -349,8 +346,8 @@
       serverHost: "bang"
       internalPort: "9067"
       process:
-        user: root
-        command: "docker run -i -p 9067:3000 --add-host bang:172.17.0.1 --volume=/opt/grafana:/var/lib/grafana -e GF_AUTH_ANONYMOUS_ENABLED=true -e GF_AUTH_ANONYMOUS_ORG_ROLE=Admin -e GF_SERVER_ROOT_URL=/grafana grafana/grafana"
+        user: grafana
+        command: "/usr/sbin/grafana-server --homepath=/usr/share/grafana --config=/etc/grafana/grafana.ini cfg:default.paths.data=/var/lib/grafana cfg:default.paths.logs=/var/log/grafana"
       tags: ['grafana']
       
 - hosts: brace

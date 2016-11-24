@@ -84,6 +84,7 @@
     - {role: shortener, tags: ['shortener']}
     - {role: x_bang, tags: ['x_bang']}
     - {role: influxdb, tags: ['influxdb']}
+    - {role: grafana, tags: ['grafana']}
     
   tasks:
     - apt: pkg=nginx-extras

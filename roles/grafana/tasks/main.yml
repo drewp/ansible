@@ -1,0 +1,9 @@
+---
+- user: name=grafana
+- file: path=/opt/grafana state=directory owner=grafana
+- apt: deb=https://grafanarel.s3.amazonaws.com/builds/grafana_4.0.0-1479719016beta2_amd64.deb
+- service: name=grafana enabled=no
+
+- copy: dest=/etc/grafana/grafana.ini src=grafana.ini
+
+# rest of site is over in websites.yml
