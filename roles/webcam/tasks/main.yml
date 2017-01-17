@@ -2,19 +2,22 @@
 - apt: pkg=python-gst0.10
 - apt: pkg=gstreamer0.10-plugins-good
 - apt: pkg=python-pil
+- apt: pkg=python-numpy
+- apt: pkg=python-scipy
 
 - file: state=directory path=/opt/webcam2
 - synchronize: src=/my/proj/webcam2/ dest=/opt/webcam2 archive=yes delete=yes 
 
 
-- name: webcam {{ camName }} serving on {{ internalPort }} with -c {{ config }}
+- name: webcam {{ camName }} serving on {{ internalPort }} with {{ camArgs }}
   supervisor_process_mod:
     name=webcam_{{ camName }}_{{ internalPort }}
     directory=/opt/webcam2
     user=drewp
     autostart=true
     autorestart=true
-    command="/opt/webcam2/{{ 'bin/python' if ansible_architecture == 'x86_64' else 'env32/bin/python' }} /opt/webcam2/gstgrab -c {{ config }}"
+    command="/opt/webcam2/{{ 'bin/python' if ansible_architecture == 'x86_64' else 'env32/bin/python' }} /opt/webcam2/unicam --port {{internalPort}} {{camArgs}}"
+    environment=DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority
   notify: supervisord update
   
 - name: route under /cam

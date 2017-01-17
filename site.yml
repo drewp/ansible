@@ -108,7 +108,7 @@
     - {role: photo_worker, tags: ['photo_worker']}
     - {role: ruler_client, tags: ['ruler']}
     - {role: ruler_server, tags: ['ruler']}
-    - { role: webcam, tags: ['webcam'], camName: 'dash', internalPort: 9016, config: 'dash.json' }
+    - { role: webcam, tags: ['webcam'], camName: 'dash', internalPort: 9016, camArgs: '--v4l /dev/v4l/by-id/usb-Vimicro_Corp._Sirius_USB2.0_Camera-video-index0 --location office' }
   tasks:
     - supervisor_process_mod:
         name=picinput_11008
@@ -123,7 +123,7 @@
   roles:
     - {role: supervisord, tags: ['supervisord']}
     - {role: photo_worker, tags: ['photo_worker']}
-    - { role: webcam, tags: ['webcam'], camName: 'printer', internalPort: 9020, config: 'slash.json' }
+    - { role: webcam, tags: ['webcam'], camName: 'printer', internalPort: 9020, camArgs: '--v4l /dev/v4l/by-id/usb-HP_HP_Webcam_HD-4110-video-index0 --location printer' }
   tasks:
     - include: tasks/slash_processes.yml
 
@@ -144,6 +144,8 @@
     - {role: ari_room_screen, tags: ['ari_room_screen']}
     - {role: audio_input_levels, tags: ['audio_input_levels']}
     - {role: x11servescreen, tags: ['x11servescreen']}
+    - { role: webcam, tags: ['webcam'], camName: 'brace', internalPort: 9020, camArgs: '--v4l /dev/v4l/by-id/usb-Chicony_Electronics_Co.__Ltd._HP_Webcam_SN0001-video-index0 --location ariDesk' }
+    - { role: webcam, tags: ['webcam'], camName: 'braceScreen', internalPort: 9021, camArgs: '--screen --location braceScreen' }
 
 - hosts: stor
   gather_facts: no
@@ -193,7 +195,6 @@
     - {role: raspi_airport_speaker, tags: ['raspi_speaker']}
     - {role: raspi_io_node, tags: ['raspi_io_node']}    
     - {role: raspi_ws2812, tags: ['raspi_ws2812']}
-    - {role: raspi_cam, tags: ['raspi_cam']}
     - {role: raspi_shell, tags: ['raspi_shell']}
 
 - hosts: living
@@ -201,13 +202,15 @@
     - include: handlers/main.yml
   roles:
     - {role: audio_input_levels, tags: ['audio_input_levels']}
-    - { role: webcam, tags: ['webcam'], camName: 'livingRoom', internalPort: 9016, config: 'living.json' }
+    - { role: webcam, tags: ['webcam'], camName: 'livingRoom', internalPort: 9016, camArgs: '--v4l /dev/v4l/by-id/usb-Generic_FULL_HD_1080P_Webcam_200901010001-video-index0 --location livingRoom' }
 
 - hosts: changing
   handlers:
     - include: handlers/main.yml
   roles:
-    - { role: webcam, tags: ['webcam'], camName: 'crib', internalPort: 9016, config: 'changing.json' }
+    - { role: webcam, tags: ['webcam'], camName: 'crib', internalPort: 9016, camArgs: '--v4l /dev/v4l/by-id/usb-Generic_USB2.0_PC_CAMERA_20100331010203-video-index0 --location crib' }
+    - { role: webcam, tags: ['webcam'], camName: 'changing', internalPort: 9017, camArgs: '--pi --location changing' }
+    
 
 - hosts: with_ble
   handlers:
@@ -265,3 +268,9 @@
   roles:
     - {role: raspi_kiosk, tags: ['raspi_kiosk']}
     
+- hosts: frontdoor
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - {role: raspi_kiosk_chrome, tags: ['raspi_kiosk']}
+    - { role: webcam, tags: ['webcam'], camName: 'frontdoor', internalPort: 9020, camArgs: '--pi --location frontYard' }
