@@ -10,15 +10,15 @@
 
 - name: prep dir for serving
   file: path="{{ item }}" state=directory
-  with_items: site_paths
+  with_items: "{{ site_paths }}"
   
 - name: sync
   synchronize: delete=yes archive=yes src="{{ item }}" dest="{{ item }}"
-  with_items: site_paths
+  with_items: "{{ site_paths }}"
 
 - name: leave rsync warning
   copy: dest="{{ item }}/RSYNC_DELETE_RUNS_IN_HERE" content="don't add files on this side!"
-  with_items: site_paths
+  with_items: "{{ site_paths }}"
 
 # for /usr/share/graphite-web/static
 - apt: name=graphite-web

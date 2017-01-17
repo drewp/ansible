@@ -3,6 +3,6 @@
     name=xidle_9107
     directory=/my/proj/homeauto/service/xidle
     command="/my/proj/homeauto/service/xidle/{{ 'bin/python' if ansible_architecture == 'x86_64' else 'env32/bin/python' }} xidle.py"
-    environment=DISPLAY=:0
+    environment=DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority
     user=drewp
   notify: supervisord update

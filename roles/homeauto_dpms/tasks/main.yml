@@ -3,7 +3,7 @@
     name=dpms_9095
     directory=/my/proj/homeauto/service/dpms
     command="/my/proj/homeauto/service/dpms/{{ 'bin/python' if ansible_architecture == 'x86_64' else 'env32/bin/python' }} dpms.py"
-    environment=DISPLAY=:0
+    environment=DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority
     user=drewp
   notify: supervisord update
 
