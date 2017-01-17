@@ -1,0 +1,21 @@
+---
+- supervisor_process_mod:
+    name=minecraft_25566
+    user=root
+    command="docker run -e EULA=TRUE -e VERSION=1.11.2 -e ALLOW_NETHER=true -e ENABLE_COMMAND_BLOCK=true -e GENERATE_STRUCTURES=true -e MODE=creative -e 'MOTD=El Camino' -e OPS=supdebug -e WHITELIST=... -v /opt/minecraft_server:/data -p 25566:25565 itzg/minecraft-server:latest"
+  notify: supervisord update
+
+- name: minecraft open port
+  ufw: rule=allow to_port=25565
+  delegate_to: prime
+
+- copy: src=minecraft_tunnel.sh dest=/opt mode=a+rx
+
+
+
+- supervisor_process_mod:
+    name=minecraft_tunnel
+    user=drewp
+    command="/opt/minecraft_tunnel.sh"
+  notify: supervisord update
+    
