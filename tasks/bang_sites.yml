@@ -16,32 +16,7 @@
     user=drewp
   notify: supervisord update
   tags: ['picinput']
-
-- supervisor_process_mod: 
-    name=gasuse_8081
-    directory=/my/proj/gasuse
-    command="/my/proj/gasuse/bin/python /usr/bin/twistd -noy serve"
-    user=drewp
-  notify: supervisord update
-  tags: ['sites']
     
-- supervisor_process_mod: 
-    name=semfile_9112
-    directory=/my/proj/semfile
-    command="/my/site/homepage/bin/python /usr/bin/twistd -noy serve"
-    user=drewp
-  notify: supervisord update
-  tags: ['sites', 'semfile']
-    
-- supervisor_process_mod: 
-    name=leafupdate_9058
-    directory=/my/proj/leaf
-    command="/my/proj/leaf/bin/python leafupdate.py"
-    user=drewp
-    autostart=true
-  notify: supervisord update
-  tags: ['sites']
-
 - apt: pkg=python-bottle
   tags: ['sites']
 - apt: pkg=python-genshi

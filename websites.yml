@@ -175,6 +175,17 @@
         command: "/my/proj/qrnotifyme/bin/python qrnotifyme.py"
 
     - role: site
+      name: 'gasuse'
+      path: '/gasuse/'
+      openid: 'anonymous'
+      serverHost: 'bang'
+      internalPort: '8081'
+      process:
+        directory: /my/proj/gasuse
+        command: "/my/proj/gasuse/bin/python serve"
+        user: drewp
+
+    - role: site
       name: 'heist_querytransactions'
       path: "/heist/"
       openid: "admin"
