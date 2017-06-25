@@ -4,7 +4,6 @@ ca /etc/openvpn/ca.crt
 cert /etc/openvpn/{{ remote }}.crt
 key /etc/openvpn/{{ remote }}.key
 tls-auth /etc/openvpn/ta.key 1
-tls-remote server
 
 dev tun
 resolv-retry infinite
@@ -14,6 +13,7 @@ remote vpn.bigasterisk.com
 
 float
 
+cipher AES-256-CBC
 comp-lzo
 
 # Our up script will establish routes once the VPN is alive.
