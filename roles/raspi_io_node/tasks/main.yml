@@ -36,6 +36,8 @@
 - lineinfile: dest=/boot/config.txt line="dtoverlay=w1-gpio,gpiopin=17,pullup=y"
   when: inventory_hostname in ["kitchen", "living", "garage"]
 
+# pi 3 onboard audio conflicts with pwm used for ws2812 leds. https://github.com/jgarff/rpi_ws281x/wiki
+- lineinfile: dest=/boot/config.txt line="dtparam=audio=off" regexp="^dtparam=audio="
 
 - supervisor_process_mod:
     name=piNode_9059
