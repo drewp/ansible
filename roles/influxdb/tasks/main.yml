@@ -1,17 +1,23 @@
 ---
 
-- apt: deb=https://dl.influxdata.com/influxdb/releases/influxdb_1.1.0_amd64.deb
+- apt: deb=https://dl.influxdata.com/influxdb/releases/influxdb_1.2.2_amd64.deb
 - service: name=influxdb state=stopped enabled=no
   
 - copy: src=influxdb.conf dest=/etc/influxdb/influxdb.conf
 - file: path="/opt/influxdb" state=directory owner=influxdb
-  
+
+- copy: src=start_influx dest=/opt/start_influx mode=755
+- lineinfile: dest=/etc/security/limits.conf regexp='influxdb\s+soft' line='influxdb          soft    nofile          90000'
+- lineinfile: dest=/etc/security/limits.conf regexp='influxdb\s+hard' line='influxdb          hard    nofile          90000'
+- lineinfile: dest=/etc/pam.d/sudo regexp='session    required   pam_limits.so' line='session    required   pam_limits.so'
+
+# command goes through sudo to get the right file limits
 - supervisor_process_mod:
     name=influxdb_9060
     directory=/opt/influxdb
     autostart=true
     startretries=3
-    user=influxdb
-    command="/usr/bin/influxd -config /etc/influxdb/influxdb.conf"
+    user=root
+    command="sudo -u influxdb /opt/start_influx"
   notify: supervisord update
 
