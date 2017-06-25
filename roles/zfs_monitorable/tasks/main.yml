@@ -1,7 +1,2 @@
 ---
 - copy: dest=/etc/sudoers.d/zfs src=zfs owner=root group=root mode=0440
-
-- copy: dest=/etc/sensu/plugins/{{ item }} src={{ item }} mode=0755
-  with_items:
-    - zpool_status
-    - zpool_iostat
