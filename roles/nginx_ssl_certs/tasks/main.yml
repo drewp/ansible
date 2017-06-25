@@ -1,4 +1,9 @@
 ---
+
+
+- cron: minute=5 hour=5 day=1 name="ssl cert renew" user="root" job="/my/proj/ansible/playbook  -t nginx_ssl_certs -l bang,prime"
+  delegate_to: bang
+  
 - set_fact:
     site_with_certs:
       - adkinslawgroup.com
