@@ -74,6 +74,7 @@
     - {role: mail_bang, tags: ['mail']}
     - {role: map_mqtt_receiver, tags: ['map_mqtt_receiver']} # for phone talking to bigasterisk.com at home
     - {role: minetest_server, tags: ['minetest_server']}
+    - {role: minecraft, tags: ['minecraft']}
     - {role: network_bigasterisk_gateway, tags: ['network_bigasterisk_gateway']}
     - {role: nginx_ssl_certs, tags: ['nginx_ssl_certs']}
     - {role: photo, tags: ['photo']}
