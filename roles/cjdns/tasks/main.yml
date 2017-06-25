@@ -8,11 +8,9 @@
   command: /usr/bin/git clone https://github.com/cjdelisle/cjdns.git /opt/cjdns creates=/opt/cjdns
 
 - name: pull
-  command: git pull origin master chdir=/opt/cjdns
-- command: git checkout master chdir=/opt/cjdns
-- name: rev
-  command: /usr/bin/git checkout 8afe708153b283332b1368915660108c13e8cd1c chdir=/opt/cjdns
-
+  command: git pull origin crashey chdir=/opt/cjdns
+- command: git checkout --force fb8b3f9ff966fd98c04163493aa0588786f2d818 chdir=/opt/cjdns
+- copy: dest=/opt/cjdns/build_linux/dependencies/cnacl/jsbuild/include_internal/crypto_types.h src=crypto_types.h
 
 # fuzz tests fail on raspi; I didn't look into why. Then the condition
 # failed and returned true on raspi, so I set to 1 everywhere.
