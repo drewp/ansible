@@ -108,7 +108,7 @@
     - {role: photo_worker, tags: ['photo_worker']}
     - {role: ruler_client, tags: ['ruler']}
     - {role: ruler_server, tags: ['ruler']}
-    - { role: webcam, tags: ['webcam'], camName: 'dash', internalPort: 9016, camArgs: '--v4l /dev/v4l/by-id/usb-Vimicro_Corp._Sirius_USB2.0_Camera-video-index0 --location office' }
+    - { role: webcam, tags: ['webcam'], camName: 'dash', internalPort: 9016, camArgs: '--v4l /dev/v4l/by-id/usb-0c45_USB_camera-video-index0 --location office' }
   tasks:
     - supervisor_process_mod:
         name=picinput_11008
@@ -122,6 +122,8 @@
     - include: handlers/main.yml
   roles:
     - {role: supervisord, tags: ['supervisord']}
+    - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
+    - {role: collectd, tags: ['collectd']}
     - {role: photo_worker, tags: ['photo_worker']}
     - { role: webcam, tags: ['webcam'], camName: 'printer', internalPort: 9020, camArgs: '--v4l /dev/v4l/by-id/usb-HP_HP_Webcam_HD-4110-video-index0 --location printer' }
   tasks:
@@ -144,19 +146,8 @@
     - {role: ari_room_screen, tags: ['ari_room_screen']}
     - {role: audio_input_levels, tags: ['audio_input_levels']}
     - {role: x11servescreen, tags: ['x11servescreen']}
-    - { role: webcam, tags: ['webcam'], camName: 'brace', internalPort: 9020, camArgs: '--v4l /dev/v4l/by-id/usb-Chicony_Electronics_Co.__Ltd._HP_Webcam_SN0001-video-index0 --location ariDesk' }
-    - { role: webcam, tags: ['webcam'], camName: 'braceScreen', internalPort: 9021, camArgs: '--screen --location braceScreen' }
-
-- hosts: stor
-  gather_facts: no
-  handlers:
-    - include: handlers/main.yml
-  roles:
-    - {role: network_stor, tags: ['network_stor']}
-    - {role: zfs_server, tags: ['zfs_server']}
-    - {role: zfs_monitorable, tags: ['zfs_monitorable']}
-    - {role: zfs_auto_snapshot, tags: ['zfs_auto_snapshot']}
-    - {role: bigasterisk_users, tags: ['bigasterisk_users']}
+#    - { role: webcam, tags: ['webcam'], camName: 'brace', internalPort: 9020, camArgs: '--v4l /dev/v4l/by-id/usb-Chicony_Electronics_Co.__Ltd._HP_Webcam_SN0001-video-index0 --location ariDesk' }
+#    - { role: webcam, tags: ['webcam'], camName: 'braceScreen', internalPort: 9021, camArgs: '--screen --location braceScreen' }
 
 - hosts: grapes
   gather_facts: no
@@ -231,15 +222,11 @@
   roles:
     - {role: auto_mount_removable, tags: ['auto_mount_removable']}
     
-- hosts: nfs_server:nfs_client
+- hosts: nfs_client
   handlers:
     - include: handlers/main.yml
   roles:
     - {role: photo_fileschangedpost, tags: ['photo_fileschangedpost']}
-
-- hosts: nfs_client
-  handlers:
-    - include: handlers/main.yml
   tasks:
     - apt: pkg=nfs-common state=present
     # this mount fails on bang if ext network isn't up (!). rpc.statd
@@ -247,7 +234,7 @@
     - mount:
         fstype=nfs
         name=/my
-        src=10.1.0.2:/stor6/my
+        src=10.1.0.1:/stor6/my
         state=mounted
         
 - hosts: sshfs_client

@@ -18,9 +18,9 @@
 - copy: dest=/opt/start_pulse content="#!/bin/sh\nsudo install --directory /run/user/1000/pulse --owner=pi\nexport USER=pi HOME=/home/pi XDG_RUNTIME_DIR=/run/user/1000\nexec /usr/bin/pulseaudio\n" mode=755
   when: ansible_distribution == "Debian"
 
-- name: fix bang's output from getting mysteriously flipped to IEC958
-  cron: minute=*/5 user=drewp job="/usr/bin/pactl set-card-profile 0 output:analog-surround-51+input:analog-stereo"
-  when: ansible_hostname == 'bang'
+#- name: fix bang's output from getting mysteriously flipped to IEC958
+#  cron: minute=*/5 user=drewp job="/usr/bin/pactl set-card-profile 0 output:analog-surround-51+input:analog-stereo"
+#  when: ansible_hostname == 'bang'
 
 - supervisor_process_mod:
     name=pulseaudio

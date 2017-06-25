@@ -1,6 +1,8 @@
 ---
-- set_fact: ext="173.228.113.124" extMask="255.255.255.0" extNet="173.228.113.0" extBcast="173.228.113.255" extGateway="173.228.113.1" prime="162.243.138.136"
-
+- set_fact:
+    ext="10.2.0.1"
+    prime="162.243.138.136"
+    
 - template:
     dest=/etc/network/interfaces
     src=interfaces.j2

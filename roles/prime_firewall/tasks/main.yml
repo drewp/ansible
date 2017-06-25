@@ -28,6 +28,7 @@
 - name: smtp send from cjdns
   ufw: rule=allow proto=tcp to_port=587 
 
+# also one in roles/minecraft (at least)
 
 - ufw: state=enabled
   

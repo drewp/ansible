@@ -6,6 +6,8 @@
 - apt: pkg=bluez
 - apt: pkg=libbluetooth-dev
 
+# pi may need pi-bluetooth pkg too
+
 - synchronize:
     src=/my/proj/homeauto/service/beacon/
     dest=/opt/beacon

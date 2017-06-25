@@ -47,7 +47,8 @@
 - pip: name=cython           executable={{top}}/env/bin/pip
   
 
-- command: sudo -u drewp make build chdir={{top}} creates={{top}}/openzwave/libopenzwave.a
+- command: make build chdir={{top}} creates={{top}}/openzwave/libopenzwave.a
+  become_user: drewp
 
 - command: env/bin/python setup-lib.py build chdir={{top}}
   

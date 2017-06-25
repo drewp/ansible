@@ -9,7 +9,7 @@
 
 - copy:
     dest=/etc/default/isc-dhcp-server
-    content="# written by /my/proj/puppet/ansible/roles/network_bigasterisk_gateway{{'\n'}}INTERFACES=\"enp6s1 enp6s2\"{{'\n'}}"
+    content="# written by /my/proj/ansible/roles/network_bigasterisk_gateway{{'\n'}}INTERFACES=\"enp1s0 ens5\"{{'\n'}}"
     owner=root
     group=root
   notify: dhcpd reload

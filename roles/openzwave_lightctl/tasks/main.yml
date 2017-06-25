@@ -1,5 +1,6 @@
 ---
-- command: sudo -u drewp bin/pip install klein chdir=/opt/python-openzwave
+- command: bin/pip install klein chdir=/opt/python-openzwave
+  become_user: drewp
 - supervisor_process_mod:
     name=lightctl_9055
     command="/opt/python-openzwave/bin/python lightctl.py"

@@ -3,6 +3,8 @@
   apt: name=supervisor state=absent
 - apt: name=python-setuptools
 
+- apt: name=python-pip
+
 # see https://pypi.python.org/pypi/supervisor for changelog
 - easy_install: name=supervisor==3.3.1
 - name: we will read config fragments from /var/lib/supervisor.d

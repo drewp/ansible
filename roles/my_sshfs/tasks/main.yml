@@ -1,7 +1,7 @@
 ---
 - lineinfile: dest=/etc/fuse.conf regexp="user_allow_other" line="user_allow_other"
 - file: path=/etc/fuse.conf mode="a+r"
-- copy: dest=/var/lib/supervisor.d/run_sshfs mode=755 content="#!/bin/zsh\n. /home/drewp/.keychain/{{ inventory_hostname }}-sh; sshfs -f -o allow_other,reconnect 10.2.0.1:/my /my"
+- copy: dest=/var/lib/supervisor.d/run_sshfs mode=755 content="#!/bin/zsh\n. /home/drewp/.keychain/{{ inventory_hostname }}-sh; sshfs -f -o allow_other,reconnect 10.2.0.1:/stor6/my /my"
 - supervisor_process_mod:
     name=my_sshfs
     command=/var/lib/supervisor.d/run_sshfs

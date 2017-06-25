@@ -2,14 +2,14 @@
 dash
 bang
 slash
-stor
 prime
 drewnote
 brace
 kitchen
 living
 changing
-piedmont ansible_ssh_host=10.2.0.40
+piedmont ansible_ssh_host=piedmont6
+headbot  ansible_ssh_host=10.1.0.104
 bling
 garage ansible_ssh_host=10.1.0.124
 #downbath  ansible_ssh_host=10.1.0.103
@@ -66,14 +66,12 @@ brace
 [with_pi_cam]
 changing
 garage
+frontdoor
 
 [with_removable_storage]
 dash
 plus
 brace
-
-[nfs_server]
-stor
 
 [nfs_client]
 #dash

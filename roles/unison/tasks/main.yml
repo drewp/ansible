@@ -2,7 +2,13 @@
 - apt: pkg=unison
 - file: owner=drewp path=/home/drewp/unison state=directory
 - file: owner=drewp path=/home/drewp/.unison state=directory
+
+# talking over cjdns is currently WAY slower, not sure why
+- copy: owner=drewp dest=/home/drewp/.unison/home.prf content="root = /home/drewp/unison\nroot = ssh{{':'}}//bang//home/drewp/unison"
+  when: inventory_hostname in ["slash", "dash"]
 - copy: owner=drewp dest=/home/drewp/.unison/home.prf content="root = /home/drewp/unison\nroot = ssh{{':'}}//bang6//home/drewp/unison"
+  when: inventory_hostname not in ["slash", "dash"]
+  
 - file: owner=drewp path=/home/drewp/bin state=directory
 - copy: owner=drewp dest=/home/drewp/bin/u content="unison home -batch -terse" mode="u+rwx"
 

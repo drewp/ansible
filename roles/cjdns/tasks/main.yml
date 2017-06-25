@@ -3,6 +3,7 @@
 # depends on nodejs, which needs to vary a bit on the debian/arm installs
 
 - apt: pkg=git
+- apt: pkg=nodejs
 - name: clone
   command: /usr/bin/git clone https://github.com/cjdelisle/cjdns.git /opt/cjdns creates=/opt/cjdns
 
@@ -16,7 +17,7 @@
 # fuzz tests fail on raspi; I didn't look into why. Then the condition
 # failed and returned true on raspi, so I set to 1 everywhere.
 - name: build cjdns
-  command: /opt/cjdns/do chdir=/opt/cjdns
+  command: nodejs node_build/make.js chdir=/opt/cjdns
   environment:
     NO_TEST: "{{ '1' if ansible_distribution == 'Debian' else '1' }}"
     Seccomp_NO: "{{ '1' if ansible_distribution == 'Debian' else '' }}"

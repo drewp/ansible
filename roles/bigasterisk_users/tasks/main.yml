@@ -17,7 +17,7 @@
 - group: name=sensu gid=147
 - user: name=sensu uid=139
 
-- user: name=drewp uid=501 group=drewp groups=adm,cdrom,sudo,dip,plugdev,lpadmin,ffg,dialout,lp,audio,fuse
+- user: name=drewp uid=501 group=drewp groups=adm,cdrom,sudo,dip,plugdev,lpadmin,ffg,dialout,lp,audio,fuse,drewnote,video
 - user: name=damon uid=3011 group=damon groups=ffg
 
 - group: name=brettw gid=3012
@@ -43,3 +43,6 @@
   
 - group: name=kelsi gid=1008
 - user: name=kelsi uid=1008 group=elastic
+
+- group: name=drewnote gid=1009
+- user: name=drewnote uid=1009

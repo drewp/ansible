@@ -171,7 +171,7 @@
 - supervisor_process_mod: 
     name=netbars_3001
     directory=/my/proj/netbars
-    command="/my/proj/netbars/install-env/bin/python install-env/bin/netbars --port 3001 --iface enp2s0 --local 10.1.10.10"
+    command="/my/proj/netbars/install-env/bin/python install-env/bin/netbars --port 3001 --iface ens6 --local 10.1.10.10"
     user=root
   notify: supervisord update
   tags: ['sites', 'netbars']

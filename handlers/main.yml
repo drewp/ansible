@@ -19,7 +19,7 @@
   command: "/usr/local/bin/supervisorctl -c /etc/supervisord-local.conf restart tinydns"
   
 - name: wifi net reset
-  shell: "/sbin/ifdown enp6s2; /sbin/ifup enp6s2"
+  shell: "/sbin/ifdown ens5; /sbin/ifup ens5"
 
 - name: firewall setup
   command: /bin/sh /etc/network/firewall-setup
