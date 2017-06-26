@@ -39,6 +39,13 @@
     group="root"
   notify: firewall setup
 
+- name: firewall-setup in rc.local
+  lineinfile:
+    dest: /etc/rc.local
+    insertbefore: "exit 0"
+    line: "/etc/network/firewall-setup"
+    regexp: "firewall-setup"
+
 - name: write resolv.conf
   copy: dest=/etc/resolv.conf content="nameserver 10.2.0.1{{'\n'}}domain bigasterisk.com{{'\n'}}" force=yes
   tags: ['resolvconf']
