@@ -86,6 +86,10 @@
     - {role: x_bang, tags: ['x_bang']}
     - {role: influxdb, tags: ['influxdb']}
     - {role: grafana, tags: ['grafana']}
+    - {role: zfs_server, tags: ['zfs_server']}
+    - {role: zfs_monitorable, tags: ['zfs_monitorable']}
+    - {role: zfs_auto_snapshot, tags: ['zfs_auto_snapshot']}
+    - {role: bigasterisk_users, tags: ['bigasterisk_users']}
     
   tasks:
     - apt: pkg=nginx-extras
