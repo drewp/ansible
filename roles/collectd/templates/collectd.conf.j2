@@ -95,6 +95,8 @@ LoadPlugin users
         ProcessMatch "wallscreen" "/my/proj/homeauto/service/wallscreen/bin/python wallscreen.py"
         ProcessMatch "pimscreen" "/usr/bin/node pimscreen.js"
         ProcessMatch "sse_collector" "/my/proj/homeauto/service/reasoning/bin/python sse_collector.py"
+        ProcessMatch "influxdb" "/usr/bin/influxd -config /etc/influxdb/influxdb.conf"
+        ProcessMatch "arduinoNode" "/my/proj/homeauto/service/arduinoNode/bin/python arduinoNode.py"
 {% endif %}
 </Plugin>
 
