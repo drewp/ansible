@@ -10,7 +10,7 @@
 
 # for first-time install
 - apt: update_cache=yes
-  
+
 - apt: pkg=rsync 
 - synchronize: src=/my/proj/supdebug/ dest=/opt/supdebug archive=yes delete=yes 
 
@@ -18,6 +18,10 @@
 - apt: pkg=python2.7-dev state=installed
 - apt: pkg=libffi-dev state=installed
 - apt: pkg=libssl-dev state=installed
+
+# https://github.com/graphite-project/graphite-web/issues/1721
+- apt: pkg=python-openssl state=absent
+  
 
 - command: virtualenv --system-site-packages /opt/supdebug_env creates=/opt/supdebug_env/bin
 - command: /opt/supdebug_env/bin/pip install -U pip
