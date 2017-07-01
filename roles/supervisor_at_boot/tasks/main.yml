@@ -1,6 +1,5 @@
 ---
 # may not be safe yet for machines that use nfs- untested
-- copy: dest=/etc/init/supervisor.conf src=supervisor.conf
+- copy: dest=/etc/systemd/system/supervisord.service src=supervisord.service
+- service: name=supervisord enabled=true state=started
 
-- lineinfile: dest=/etc/rc.local insertbefore="exit 0" line="/usr/local/bin/supervisord -c /etc/supervisord.conf &"
-  when: inventory_hostname in ["sticker", "kitchen"]
