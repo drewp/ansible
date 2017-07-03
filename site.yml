@@ -192,6 +192,9 @@
     - {role: raspi_io_node, tags: ['raspi_io_node']}    
     - {role: raspi_ws2812, tags: ['raspi_ws2812']}
     - {role: raspi_shell, tags: ['raspi_shell']}
+  tasks:
+    - systemd: name=ssh enabled=true state=started 
+    - hostname: name={{ansible_hostname}}
 
 - hosts: living
   handlers:

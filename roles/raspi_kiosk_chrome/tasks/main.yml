@@ -1,6 +1,13 @@
 ---
 
+- apt: pkg=xserver-xorg
+  
 - apt: pkg=lightdm state=absent
 - apt: pkg=slim
 
+- apt: pkg=chromium-browser
+  
 - copy: dest=/etc/slim.conf src=slim.conf
+
+- service: name=slim status=restarted
+  

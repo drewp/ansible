@@ -1,8 +1,9 @@
 ---
 
+# see raspi_kiosk_chrome/tasks/main.yml for a way easier version
+
 # boot-to-x:
 # Created symlink from /etc/systemd/system/default.target to /lib/systemd/system/graphical.target.
-
 
 # for chromium instead, per https://drive.google.com/file/d/0B2X5T2P-KI8mUVNGSlVhYjVnNGc/view
 #  wget -qO - http://bintray.com/user/downloadSubjectPublicKey\?username\=bintray | sudo apt-key add -
