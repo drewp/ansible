@@ -2,4 +2,10 @@
 - apt: pkg=openvpn state=present
 - copy: dest=/etc/openvpn/server.conf src=server.conf
 - copy: dest=/etc/openvpn/ta.key src=ta.key owner=root group=root mode=0600
-# restart openvpn
+- copy: dest=/etc/openvpn/ca.crt src=ca.crt owner=root group=root mode=0600
+- copy: dest=/etc/openvpn/server.crt src=server.crt owner=root group=root mode=0600
+- copy: dest=/etc/openvpn/server.key src=server.key owner=root group=root mode=0600
+- copy: dest=/etc/openvpn/dh2048.pem src=dh2048.pem owner=root group=root mode=0600
+
+- service: name=openvpn enabled=yes state=reloaded
+

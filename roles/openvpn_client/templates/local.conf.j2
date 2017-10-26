@@ -6,6 +6,7 @@ key /etc/openvpn/{{ remote }}.key
 tls-auth /etc/openvpn/ta.key 1
 
 dev tun
+proto udp4
 resolv-retry infinite
 nobind
 

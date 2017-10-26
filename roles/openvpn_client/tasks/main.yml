@@ -6,29 +6,34 @@
     openvpn_log_dir=/var/log
     remote={{ inventory_hostname }}
 
-- file: path=/etc/openvpn/{{ remote }} state=directory
-  delegate_to: bang
-
-- name: create-key
-  copy: dest=/etc/openvpn/create-key src=create-key mode=0755 
-  
 - name: make new client key
   delegate_to: bang
   shell:
-    /etc/openvpn/create-key {{ remote }}
+    sh /my/proj/ansible/roles/openvpn_client/files/create-key {{ remote }}
     creates=/etc/openvpn/keys/{{ remote }}.key
 
+
+    
 - copy:
     dest=/etc/openvpn/ca.crt
     src=../../openvpn_server/files/ca.crt
     owner=root
     group=root
     mode=0644
+    
 - template: dest=/etc/openvpn/{{ remote }}.conf src=local.conf.j2 owner=root group=root
 
-#- name: install key
-#  local_action: command scp /etc/openvpn/keys/{{ remote }}.key pi@tower-ext:/etc/openvpn/{{ remote }}.key
-    
+- name: install tls-auth
+  copy:
+    dest=/etc/openvpn/ta.key
+    src=../../openvpn_server/files/ta.key
+    owner=root
+    group=root
+    mode=0600
+  notify: openvpn restart
+
+
+  
 - name: install key
   copy:
     dest=/etc/openvpn/{{ remote }}.key
@@ -46,15 +51,8 @@
     mode=0600
   notify: openvpn restart
 
-- name: install tls-auth
-  copy:
-    dest=/etc/openvpn/ta.key
-    src=../../openvpn_server/files/ta.key
-    owner=root
-    group=root
-    mode=0600
-  notify: openvpn restart
-    
+
+  
 - name: write server-side config to give client a fixed address
   delegate_to: prime
   copy:
