@@ -9,16 +9,22 @@
 
 - name: pull
   command: git pull origin crashey chdir=/opt/cjdns
-- command: git checkout --force efd7d7f82be405fe47f6806b6cc9c0043885bc2e chdir=/opt/cjdns
+- command: git checkout --force 186169f9a8631633795e4e9d70c501519a7800f4 chdir=/opt/cjdns
 #- copy: dest=/opt/cjdns/build_linux/dependencies/cnacl/jsbuild/include_internal/crypto_types.h src=crypto_types.h
 
 # fuzz tests fail on raspi; I didn't look into why. Then the condition
 # failed and returned true on raspi, so I set to 1 everywhere.
+#
+# pi3 flags:
+#   from https://wiki.gentoo.org/wiki/Raspberry_Pi#Cross_compiling, -march=armv7-a -mfpu=neon-vfpv4
+#   from another site, -mcpu=cortex-a53 -mfpu=neon-fp-armv8
+#   from more trials, just pass nothing
 - name: build cjdns
   command: nodejs node_build/make.js chdir=/opt/cjdns
   environment:
     NO_TEST: "{{ '1' if ansible_distribution == 'Debian' else '1' }}"
     Seccomp_NO: "{{ '1' if ansible_distribution == 'Debian' else '' }}"
+    CFLAGS: "{{ '' if ansible_hostname in ['changing', 'living', 'garage', 'frontdoor'] else '' }}"
 
 - name: make config
   local_action: command python /my/proj/ansible/roles/cjdns/make_config.py "{{ inventory_hostname }}"

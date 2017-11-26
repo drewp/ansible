@@ -31,11 +31,12 @@ def parseCjdConf(jsonish):
             while lines.next().strip() != '*/':
                 pass
             continue
-        if line == '"ETHInterface":':
-            line = ',' + line
+        #if line == '"ETHInterface":':
+        #    line = ',' + line
         if line == '"noBackground":0,':
             line = '"noBackground":0'
         confJson += line + '\n'
+    confJson = confJson.replace(']\n\n"', '],\n"')
     return json.loads(confJson)
 
 def newHost(host, localInterfaces=[]):
