@@ -34,6 +34,7 @@
     - {role: bigasterisk_users, tags: ['bigasterisk_users']}
     - {role: unison, tags: ['unison']}
     - {role: hosts, tags: ['hosts']}
+    - {role: telegraf, tags: ['telegraf']}
   tasks:
     - name: no UseDNS on ssh server
       lineinfile: dest=/etc/ssh/sshd_config regexp="^UseDNS\b" line="UseDNS no"
@@ -69,7 +70,6 @@
     - {role: ajaxterm, tags: ['ajaxterm']}
     - {role: blog, tags: ['blog']}
     - {role: checkvistpost, tags: ['checkvistpost']}
-    - {role: collectd, tags: ['collectd']}
     - {role: dnscache, tags: ['dnscache']}
     - {role: dovecot_home, tags: ['dovecot_home']}
     - {role: dropbox, tags: ['dropbox']}
@@ -110,7 +110,6 @@
     - include: handlers/main.yml
   roles:
     - {role: supervisord, tags: ['supervisord']}
-    - {role: collectd, tags: ['collectd']}
     - {role: cups, tags: ['cups']}
     - {role: mail_relay, tags: ['mail_relay']}
     - {role: photo_worker, tags: ['photo_worker']}
@@ -130,8 +129,6 @@
     - include: handlers/main.yml
   roles:
     - {role: supervisord, tags: ['supervisord']}
-    - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
-    - {role: collectd, tags: ['collectd']}
     - {role: photo_worker, tags: ['photo_worker']}
     - { role: webcam, tags: ['webcam'], camName: 'printer', internalPort: 9020, camArgs: '--v4l /dev/v4l/by-id/usb-HP_HP_Webcam_HD-4110-video-index0 --location printer' }
   tasks:
