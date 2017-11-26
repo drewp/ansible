@@ -152,8 +152,6 @@
   roles:
     - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
     - {role: ari_room_screen, tags: ['ari_room_screen']}
-    - {role: audio_input_levels, tags: ['audio_input_levels']}
-    - {role: x11servescreen, tags: ['x11servescreen']}
 #    - { role: webcam, tags: ['webcam'], camName: 'brace', internalPort: 9020, camArgs: '--v4l /dev/v4l/by-id/usb-Chicony_Electronics_Co.__Ltd._HP_Webcam_SN0001-video-index0 --location ariDesk' }
 #    - { role: webcam, tags: ['webcam'], camName: 'braceScreen', internalPort: 9021, camArgs: '--screen --location braceScreen' }
 
@@ -175,7 +173,6 @@
     - {role: pi_users, tags: ['pi_users']}
     - {role: hosts, tags: ['hosts']}
     - {role: pigpio, tags: ['pigpio']}
-    - {role: raspi_airport_speaker, tags: ['raspi_speaker']}
     - {role: raspi_io_node, tags: ['raspi_io_node']}    
     - {role: raspi_ws2812, tags: ['raspi_ws2812']}
     - {role: raspi_shell, tags: ['raspi_shell']}

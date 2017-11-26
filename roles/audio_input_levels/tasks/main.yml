@@ -19,10 +19,8 @@
     src=/my/proj/homeauto/service/audioInputLevels/python-pulseaudio/pulseaudio/__init__.py
     dest={{venv}}/lib/python2.7/site-packages/pulseaudio/
 
-
-- set_fact: pulse_input=alsa_input.pci-0000_00_07.0.analog-stereo
-- set_fact: pulse_input="alsa_input.usb-Generic_FULL_HD_1080P_Webcam_200901010001-02-Webcam.analog-stereo"
-  when: "{{ansible_hostname == 'living'}}"
+# set pulse_input with a value from
+# pactl list sources | grep Name
 
 - supervisor_process_mod:
     name=audio_input_levels
