@@ -30,6 +30,7 @@
     command="/opt/audioInputLevels_env/bin/python audioInputLevelsPulse.py --source {{pulse_input}}"
     user=drewp
     autostart=true
+  notify: supervisord update
 
 - copy:
     dest="/var/lib/ruler.d/audio_input_levels_{{ansible_hostname}}.n3"

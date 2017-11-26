@@ -11,7 +11,8 @@
   notify:
    - supervisord update
 
-- cron: name="dropbox_monitor" user="drewp" special_time="hourly" job="/my/proj/ruler/bin/python /my/proj/ruler/dropbox_monitor/fetch_data.py"
+# needs dropbox api update to work again
+#- cron: name="dropbox_monitor" user="drewp" special_time="hourly" job="/my/proj/ruler/bin/python /my/proj/ruler/dropbox_monitor/fetch_data.py"
 
 - cron: name="ruler_total"   user="drewp" minute="*/5" job="curl -s -XPOST 'http://localhost:9060/write?db=main' --data-binary 'ruler,state=total value='`curl -s http://bang:8103/stats/totalChecks`"
 - cron: name="ruler_failing" user="drewp" minute="*/5" job="curl -s -XPOST 'http://localhost:9060/write?db=main' --data-binary 'ruler,state=failing value='`curl -s http://bang:8103/stats/failingChecks`"  

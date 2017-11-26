@@ -13,7 +13,8 @@
     dest=/opt/beacon
     archive=yes
     delete=yes
-
+  
+    
 - pip:
     chdir=/opt/beacon_env
     requirements=/opt/beacon/requirements.txt

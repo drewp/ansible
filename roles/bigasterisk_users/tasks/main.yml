@@ -8,8 +8,6 @@
 - group: name=lpadmin gid=200
 - group: name=plugdev gid=46
 
-
-  
 - group: name=damon gid=3011
 - group: name=ffg gid=3008
 
@@ -30,6 +28,7 @@
 - file: path=/home/ffg/.ssh state=directory owner=ffg group=ffg mode=700
 
 - user: name=darcsweb
+
 
 - user: name=newsbru uid=1019
 - user: name=dmcc uid=1013

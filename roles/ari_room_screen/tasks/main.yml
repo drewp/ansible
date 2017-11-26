@@ -16,7 +16,7 @@
   notify: supervisord update
 
 - supervisor_process_mod:
-    name=room_server_10005
+    name=ari_room_server_10008
     directory=/my/proj/ariRoom
     command="/my/proj/ariRoom/bin/python ariRoom.py"
     user=drewp

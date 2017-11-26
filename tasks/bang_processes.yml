@@ -124,15 +124,15 @@
   notify: supervisord update
   tags: ['zope']
 
-- supervisor_process_mod: 
-    name=ffg_trafficGen
-    directory=/my/proj/ffg
-    command=/my/proj/ffg/bin/trafficGen
-    user=drewp
-    stdout_logfile_backups=2
-    stderr_logfile_backups=2
-  notify: supervisord update
-  tags: ['ffg']
+# - supervisor_process_mod: 
+#     name=ffg_trafficGen
+#     directory=/my/proj/ffg
+#     command=/my/proj/ffg/bin/trafficGen
+#     user=drewp
+#     stdout_logfile_backups=2
+#     stderr_logfile_backups=2
+#   notify: supervisord update
+#  tags: ['ffg']
 
 # needs new cgi solution
 #- supervisor_process_mod: 

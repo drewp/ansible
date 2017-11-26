@@ -28,6 +28,6 @@
 
 # not unison at all, just tools i want
 - apt: pkg=spacefm-gtk3
-- apt: pkg=gnome-icon-theme-full
+#- apt: pkg=gnome-icon-theme-full
 - apt: pkg=atool
 

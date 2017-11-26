@@ -5,6 +5,9 @@
 # test connections:
 #  ansible all -m ping -vvv
 
+# see facts
+#  sudo ansible -m setup all -l frontbed
+
 # to prepare a host, aptitude install python-apt python-pip python-pycurl python-keyczar
 # to run this:
 #  sudo ./playbook -l dash -t gitannex
@@ -73,7 +76,7 @@
     - {role: hosts, tags: ['hosts']}
     - {role: mail_bang, tags: ['mail']}
     - {role: map_mqtt_receiver, tags: ['map_mqtt_receiver']} # for phone talking to bigasterisk.com at home
-    - {role: minetest_server, tags: ['minetest_server']}
+#    - {role: minetest_server, tags: ['minetest_server']}
     - {role: minecraft, tags: ['minecraft']}
     - {role: network_bigasterisk_gateway, tags: ['network_bigasterisk_gateway']}
     - {role: nginx_ssl_certs, tags: ['nginx_ssl_certs']}
@@ -83,7 +86,7 @@
     - {role: ruler_client, tags: ['ruler']}
     - {role: ruler_server, tags: ['ruler']}
     - {role: shortener, tags: ['shortener']}
-    - {role: x_bang, tags: ['x_bang']}
+#    - {role: x_bang, tags: ['x_bang']}
     - {role: influxdb, tags: ['influxdb']}
     - {role: grafana, tags: ['grafana']}
     - {role: zfs_server, tags: ['zfs_server']}
@@ -154,30 +157,15 @@
 #    - { role: webcam, tags: ['webcam'], camName: 'brace', internalPort: 9020, camArgs: '--v4l /dev/v4l/by-id/usb-Chicony_Electronics_Co.__Ltd._HP_Webcam_SN0001-video-index0 --location ariDesk' }
 #    - { role: webcam, tags: ['webcam'], camName: 'braceScreen', internalPort: 9021, camArgs: '--screen --location braceScreen' }
 
-- hosts: grapes
-  gather_facts: no
-  handlers:
-    - include: handlers/main.yml
-  roles:
-    - boot2gecko
-    - rpi_buttons
-
-- hosts: bling
-  gather_facts: no
-  handlers:
-    - include: handlers/main.yml
-
 - hosts: with_speakers
   handlers:
     - include: handlers/main.yml
   roles:
     - {role: pulse, tags: ['pulse']}
-    - {role: mpd, tags: ['mpd']}
-    - {role: ympd, tags: ['ympd']}
     - {role: speech_music, tags: ['speech_music']}
-    - {role: mpdweb, tags: ['mpdweb']}
-    # - mpdpandorafeeder # not working yet
-    - {role: pianobar_web, tags: ['pianobar_web']}
+    #- {role: mpd, tags: ['mpd']}
+    #- {role: ympd, tags: ['ympd']}
+    #- {role: mpdweb, tags: ['mpdweb']} # to replace with mopidy
 
 - hosts: pi
   handlers:
@@ -185,7 +173,6 @@
   roles:
     - {role: raspi_network, tags: ['raspi_network']}
     - {role: pi_users, tags: ['pi_users']}
-    - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
     - {role: hosts, tags: ['hosts']}
     - {role: pigpio, tags: ['pigpio']}
     - {role: raspi_airport_speaker, tags: ['raspi_speaker']}
@@ -250,7 +237,6 @@
     - include: handlers/main.yml
   roles:
     - {role: my_sshfs, tags: ['my_sshfs']}
-
 
 - hosts: vpn_client
   #gather_facts: no
