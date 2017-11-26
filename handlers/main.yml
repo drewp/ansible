@@ -7,7 +7,7 @@
   # also, supervisor might not be running, and then this probably
   # *shouldn't* error since an update will happen when supervisor
   # next starts
-  command: "/usr/local/bin/supervisorctl update"
+  shell: "/usr/local/bin/supervisorctl update || true"
  
 - name: nginx update
   command: "/usr/local/bin/supervisorctl restart nginx"
