@@ -44,7 +44,6 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
     - {role: bigasterisk_users, tags: ['bigasterisk_users']}
     - {role: nginx_ssl_certs, tags: ['nginx_forward', 'nginx_ssl_certs']}
     - {role: nginx_forward, tags: ['nginx_forward', 'nginx_server']}
@@ -147,7 +146,7 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: supervisor_at_boot, tags: ['supervisor_at_boot']}
+    - {role: x11servescreen, tags: ['x11servescreen']}
     - {role: ari_room_screen, tags: ['ari_room_screen']}
 #    - { role: webcam, tags: ['webcam'], camName: 'brace', internalPort: 9020, camArgs: '--v4l /dev/v4l/by-id/usb-Chicony_Electronics_Co.__Ltd._HP_Webcam_SN0001-video-index0 --location ariDesk' }
 #    - { role: webcam, tags: ['webcam'], camName: 'braceScreen', internalPort: 9021, camArgs: '--screen --location braceScreen' }
@@ -166,6 +165,7 @@
   handlers:
     - include: handlers/main.yml
   roles:
+    - {role: raspi_system, tags: ['raspi_system']}
     - {role: raspi_network, tags: ['raspi_network']}
     - {role: pi_users, tags: ['pi_users']}
     - {role: hosts, tags: ['hosts']}
@@ -173,25 +173,8 @@
     - {role: raspi_io_node, tags: ['raspi_io_node']}    
     - {role: raspi_ws2812, tags: ['raspi_ws2812']}
     - {role: raspi_shell, tags: ['raspi_shell']}
-  tasks:
-    - systemd: name=ssh enabled=true state=started 
-    - hostname: name={{ansible_hostname}}
-
-- hosts: living
-  handlers:
-    - include: handlers/main.yml
-  roles:
-    - {role: audio_input_levels, tags: ['audio_input_levels']}
-    - { role: webcam, tags: ['webcam'], camName: 'livingRoom', internalPort: 9016, camArgs: '--v4l /dev/v4l/by-id/usb-Generic_FULL_HD_1080P_Webcam_200901010001-video-index0 --location livingRoom' }
-
-- hosts: changing
-  handlers:
-    - include: handlers/main.yml
-  roles:
-    - { role: webcam, tags: ['webcam'], camName: 'crib', internalPort: 9016, camArgs: '--v4l /dev/v4l/by-id/usb-Generic_USB2.0_PC_CAMERA_20100331010203-video-index0 --location crib' }
-    - { role: webcam, tags: ['webcam'], camName: 'changing', internalPort: 9017, camArgs: '--pi --location changing' }
-    
-
+    - {role: telegraf, tags: ['telegraf']}
+ 
 - hosts: with_ble
   handlers:
     - include: handlers/main.yml
@@ -202,6 +185,7 @@
   handlers:
     - include: handlers/main.yml
   roles:
+    - {role: x_setup, tags: ['x_setup']}
     - {role: homeauto_dpms, tags: ['homeauto_dpms']}
     - {role: homeauto_xidle, tags: ['homeauto_xidle']}
 
@@ -239,13 +223,48 @@
   roles:
     - {role: openvpn_client, tags: ['openvpn_client']}
 
-- hosts: piedmont
+
+- hosts: living
+  handlers:
+    - include: handlers/main.yml
   roles:
-    - {role: raspi_kiosk, tags: ['raspi_kiosk']}
-    
+    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-Generic_FULL_HD_1080P_Webcam_200901010001-02.analog-stereo"}
+    - { role: webcam, tags: ['webcam'], camName: 'livingRoom', internalPort: 9016, camArgs: '--v4l /dev/v4l/by-id/usb-Generic_FULL_HD_1080P_Webcam_200901010001-video-index0 --location livingRoom' }
+    - {role: raspi_airport_speaker, tags: ['raspi_speaker']}
+
+- hosts: changing
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - { role: webcam, tags: ['webcam'], camName: 'crib', internalPort: 9016, camArgs: '--v4l /dev/v4l/by-id/usb-Generic_USB2.0_PC_CAMERA_20100331010203-video-index0 --location crib' }
+    - { role: webcam, tags: ['webcam'], camName: 'changing', internalPort: 9017, camArgs: '--pi --location changing' }
+
 - hosts: frontdoor
   handlers:
     - include: handlers/main.yml
   roles:
     - {role: raspi_kiosk_chrome, tags: ['raspi_kiosk']}
     - { role: webcam, tags: ['webcam'], camName: 'frontdoor', internalPort: 9020, camArgs: '--pi --location frontYard' }
+    
+- hosts: piedmont
+  roles:
+    - {role: raspi_kiosk, tags: ['raspi_kiosk']}
+    
+- hosts: frontbed
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-GeneralPlus_USB_Audio_Device-00.analog-mono"}
+
+- hosts: kitchen
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - {role: pulse, tags: ['pulse']}
+    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-0d8c_C-Media_USB_Audio_Device-00.analog-mono"}
+
+- hosts: bed
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - {role: raspi_airport_speaker, tags: ['raspi_speaker']}
