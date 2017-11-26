@@ -1,5 +1,7 @@
 ---
 
+- file:  path=/opt/beacon_env state=absent
+
 - file: state=directory path=/opt/beacon_env
 - apt: pkg=build-essential
 - apt: pkg=python-dev
