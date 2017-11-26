@@ -1,10 +1,11 @@
 [all]
 dash
+plus ansible_ssh_host=10.2.0.20
 bang
 slash
-prime
-drewnote
-brace
+prime ansible_ssh_host=public.bigasterisk.com
+drewnote ansible_ssh_host=10.2.0.55 ansible_ssh_port=2222
+dot
 kitchen
 living
 changing
@@ -13,6 +14,7 @@ headbot  ansible_ssh_host=10.1.0.104
 bling
 garage ansible_ssh_host=10.1.0.124
 #downbath  ansible_ssh_host=10.1.0.103
+frontbed
 frontdoor 
 bed
 
@@ -20,7 +22,7 @@ bed
 dash
 bang
 slash
-brace
+dot
 plus
 
 [remote]
@@ -37,6 +39,7 @@ headbot
 garage
 #downbath
 frontdoor
+frontbed
 
 [with_ble]
 changing
@@ -51,17 +54,17 @@ kitchen
 dash
 slash
 plus
-brace
+dot
 bang
 bed
-kitchen
 living
 headbot  ansible_ssh_host=10.1.0.104
 
 [with_x11]
 dash
 slash
-brace
+dot
+frontdoor
 
 [with_pi_cam]
 changing
@@ -71,23 +74,19 @@ frontdoor
 [with_removable_storage]
 dash
 plus
-brace
+dot
 
 [nfs_client]
 #dash
 bang
 slash
 
-[sshfs_client]
-brace
-
 [vpn_client]
 fantasy3 vpn_remote_addr=10.3.0.41
-dash vpn_remote_addr=10.3.0.39
+#dash vpn_remote_addr=10.3.0.39
 drewnote vpn_remote_addr=10.3.0.23 openvpn_log_dir=/tmp
 bang vpn_remote_addr=10.3.0.37
 plus vpn_remote_addr=10.3.0.5
-brace vpn_remote_addr=10.3.0.43
 
 [hosted]
 prime
