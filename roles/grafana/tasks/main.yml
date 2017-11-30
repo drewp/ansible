@@ -1,9 +1,17 @@
 ---
 - user: name=grafana
 - file: path=/opt/grafana state=directory owner=grafana
-- apt: deb=https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana_4.3.2_amd64.deb 
+- apt: deb=https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana_4.6.2_amd64.deb 
 - service: name=grafana enabled=no
 
 - copy: dest=/etc/grafana/grafana.ini src=grafana.ini
 
+- file: path=/opt/grafana/plugins state=absent
+  name: clear old plugin versions
+- file: path=/opt/grafana/plugins state=directory
+- unarchive: dest=/opt/grafana/plugins/ remote_src=yes src="https://grafana.com/api/plugins/jdbranham-diagram-panel/versions/1.4.3/download"
+- unarchive: dest=/opt/grafana/plugins/ remote_src=yes src="https://grafana.com/api/plugins/natel-discrete-panel/versions/0.0.6/download"
+
+# may need to rm 'author' line from jdbranham-grafana-diagram-d148296/dist/plugin.json so it loads right.
+  
 # rest of site is over in websites.yml
