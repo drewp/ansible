@@ -1,0 +1,9 @@
+---
+
+- unarchive: remote_src=yes src=https://github.com/yudai/gotty/releases/download/pre-release/gotty_2.0.0-alpha.2_linux_amd64.tar.gz dest=/opt/
+
+- supervisor_process_mod: 
+    name=web_ssh_8022
+    command="/opt/gotty --port=8022 --permit-write --title-format 'bigasterisk ssh' --ws-origin=https://bigasterisk.com ssh bang"
+    user=drewp
+  notify: supervisord update
