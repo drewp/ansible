@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
-import ast, socket
+from ansible.module_utils.basic import AnsibleModule
+import ast, socket, os
 
 DOCUMENTATION = '''
 ---
@@ -131,7 +131,5 @@ def main():
                      notify="supervisord_update", # not happening i think
                      )
 
-# this is magic, see lib/ansible/module_common.py
-#<<INCLUDE_ANSIBLE_MODULE_COMMON>>
 main()
 
