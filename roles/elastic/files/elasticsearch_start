@@ -4,13 +4,9 @@
 
 # this allows PAM to set the ulimit from /etc/security/limits.conf,
 # which was not happening when supervisord runs the process itself
-ES_MIN_MEM=32m
-ES_MAX_MEM=256m
-
 ulimit -Sn 1023 || exit 1
 
+export ES_JAVA_OPTS='-Xms512m -Xmx512m'
+
 exec /usr/share/elasticsearch/bin/elasticsearch \
-    -Des.max-open-files=true \
-    -Des.config=/opt/elastic-data/elasticsearch.yml \
-    -Des.num_nodes=2 \
-    -Xss300k
+    -Epath.conf=/opt/elastic-data/ 

@@ -4,18 +4,23 @@
 - lineinfile: dest=/etc/security/limits.conf regexp='elastic\s+hard' line='elastic          hard    nofile          90000'
 
 # this makes a user 'elasticsearch' which i am ignoring
-- apt: pkg=elasticsearch
+#- apt: pkg=elasticsearch
 - command: systemctl disable elasticsearch.service
 
+# really, get this:
+- apt: deb="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.5.1.deb"
+
+
+  
 - copy: dest=/home/drewp/bin/elasticsearch_start src=elasticsearch_start
 - copy: dest=/opt/elastic-data/elasticsearch.yml src=elasticsearch.yml
+- copy: dest=/opt/elastic-data/log4j2.properties src=log4j2.properties
 
 
-- file: path=/var/log/elasticsearch state=directory owner=elastic group=elastic
-  
+- file: path=/opt/elastic-log state=directory owner=elastic group=elastic
+
 - supervisor_process_mod: 
     name=elastic_9200
-    environment="ES_MIN_MEM=32m,ES_MAX_MEM=256m"
     directory=/tmp
     user=elastic
     command="/home/drewp/bin/elasticsearch_start "
@@ -23,3 +28,17 @@
     # http://www.cyberciti.biz/faq/linux-increase-the-maximum-number-of-open-files/ and
     # /etc/security/limits.conf
   notify: supervisord update
+
+- apt: pkg=jq
+  
+- cron:
+    name="elastic_docs"
+    user="drewp"
+    special_time="hourly"
+    job="curl -s -XPOST 'http://localhost:9060/write?db=main' --data-binary 'elastic,state=docs value='`curl -s http://bang:9200/_stats | jq '._all.total.docs.count'`"
+
+- cron:
+    name="elastic_store_bytes"
+    user="drewp"
+    special_time="hourly"
+    job="curl -s -XPOST 'http://localhost:9060/write?db=main' --data-binary 'elastic,state=store_bytes value='`curl -s http://bang:9200/_stats | jq '._all.total.store.size_in_bytes'`"
