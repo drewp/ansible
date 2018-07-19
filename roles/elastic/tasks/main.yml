@@ -8,11 +8,12 @@
 - command: systemctl disable elasticsearch.service
 
 # really, get this:
-- apt: deb="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.5.1.deb"
+- apt: deb="https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.3.1.deb"
 
 
   
 - copy: dest=/home/drewp/bin/elasticsearch_start src=elasticsearch_start
+- copy: dest=/etc/default/elasticsearch src=default
 - copy: dest=/opt/elastic-data/elasticsearch.yml src=elasticsearch.yml
 - copy: dest=/opt/elastic-data/log4j2.properties src=log4j2.properties
 

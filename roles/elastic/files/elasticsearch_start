@@ -6,7 +6,4 @@
 # which was not happening when supervisord runs the process itself
 ulimit -Sn 1023 || exit 1
 
-export ES_JAVA_OPTS='-Xms512m -Xmx512m'
-
-exec /usr/share/elasticsearch/bin/elasticsearch \
-    -Epath.conf=/opt/elastic-data/ 
+exec /usr/share/elasticsearch/bin/elasticsearch
