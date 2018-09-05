@@ -181,24 +181,96 @@ writeDashboard('pi cpu', [
 ])
 
 writeDashboard('ping from bang', [
-     {
-         "height": 1000, "panels": [
-             float_panel(datasource='telegraf', title='ping from bang (max ms)', max=50, targets=[
-                 metric(alias=h, measurement='ping', field='maximum_response_ms', avg=5, tags=[('host', 'bang'), ('url', h)])
-                 for h in pingHosts
-             ]),
-         ],
-    },
-])
+     {"height": 1000, "panels": [
+         float_panel(datasource='telegraf', title='ping from bang (max ms)', max=50, targets=[
+             metric(alias=h, measurement='ping', field='maximum_response_ms', avg=5, tags=[('host', 'bang'), ('url', h)])
+             for h in pingHosts
+         ]),
+     ]}])
 
-writeDashboard('audio level', [
+def audioPanel(title, loc):
+    return {
+  "datasource": "main",
+  "id": nextId(),
+  "interval": ">10s",
+  "span": 12,
+  "targets": [
     {
-        "height": 250, "panels": [
-            float_panel(datasource='main', title=title, max=.6, targets=[
-                metric(alias='level', measurement='audioLevel',  field='value', tags=[('location', loc)])
-            ]),
-        ],
-    } for title, loc in audioHosts
+      "alias": "lo",
+      "dsType": "influxdb",
+      "groupBy": [{"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
+      "measurement": "audioLevel",
+      "select": [[{"params": ["lo"], "type": "field"}, {"params": [], "type": "mean"}]],
+      "tags": [{"key": "location", "operator": "=", "value": loc}],
+      "policy": "default",
+      "resultFormat": "time_series",
+      "orderByTime": "ASC",
+      "refId": "A"
+    },
+    {
+      "alias": "mid",
+      "dsType": "influxdb",
+      "groupBy": [{"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
+      "measurement": "audioLevel",
+      "select": [[{"params": ["mid"], "type": "field"}, {"params": [], "type": "mean"}]],
+      "tags": [{"key": "location", "operator": "=", "value": loc}],
+      "policy": "default",
+      "resultFormat": "time_series",
+      "orderByTime": "ASC",
+      "refId": "B"
+    },
+    {
+      "alias": "hi",
+      "dsType": "influxdb",
+      "groupBy": [{"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
+      "measurement": "audioLevel",
+      "select": [[{"params": ["hi"], "type": "field"}, {"params": [], "type": "mean"}]],
+      "tags": [{"key": "location", "operator": "=", "value": loc}],
+      "policy": "default",
+      "resultFormat": "time_series",
+      "orderByTime": "ASC",
+      "refId": "C"
+    }
+  ],
+  "title": title,
+  "type": "graph",
+  "yaxes": [{"format": "short", "max": ".5", "min": 0, "show": true, "decimals": null}, {"format": "short", "min": 0, "show": true}],
+  "renderer": "flot",
+  "xaxis": {"show": true, "mode": "time", "name": null, "values": [], "buckets": null},
+  "lines": true,
+  "fill": 1,
+  "linewidth": 1,
+  "dashes": false,
+  "dashLength": 10,
+  "spaceLength": 10,
+  "points": false,
+  "pointradius": 5,
+  "bars": false,
+  "stack": false,
+  "percentage": false,
+  "legend": {"show": true, "values": false, "min": false, "max": false, "current": false, "total": false, "avg": false},
+  "nullPointMode": "null",
+  "steppedLine": false,
+  "tooltip": {"value_type": "individual", "shared": true, "sort": 0},
+  "timeFrom": null,
+  "timeShift": null,
+  "aliasColors": {},
+  "seriesOverrides": [
+    {"alias": "lo", "color": "#0a50a1"},
+    {"alias": "mid", "color": "#5195ce"},
+    {"alias": "hi", "color": "#64b0c8"}
+  ],
+  "thresholds": [],
+  "links": []
+}
+writeDashboard('audio level', [
+    {"height": 250,
+     "panels": [
+        #float_panel(datasource='main', title=title, max=1,
+        #            targets=[metric(alias='level', measurement='audioLevel',  field='value', tags=[('location', loc)])])
+         audioPanel(title, loc)
+     ],
+ } for title, loc in audioHosts
 ])
 
 
