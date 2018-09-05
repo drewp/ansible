@@ -1,35 +1,21 @@
 ---
 
-- set_fact:
-    src=/my/proj/homeauto/service/audioInputLevels/
-    root=/opt/audioInputLevels
-    venv=/opt/audioInputLevels_env
+- set_fact: job=audio_input_levels image_tag="latest"
+- set_fact: base_image_platform="{{'pi' if ansible_architecture=='armv7l' else 'x86'}}"
+- set_fact: image=bang6:5000/{{job}}_{{base_image_platform}}:{{image_tag}}
+- docker_image: name={{image}} force=yes
 
-- file: state=directory path={{root}}
-# put this outside {{root}} since we rsync --delete in there.
-- file: state=directory path={{venv}}
-- synchronize: src={{src}} dest={{root}} archive=yes delete=yes
-- pip: chdir={{venv}} requirements={{root}}/requirements.txt virtualenv={{venv}}
-
-- file: state=directory path={{venv}}/lib/python2.7/site-packages/pulseaudio
-- copy:
-    src=/my/proj/homeauto/service/audioInputLevels/python-pulseaudio/pulseaudio/lib_pulseaudio.py
-    dest={{venv}}/lib/python2.7/site-packages/pulseaudio/
-- copy:
-    src=/my/proj/homeauto/service/audioInputLevels/python-pulseaudio/pulseaudio/__init__.py
-    dest={{venv}}/lib/python2.7/site-packages/pulseaudio/
 
 # set pulse_input with a value from
 # pactl list sources | grep Name
 
 - supervisor_process_mod:
-    name=audio_input_levels
-    directory=/opt/audioInputLevels
-    command="/opt/audioInputLevels_env/bin/python audioInputLevelsPulse.py --source {{pulse_input}}"
+    name={{job}}
+    command="docker run --name {{job}} --rm -v /etc/pulse:/etc/pulse  -v /tmp/pulseaudio:/tmp/pulseaudio --net=host {{image}} python ./audioInputLevelsPulse.py --source {{pulse_input}}"
     user=drewp
     autostart=true
   notify: supervisord update
-
+  
 - copy:
     dest="/var/lib/ruler.d/audio_input_levels_{{ansible_hostname}}.n3"
     content="@prefix {{':'}} <http://bigasterisk.com/ruler/ns#> .\n@prefix check{{':'}} <http://bigasterisk.com/ruler/check/> .\n@prefix host{{':'}} <http://bigasterisk.com/ruler/host/> .\ncheck:influx_audioLevel_{{ansible_hostname}}        a :InfluxDbCheck; :runHost host:bang; :measurement \"audioLevel\";    :where \"location = '{{ansible_hostname}}'\"; :dataSince \"2m\" ."
