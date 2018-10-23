@@ -9,7 +9,8 @@
 
 - name: pull
   command: git pull origin crashey chdir=/opt/cjdns
-- command: git checkout --force 186169f9a8631633795e4e9d70c501519a7800f4 chdir=/opt/cjdns
+- command: git checkout --force 77259a49e5bc7ca7bc6dca5bd423e02be563bdc5 chdir=/opt/cjdns
+  name: cjdns-v20.2 from 2018-04-18
 #- copy: dest=/opt/cjdns/build_linux/dependencies/cnacl/jsbuild/include_internal/crypto_types.h src=crypto_types.h
 
 # fuzz tests fail on raspi; I didn't look into why. Then the condition
