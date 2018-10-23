@@ -1,31 +1,13 @@
 ---
 
-# depends on nodejs, which needs to vary a bit on the debian/arm installs
+- set_fact: job=cjdns image_tag="latest"
+- set_fact: base_image_platform="{{'pi' if ansible_architecture=='armv7l' else 'x86'}}"
+# hard to use bang6 here upon 1st setup. Need an simpler access to the repo.
+- set_fact: image=bang6:5000/{{job}}_{{base_image_platform}}:{{image_tag}}
+- docker_image: name={{image}} force=yes
 
-- apt: pkg=git
-- apt: pkg=nodejs
-- name: clone
-  command: /usr/bin/git clone https://github.com/cjdelisle/cjdns.git /opt/cjdns creates=/opt/cjdns
 
-- name: pull
-  command: git pull origin crashey chdir=/opt/cjdns
-- command: git checkout --force 77259a49e5bc7ca7bc6dca5bd423e02be563bdc5 chdir=/opt/cjdns
-  name: cjdns-v20.2 from 2018-04-18
-#- copy: dest=/opt/cjdns/build_linux/dependencies/cnacl/jsbuild/include_internal/crypto_types.h src=crypto_types.h
-
-# fuzz tests fail on raspi; I didn't look into why. Then the condition
-# failed and returned true on raspi, so I set to 1 everywhere.
-#
-# pi3 flags:
-#   from https://wiki.gentoo.org/wiki/Raspberry_Pi#Cross_compiling, -march=armv7-a -mfpu=neon-vfpv4
-#   from another site, -mcpu=cortex-a53 -mfpu=neon-fp-armv8
-#   from more trials, just pass nothing
-- name: build cjdns
-  command: nodejs node_build/make.js chdir=/opt/cjdns
-  environment:
-    NO_TEST: "{{ '1' if ansible_distribution == 'Debian' else '1' }}"
-    Seccomp_NO: "{{ '1' if ansible_distribution == 'Debian' else '' }}"
-    CFLAGS: "{{ '' if ansible_hostname in ['changing', 'living', 'garage', 'frontdoor'] else '' }}"
+- file: path=/opt/cjdns state=directory
 
 - name: make config
   local_action: command python /my/proj/ansible/roles/cjdns/make_config.py "{{ inventory_hostname }}"
@@ -47,21 +29,14 @@
   when: inventory_hostname != "drewnote"
 
 
-- name: runner
-  copy: dest=/opt/cjdns/run content="#!/bin/sh\nmodprobe ipv6\nexec /opt/cjdns/cjdroute < /opt/cjdns/cjdroute.conf" mode=0755 owner=root
-
-- name: runner_with_tun
-  copy: dest=/opt/cjdns/run content="#!/bin/sh\nmodprobe ipv6\nmkdir -p /dev/net\nmknod /dev/net/tun c 10 200\nchmod 0666 /dev/net/tun\nexec /opt/cjdns/cjdroute < /opt/cjdns/cjdroute.conf" mode=0755 owner=root
-  when: inventory_hostname == "drewnote"
-
-  
 - supervisor_process_mod:
-    name=cjdns
-    command="/opt/cjdns/run"
+    name={{job}}
+    command="docker run --rm --name {{job}} -v /opt/cjdns/cjdroute.conf:/opt/cjdns/cjdroute.conf --network=host --cap-add=NET_ADMIN --device=/dev/net/tun {{image}} /bin/sh /opt/cjdns/run"
     directory=/opt/cjdns
     user=root
     stopasgroup=true
   notify: supervisord update
+  
   
 # write some /etc/hosts
 

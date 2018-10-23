@@ -1,0 +1,10 @@
+FROM bang6:5000/base_pi
+
+RUN git clone https://github.com/cjdelisle/cjdns.git /opt/cjdns
+
+WORKDIR /opt/cjdns
+
+RUN git checkout 902365945f5497a1c30337bd92447fae1fbbc10e
+RUN Seccomp_NO=1 NO_TEST=1 ./do
+
+COPY ./run /opt/cjdns/run
