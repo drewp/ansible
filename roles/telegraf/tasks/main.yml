@@ -1,11 +1,11 @@
 ---
 - service: name=collectd enabled=no state=stopped
   when: "ansible_hostname in ['bang', 'dash',  'prime']"
+  name: "no collectd"
 
 
 - set_fact: "arch={{ {'x86_64': 'amd64', 'armv7l': 'armhf'}[ansible_architecture] }}"
-- apt: deb="https://dl.influxdata.com/telegraf/releases/telegraf_1.4.3-1_{{ arch }}.deb" 
-
+- apt: deb="https://dl.influxdata.com/telegraf/releases/telegraf_1.6.0-1_{{ arch }}.deb" 
 - service: name=telegraf enabled=no
   
 - apt: pkg=lm-sensors
