@@ -1,21 +1,24 @@
 ---
+- set_fact: job=telegraf image_tag="latest"
+- set_fact: base_image_platform="{{'pi' if ansible_architecture=='armv7l' else 'x86'}}"
+- set_fact: image=bang6:5000/{{job}}_{{base_image_platform}}:{{image_tag}}
+- docker_image: name={{image}}
+
+
 - service: name=collectd enabled=no state=stopped
   when: "ansible_hostname in ['bang', 'dash',  'prime']"
   name: "no collectd"
 
-
-- set_fact: "arch={{ {'x86_64': 'amd64', 'armv7l': 'armhf'}[ansible_architecture] }}"
-- apt: deb="https://dl.influxdata.com/telegraf/releases/telegraf_1.6.0-1_{{ arch }}.deb" 
-- service: name=telegraf enabled=no
-  
-- apt: pkg=lm-sensors
+- service: name=telegraf enabled=no state=stopped
 
 - template: dest=/opt/telegraf.conf src=telegraf.conf
+  notify:
+    - reload telegraf
   
 - supervisor_process_mod:
     name=telegraf
     user=root
-    command="telegraf -config /opt/telegraf.conf"
+    command="docker run --rm --name telegraf --net=host --pid=host --hostname={{ansible_hostname}} --cap-add=SYS_PTRACE --security-opt=apparmor=unconfined -e HOST_PROC=/rootfs/proc -e HOST_SYS=/rootfs/sys -e HOST_ETC=/rootfs/etc -v /opt/telegraf.conf:/opt/telegraf.conf:ro -v /var/run/docker.sock:/var/run/docker.sock:ro -v /sys:/rootfs/sys:ro -v /proc:/rootfs/proc:ro -v /etc:/rootfs/etc:ro {{image}} /usr/bin/telegraf --config /opt/telegraf.conf"
   notify:
     - supervisord update
   
