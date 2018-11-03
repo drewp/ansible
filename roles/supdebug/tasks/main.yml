@@ -1,41 +1,13 @@
 ---
-- file: state=directory path=/opt/supdebug
-- file: state=directory path=/opt/supdebug_env
-
-# for later when this is in its own repo
-#- name: initial checkout
-#  command: darcs get ... creates=/opt/supdebug/_darcs
-#- name: update
-#  command: darcs pull...
-
-# for first-time install
-- apt: update_cache=yes
-
-- apt: pkg=rsync 
-- synchronize: src=/my/proj/supdebug/ dest=/opt/supdebug archive=yes delete=yes 
-
-- apt: pkg=python-virtualenv state=installed
-- apt: pkg=python2.7-dev state=installed
-- apt: pkg=libffi-dev state=installed
-- apt: pkg=libssl-dev state=installed
-
-# https://github.com/graphite-project/graphite-web/issues/1721
-- apt: pkg=python-openssl state=absent
-  
-
-- command: virtualenv --system-site-packages /opt/supdebug_env creates=/opt/supdebug_env/bin
-- command: /opt/supdebug_env/bin/pip install -U pip
-
-- apt: pkg=build-essential
-
-- command: /opt/supdebug_env/bin/pip install cyclone tailer
+- set_fact: job=supdebug port=10004 image_tag="latest"
+- set_fact: base_image_platform="{{'pi' if ansible_architecture=='armv7l' else 'x86'}}"
+- set_fact: image=bang6:5000/{{job}}_{{base_image_platform}}:{{image_tag}}
+- docker_image: name={{image}} force=yes
 
 - supervisor_process_mod:
-    name=supdebug_10004
-    directory=/opt/supdebug
-    command="/opt/supdebug_env/bin/python supdebug.py"
+    name="{{job}}_{{port}}"
+    command="docker run --rm --name {{job}} -v /etc/passwd:/etc/passwd -v /etc/supervisord.conf:/etc/supervisord.conf -v /var/lib/supervisor.d:/var/lib/supervisor.d -v /tmp:/tmp -p {{port}}:{{port}} --net=host {{image}}"
     user=drewp
-    autostart=true
   notify: supervisord update
 
 - template:
