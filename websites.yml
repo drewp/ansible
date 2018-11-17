@@ -357,8 +357,8 @@
       serverHost: "bang"
       internalPort: "9067"
       process:
-        user: grafana
-        command: "/usr/sbin/grafana-server --homepath=/usr/share/grafana --config=/etc/grafana/grafana.ini cfg:default.paths.data=/var/lib/grafana cfg:default.paths.logs=/var/log/grafana"
+        user: root
+        command: "docker run --rm --name grafana --net=host -p 9067:9067 -v /opt/grafana:/opt/grafana bang6:5000/grafana_x86:latest"
       tags: ['grafana']
 
 - hosts: brace
