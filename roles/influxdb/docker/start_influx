@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# run as 'influxdb' user
+
+ulimit -Sn 90000 || exit 1
+exec /usr/bin/influxd -config /opt/influxdb.conf
