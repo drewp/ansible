@@ -1,19 +1,18 @@
 ---
 #- apt_repository: repo=ppa:kokelnet/dovecot22
-- set_fact:
-    launchpadRoot="https://launchpad.net/ubuntu/+archive/primary/+files"
-    
-- get_url:
-    dest="/opt/{{ item }}"
-    url="{{ launchpadRoot }}/{{ item }}"
-  with_items:
-    - dovecot-core_2.2.9-1ubuntu1_amd64.deb
-    - dovecot-imapd_2.2.9-1ubuntu1_amd64.deb
-- command: dpkg -i /opt/dovecot-core_2.2.9-1ubuntu1_amd64.deb
-- command: dpkg -i /opt/dovecot-imapd_2.2.9-1ubuntu1_amd64.deb
 
-# someday:
-#- apt: pkg=dovecot-core
-#- apt: pkg=dovecot-imapd
+#- set_fact:
+#    launchpadRoot="https://launchpad.net/ubuntu/+archive/primary/+files"
+#- get_url:
+#    dest="/opt/{{ item }}"
+#    url="{{ launchpadRoot }}/{{ item }}"
+#  with_items:
+#    - dovecot-core_2.2.9-1ubuntu1_amd64.deb
+#    - dovecot-imapd_2.2.9-1ubuntu1_amd64.deb
+#- command: dpkg -i /opt/dovecot-core_2.2.9-1ubuntu1_amd64.deb
+#- command: dpkg -i /opt/dovecot-imapd_2.2.9-1ubuntu1_amd64.deb
+
+- apt: pkg=dovecot-core
+- apt: pkg=dovecot-imapd
 
 - copy: dest=/etc/dovecot/dovecot.conf src=dovecot.conf
