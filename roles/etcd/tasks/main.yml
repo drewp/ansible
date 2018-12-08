@@ -1,0 +1,16 @@
+---
+- name: Run etcd KV node
+  docker_container:
+    name: "etcd0"
+    image: quay.io/coreos/etcd
+    network_mode: host
+    command:
+      - /usr/local/bin/etcd
+      - -name etcd0
+      - -advertise-client-urls http://bang6:2379,http://bang6:4001
+      - -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001
+      - -initial-advertise-peer-urls http://bang6:2380
+      - -initial-cluster etcd0=http://bang6:2380
+      - -initial-cluster-token etcd-cluster
+      - -listen-peer-urls http://0.0.0.0:2380
+      - -initial-cluster-state new
