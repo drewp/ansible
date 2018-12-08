@@ -1,0 +1,37 @@
+---
+
+# set gpio_in_pin, gpio_out_pin
+
+- apt: pkg=lirc
+- lineinfile: path=/etc/modules regexp="^lirc_dev" line="lirc_dev"
+- lineinfile: path=/etc/modules regexp="^lirc_rpi" line="lirc_rpi gpio_in_pin={{ gpio_in_pin }} gpio_out_pin={{ gpio_out_pin }}"
+- lineinfile:
+    path=/boot/config.txt
+    regexp="^dtoverlay=lirc-rpi"
+    line="dtoverlay=lirc-rpi,gpio_in_pin={{ gpio_in_pin }},gpio_out_pin={{ gpio_out_pin }}"
+- copy: dest=/etc/lirc/lirc_options.conf src=lirc_options.conf
+- copy: dest=/etc/lirc/lircd.conf.d/remotes.conf src=remotes.conf
+  
+- file: state=directory path=/opt/irRemote
+# put this outside /opt/irRemote since we rsync --delete in there.
+- file: state=directory path=/opt/irRemote_env
+- synchronize:
+    src=/my/proj/homeauto/service/irRemote/
+    dest=/opt/irRemote
+    archive=yes
+    delete=yes
+
+- pip:
+    chdir=/opt/irRemote_env
+    requirements=/opt/irRemote/requirements.txt
+    virtualenv=/opt/irRemote_env
+
+- supervisor_process_mod:
+    name=irRemote
+    directory=/opt/irRemote
+    autostart=true
+    user=pi
+    startsecs=30
+    command="/opt/irRemote_env/bin/python irRemote.py"
+  notify: supervisord update
+
