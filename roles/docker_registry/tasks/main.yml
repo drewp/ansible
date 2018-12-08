@@ -1,0 +1,13 @@
+---
+
+- docker_image: name=registry:2 force=yes
+
+- copy: dest=/opt/docker_registry/config.yml src=config.yml
+  
+- supervisor_process_mod:
+    name=docker_registry_5000
+    command="docker run --name registry --rm -v /opt/docker_registry/registry:/var/lib/registry/docker/registry -v /opt/docker_registry/config.yml:/etc/docker/registry/config.yml -p 5000:5000 registry:2"
+    user=drewp
+    autostart=true
+  notify: supervisord update
+  
