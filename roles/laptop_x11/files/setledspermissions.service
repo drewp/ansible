@@ -1,0 +1,10 @@
+[Unit]                            
+Description=Set leds writable to everybody
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/bin/bash -c "/bin/chmod a+w /sys/class/backlight/intel_backlight/brightness /dev/bus/usb/001/009"
+
+[Install]
+WantedBy=multi-user.target
