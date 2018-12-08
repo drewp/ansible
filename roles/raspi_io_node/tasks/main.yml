@@ -1,53 +1,40 @@
 ---
-- file: state=directory path=/opt/piNode
-# put this outside /opt/piNode since we rsync --delete in there.
-- file: state=directory path=/opt/piNode_env
-- file: state=directory path=/opt/arduinoNode
-- file: state=directory path=/opt/homeauto_lib
+- set_fact: job=pi_node port=9059 image_tag="latest"
+- set_fact: base_image_platform="{{'pi' if ansible_architecture=='armv7l' else 'x86'}}"
+- set_fact: image=bang6:5000/{{job}}_{{base_image_platform}}:{{image_tag}}
+- docker_image: name={{image}} force=yes
 
-- apt: pkg=build-essential
-- apt: pkg=python-dev
-- apt: pkg=libffi-dev
-- apt: pkg=git
-- apt: pkg=liblapack-dev
-- apt: pkg=libjpeg-dev
-- apt: pkg=zlib1g-dev
-
-
-  
-- synchronize:
-    src=/my/proj/homeauto/service/piNode/
-    dest=/opt/piNode
-    archive=yes
-    delete=yes
-
-# may need to 'pip install -U setuptools' in here first
-- pip:
-    chdir=/opt/piNode_env
-    requirements=/opt/piNode/requirements.txt
-    virtualenv=/opt/piNode_env
-
-- synchronize: src=/my/proj/homeauto/service/arduinoNode/ dest=/opt/arduinoNode archive=yes delete=yes
-- synchronize: src=/my/proj/homeauto/lib/ dest=/opt/homeauto_lib archive=yes delete=yes
-- copy: src=/my/site/magma/stategraph.py dest=/opt/homeauto_lib
-- copy: src=/my/proj/room/carbondata.py dest=/opt/homeauto_lib
-- synchronize: src=/my/proj/light9/light9 dest=/opt/homeauto_lib archive=yes
-  
 - lineinfile: dest=/etc/modules line="ipv6"
 
 # using 1-wire? (piNode program knows if this is the case)
 - lineinfile: dest=/boot/config.txt line="dtoverlay=w1-gpio,gpiopin=17,pullup=y"
-  when: inventory_hostname in ["frontbed", "kitchen", "living", "garage", "frontdoor"]
+  when: inventory_hostname in ["frontbed", "kitchen", "living", "garage", "frontdoor", "workshop"]
 
 # pi 3 onboard audio conflicts with pwm used for ws2812 leds. https://github.com/jgarff/rpi_ws281x/wiki
 - lineinfile: dest=/boot/config.txt line="dtparam=audio=off" regexp="^dtparam=audio="
+
+# old name
+- file: path=/var/lib/supervisor.d/piNode_9059.conf state=absent
   
 - supervisor_process_mod:
-    name=piNode_9059
-    directory=/opt/piNode
+    name="{{job}}_{{port}}"
     autostart=true
     user=root
     startsecs=30
-    command="/opt/piNode_env/bin/python piNode.py"
+    command="docker run --name {{job}} --rm -p {{port}}:{{port}} --uts=host --net=host --cap-add SYS_RAWIO --device /dev/mem  --privileged {{image}}"
   notify: supervisord update
 
+
+- set_fact:
+    name: "{{ansible_hostname}}_{{job}}"
+    domain: "bigasterisk.com"
+    path: "/pi/{{ansible_hostname}}/"
+    upstreamTarget: "http://{{ansible_hostname}}.bigasterisk.com:{{port}}/"
+    openid: admin
+    useWebsocketPath: yes
+
+- template:
+    dest=/var/lib/openid_proxy.d/{{name}}.n3
+    src=openid_proxy_statements.n3.j2
+  notify: openid_proxy restart    
+  delegate_to: bang
