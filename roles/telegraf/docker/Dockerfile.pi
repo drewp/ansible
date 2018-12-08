@@ -1,0 +1,8 @@
+FROM bang6:5000/base_pi
+
+WORKDIR /opt/
+
+RUN wget https://dl.influxdata.com/telegraf/releases/telegraf_1.8.2-1_armhf.deb
+RUN dpkg -i telegraf_1.8.2-1_armhf.deb
+RUN apt-get install -y lm-sensors iputils-ping
+
