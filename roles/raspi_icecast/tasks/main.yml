@@ -1,0 +1,33 @@
+---
+- apt: pkg=icecast2
+- apt: pkg=darkice
+- service: name=icecast2 enabled=no state=stopped
+
+- template: src=icecast.xml dest=/opt/icecast.xml
+- template: src=darkice.cfg dest=/opt/darkice.cfg
+
+- copy: dest=/opt/icecast_launch.sh content="#!/bin/sh\nmkdir -p /var/log/icecast2\nchown icecast2 /var/log/icecast2\nsudo -u icecast2 icecast2 -c /opt/icecast.xml" mode=755
+  name: launcher
+  
+- supervisor_process_mod:
+    name=icecast_8000
+    autostart=true
+    user=root
+    startsecs=5
+    command="/bin/sh /opt/icecast_launch.sh"
+  notify: supervisord update
+
+- supervisor_process_mod:
+    name=darkice
+    autostart=true
+    user=pi
+    startsecs=5
+    command="/usr/bin/darkice -c /opt/darkice.cfg"
+  notify: supervisord update
+
+- template:
+    dest=/var/lib/openid_proxy.d/icecast_{{ansible_hostname}}.n3
+    src=openid_proxy_statements.n3.j2
+  name: icecast route
+  notify: openid_proxy restart    
+  delegate_to: bang
