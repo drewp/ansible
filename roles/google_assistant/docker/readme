@@ -1,0 +1,4 @@
+
+% make shell
+
+% google-oauthlib-tool --client-secrets /opt/credentials.json --scope https://www.googleapis.com/auth/assistant-sdk-prototype --save --headless
