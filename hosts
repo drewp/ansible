@@ -1,6 +1,6 @@
 [all]
 dash
-plus ansible_ssh_host=10.2.0.20
+plus
 bang
 slash
 prime ansible_ssh_host=public.bigasterisk.com
@@ -10,13 +10,13 @@ kitchen
 living
 changing
 piedmont ansible_ssh_host=piedmont6
-headbot  ansible_ssh_host=10.1.0.104
 bling
 garage ansible_ssh_host=10.1.0.124
 #downbath  ansible_ssh_host=10.1.0.103
 frontbed
-frontdoor 
+frontdoor
 bed
+workshop
 
 [big]
 dash
@@ -35,11 +35,10 @@ kitchen
 living
 changing
 piedmont
-headbot
 garage
-#downbath
 frontdoor
 frontbed
+workshop
 
 [with_ble]
 changing
@@ -49,16 +48,16 @@ bang
 living
 garage
 kitchen
+workshop
 
 [with_speakers]
 dash
 slash
 plus
 dot
-bang
 bed
 living
-headbot  ansible_ssh_host=10.1.0.104
+kitchen
 
 [with_x11]
 dash

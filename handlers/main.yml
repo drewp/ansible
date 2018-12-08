@@ -27,6 +27,9 @@
 - name: openid_proxy restart
   command: "/usr/local/bin/supervisorctl restart openid_proxy_9023"
 
+- name: reload telegraf
+  command: "/usr/local/bin/supervisorctl restart telegraf"
+
 - name: sshd restart
   service: name=ssh enabled=yes state=reloaded
 
@@ -38,4 +41,8 @@
 
 - name: update timezone
   command: dpkg-reconfigure --frontend noninteractive tzdata
+
+- name: restart docker
+  service: name=docker state=restarted
+
 

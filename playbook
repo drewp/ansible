@@ -1,0 +1,14 @@
+#!/bin/zsh
+
+# sudo /my/proj/ansible/playbook -l host -t tag
+
+# from https://github.com/ansible/ansible/issues/13401 , comes up when
+# talking to newer hosts
+ANSIBLE_SCP_IF_SSH=y
+export ANSIBLE_SCP_IF_SSH
+
+HOME=/root
+export HOME
+eval `keychain --quiet --eval id_ecdsa` 
+cd /my/proj/ansible
+ansible-playbook site.yml $@
