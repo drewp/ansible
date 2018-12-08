@@ -1,8 +1,10 @@
 ---
 
 - set_fact: job=cjdns image_tag="latest"
+  name: "cjdns top"
 - set_fact: base_image_platform="{{'pi' if ansible_architecture=='armv7l' else 'x86'}}"
 # hard to use bang6 here upon 1st setup. Need an simpler access to the repo.
+- set_fact: image=bang:5000/{{job}}_{{base_image_platform}}:{{image_tag}}
 - set_fact: image=bang6:5000/{{job}}_{{base_image_platform}}:{{image_tag}}
 - docker_image: name={{image}} force=yes
 

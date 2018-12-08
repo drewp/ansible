@@ -1,0 +1,3 @@
+if you build x86 on a box with bmi1 or bmi2 support, some crypto code
+will use RORX which will fail with SIGILL on non-bmi cpus. see
+https://github.com/golang/go/issues/18512
