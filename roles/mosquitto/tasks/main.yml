@@ -1,3 +1,13 @@
 ---
 - apt: pkg=mosquitto
-- service: name=mosquitto enabled=yes state=started
+- service: name=mosquitto enabled=no
+- file: path=/opt/mosquitto/{{id}} state=directory owner=mosquitto
+- template: src=mosquitto.conf.j2 dest=/opt/mosquitto/{{id}}/mosquitto.conf
+
+  
+- supervisor_process_mod:
+    name=mosquitto_{{id}}_{{pport}}
+    command="/usr/sbin/mosquitto -c /opt/mosquitto/{{id}}/mosquitto.conf"
+    user=root
+  notify:
+   - supervisord update
