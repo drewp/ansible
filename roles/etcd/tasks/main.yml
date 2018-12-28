@@ -1,16 +1,12 @@
 ---
-- name: Run etcd KV node
-  docker_container:
-    name: "etcd0"
-    image: quay.io/coreos/etcd
-    network_mode: host
-    command:
-      - /usr/local/bin/etcd
-      - -name etcd0
-      - -advertise-client-urls http://bang6:2379,http://bang6:4001
-      - -listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001
-      - -initial-advertise-peer-urls http://bang6:2380
-      - -initial-cluster etcd0=http://bang6:2380
-      - -initial-cluster-token etcd-cluster
-      - -listen-peer-urls http://0.0.0.0:2380
-      - -initial-cluster-state new
+- file: path=/opt/etcd_homeauto state=directory
+- set_fact: image=quay.io/coreos/etcd
+- docker_image: name={{image}}
+
+- supervisor_process_mod:
+    name=etcd_homeauto_9022
+    command="docker run --name etcd_homeauto --rm -v /etc/hosts:/etc/hosts -v /opt/etcd_homeauto:/data -p 9022:9022 -p 9028:9028 {{image}} /usr/local/bin/etcd -name etcd0 -advertise-client-urls http://bang6:9022 -listen-client-urls http://0.0.0.0:9022 -initial-advertise-peer-urls http://bang6:9028 -initial-cluster etcd0=http://bang6:9028 -listen-peer-urls http://0.0.0.0:9028 -data-dir /data"
+    user=drewp
+    autostart=true
+  notify: supervisord update
+      
