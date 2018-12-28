@@ -34,7 +34,7 @@
 
 - file: path="/var/lib/nginx.d/{{domain}}/no-nfs/" state=directory
 - copy:
-    dest="/var/lib/nginx.d/{{domain}}/no-nfs/{{name}}.conf"
+    dest="/var/lib/nginx.d/{{domain}}/no-nfs/{{site_name}}.conf"
     content="location {{path}} { {{nginxLocation}} {{accessLogLine}} }"
     # always include the addslash redirect?
   notify: nginx restart
@@ -44,20 +44,20 @@
 
 # note that user may be overridden by arg_dict sometimes
 - supervisor_process_mod:
-    name="{{ name }}_{{ internalPort }}"
+    name="{{ site_name }}_{{ internalPort }}"
     user=drewp
     arg_dict="{{process}}"
   notify: supervisord update
 
 - template:
-    dest=/var/lib/openid_proxy.d/{{name}}.n3
+    dest=/var/lib/openid_proxy.d/{{site_name}}.n3
     src=openid_proxy_statements.n3.j2
   notify: openid_proxy restart    
   delegate_to: bang
 
   
 #- template:
-#    dest="/my/proj/puppet/ansible/roles/sensu_client/files/generated/site/{{name}}.json"
+#    dest="/my/proj/puppet/ansible/roles/sensu_client/files/generated/site/{{site_name}}.json"
 #    src=sensu-check.json.j2
 #  # notify: (todo: all sensus on all machines)
 
@@ -65,7 +65,7 @@
   delegate_to: bang
 
 - template:
-    dest="/var/lib/ruler.d/site/{{name}}.n3"
+    dest="/var/lib/ruler.d/site/{{site_name}}.n3"
     src=ruler-check.n3.j2
   tags: ['ruler-check']
   delegate_to: bang

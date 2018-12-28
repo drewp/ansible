@@ -19,7 +19,7 @@
     - apt: pkg=coffeescript
   roles:
     - role: site
-      name: 'heist_querytransactions'
+      site_name: 'heist_querytransactions'
       internalPort: "10003"
       path: "/heist/"
       openid: "admin"
@@ -29,7 +29,7 @@
         command: "/my/proj/heist/bin/python querytransactions.py"
         
     - role: site
-      name: 'darcsweb'
+      site_name: 'darcsweb'
       path: "/darcs/"
       openid: "anonymous"
       serverHost: "bang"
@@ -41,7 +41,7 @@
         user: "darcsweb"
     
     - role: site
-      name: 'href'
+      site_name: 'href'
       path: "/href/"
       openid: "anonymous"
       serverHost: "bang"
@@ -63,7 +63,7 @@
 
     - role: site
       tags: ['babysitcoop']
-      name: 'babysitcoop'
+      site_name: 'babysitcoop'
       path: "/babysitcoop/"
       openid: "anonymous"
       serverHost: "bang"
@@ -74,7 +74,7 @@
 
     - role: site
       tags: ['babysitcoop']
-      name: 'babysitcoop_jm'
+      site_name: 'babysitcoop_jm'
       path: "/jmbc/"
       openid: "anonymous"
       serverHost: "bang"
@@ -85,7 +85,7 @@
         command: "/my/proj/babysitcoop/bin/python babysitcoop.py"
         
     - role: site
-      name: 'bigfoaf'
+      site_name: 'bigfoaf'
       tags: ['bigfoaf']
       path: "/foaf/"
       upstreamPath: "/foaf/"
@@ -97,7 +97,7 @@
         command: "/my/proj/bigfoaf/bin/python bigfoaf.py"
         
     - role: site
-      name: 'bigfoaf_logins'
+      site_name: 'bigfoaf_logins'
       tags: ['bigfoaf']
       path: "/logins/"
       openid: "admin"
@@ -108,7 +108,7 @@
         command: "/my/proj/bigfoaf/bin/python logins.py"
         
     - role: site
-      name: 'diarybot'
+      site_name: 'diarybot'
       path: "/diary/"
       openid: "admin"
       serverHost: "bang"
@@ -119,18 +119,7 @@
       tags: ['diary']
         
     - role: site
-      name: 'wesabe'
-      path: "/wesabe/"
-      openid: "admin"
-      serverHost: "bang"
-      internalPort: "9044"
-      root_page_timeout_secs: 10
-      process:
-        directory: "/my/proj/wesabe-rdf"
-        command: "/my/proj/wesabe-rdf/bin/python /my/proj/wesabe-rdf/pervisit.py"
-
-    - role: site
-      name: 'search'
+      site_name: 'search'
       path: "/search/"
       openid: "admin"
       serverHost: "bang"
@@ -142,7 +131,7 @@
         stderr_logfile_backups: 2
 
     - role: site
-      name: 'searchFiles'
+      site_name: 'searchFiles'
       path: "/search/files/"
       openid: "admin"
       serverHost: "bang"
@@ -152,7 +141,7 @@
         command: "/my/proj/fsindex/bin/python fsindex.py"
 
     - role: site
-      name: 'whopickedthis'
+      site_name: 'whopickedthis'
       tags: ['whopickedthis']
       path: "/"
       openid: "anonymous"
@@ -175,7 +164,7 @@
         command: "/my/proj/qrnotifyme/bin/python qrnotifyme.py"
 
     - role: site
-      name: 'gasuse'
+      site_name: 'gasuse'
       path: '/gasuse/'
       openid: 'anonymous'
       serverHost: 'bang'
@@ -186,7 +175,7 @@
         user: drewp
 
     - role: site
-      name: 'heist_querytransactions'
+      site_name: 'heist_querytransactions'
       path: "/heist/"
       openid: "admin"
       serverHost: "bang"
@@ -196,7 +185,7 @@
         command: "/my/proj/heist/bin/python querytransactions.py"
 
     - role: site
-      name: 'jessicaanddavidswedding'
+      site_name: 'jessicaanddavidswedding'
       path: "/jessicaanddavidswedding/"
       openid: "no"
       serverHost: "bang"
@@ -207,7 +196,7 @@
       tags: ['jessicaanddavidswedding']
 
     - role: site
-      name: 'firedata'
+      site_name: 'firedata'
       path: "/firedata/"
       openid: "no"
       serverHost: "bang"
@@ -219,7 +208,7 @@
       tags: ['firedata']
       
     - role: site
-      name: 'firedata_zipborders'
+      site_name: 'firedata_zipborders'
       path: '/firedata/zipborders/'
       serverHost: "bang"
       internalPort: "3192"
@@ -229,7 +218,7 @@
       tags: ['firedata']
 
     - role: site
-      name: 'colorcast'
+      site_name: 'colorcast'
       path: '/colorcast/'
       serverHost: "bang"
       internalPort: "9094"
@@ -239,7 +228,7 @@
       openid: "anonymous"
 
     - role: site
-      name: 'daily'
+      site_name: 'daily'
       path: '/daily/'
       serverHost: "bang"
       internalPort: "9111"
@@ -261,7 +250,7 @@
       tags: ['timebank']
         
     - role: site
-      name: 'dhcpleases'
+      site_name: 'dhcpleases'
       path: "/dhcpleases/"
       openid: "admin"
       serverHost: "bang"
@@ -272,7 +261,7 @@
       tags: ['dhcpleases']
 
     - role: site
-      name: 'wifi'
+      site_name: 'wifi'
       path: "/wifi/"
       openid: "admin"
       serverHost: "bang"
@@ -283,7 +272,7 @@
       tags: ['wifi']
 
     - role: site
-      name: 'beacon'
+      site_name: 'beacon'
       path: "/beacon/"
       openid: "admin"
       serverHost: "bang"
@@ -294,7 +283,7 @@
       tags: ['beacon']
 
     - role: site
-      name: 'colplay'
+      site_name: 'colplay'
       path: "/colplay/"
       openid: "admin"
       serverHost: "bang"
@@ -314,7 +303,7 @@
         directory: "/my/proj/homeauto/service/reasoning/"
         command: "/my/proj/homeauto/service/reasoning/bin/python sse_collector.py"
       tags: ['reasoning']
-
+      
     - role: site
       name: 'magma'
       path: "/magma/"
@@ -327,7 +316,7 @@
       tags: ['magma']
       
     - role: site
-      name: 'arduinoNodeBang'
+      site_name: 'arduinoNodeBang'
       path: "/arduino/bang/"
       openid: "admin"
       serverHost: "bang"
@@ -339,7 +328,7 @@
       tags: ['arduinoNode']
 
     - role: site
-      name: 'gcalendarwatch'
+      site_name: 'gcalendarwatch'
       path: "/gcalendarwatch/"
       openid: "admin"
       serverHost: "bang"
@@ -351,7 +340,7 @@
       tags: ['gcalendarwatch']
 
     - role: site
-      name: 'grafana'
+      site_name: 'grafana'
       path: "/grafana/"
       openid: "admin"
       serverHost: "bang"
