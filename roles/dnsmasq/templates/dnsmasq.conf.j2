@@ -1,0 +1,23 @@
+user=nobody
+keep-in-foreground
+log-facility=-
+
+listen-address={{net}}.0.1
+{% if net == "10.2" %}
+listen-address=127.0.0.1
+{% endif %}
+bind-interfaces
+
+domain-needed
+no-resolv
+server=208.201.224.11
+server=208.201.224.33
+server=8.8.4.4
+server=8.8.8.8
+local=/bigasterisk.com/
+no-hosts
+addn-hosts=/opt/dnsmasq/hosts
+local-ttl=30
+mx-host=bigasterisk.com,prime6.bigasterisk.com
+cache-size=10000
+neg-ttl=60
