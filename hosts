@@ -1,29 +1,30 @@
+[kube]
+10.1.0.9
+
 [all]
 dash
-plus
+plus ansible_ssh_host=10.2.0.30
 bang
 slash
 prime ansible_ssh_host=public.bigasterisk.com
-drewnote ansible_ssh_host=10.2.0.55 ansible_ssh_port=2222
+drewnote ansible_ssh_port=2222
 dot
-kitchen
+kitchen ansible_ssh_host=10.2.0.126
 living
 changing
 piedmont ansible_ssh_host=piedmont6
-bling
 garage ansible_ssh_host=10.1.0.124
-#downbath  ansible_ssh_host=10.1.0.103
 frontbed
 frontdoor
 bed
-workshop
+workshop ansible_ssh_host=10.2.0.22
 
 [big]
 dash
 bang
 slash
 dot
-plus
+plus ansible_ssh_host=fc7b:54e8:69a9:e165:86c8:9d42:6cc5:b2a1
 
 [remote]
 plus
@@ -64,6 +65,7 @@ dash
 slash
 dot
 frontdoor
+plus
 
 [with_pi_cam]
 changing
@@ -81,11 +83,20 @@ bang
 slash
 
 [vpn_client]
-fantasy3 vpn_remote_addr=10.3.0.41
-#dash vpn_remote_addr=10.3.0.39
-drewnote vpn_remote_addr=10.3.0.23 openvpn_log_dir=/tmp
-bang vpn_remote_addr=10.3.0.37
-plus vpn_remote_addr=10.3.0.5
+bang      vpn_remote_addr=10.3.0.37
+piedmont  vpn_remote_addr=10.3.0.8
+
+bed       vpn_remote_addr=10.4.0.49
+changing  vpn_remote_addr=10.4.0.34
+dash      vpn_remote_addr=10.4.0.229
+dot       vpn_remote_addr=10.4.0.23
+frontbed  vpn_remote_addr=10.4.0.79
+frontdoor vpn_remote_addr=10.4.0.38
+garage    vpn_remote_addr=10.4.0.3
+kitchen   vpn_remote_addr=10.4.0.126
+living    vpn_remote_addr=10.4.0.28
+workshop  vpn_remote_addr=10.4.0.22
+
 
 [hosted]
-prime
+prime ansible_ssh_host=public.bigasterisk.com
