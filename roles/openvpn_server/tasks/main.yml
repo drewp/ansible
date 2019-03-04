@@ -30,3 +30,14 @@
   
 - service: name=openvpn enabled=yes state=reloaded
 
+# new setup, one-time:
+# /my/proj/ansible/roles/openvpn_server/files/vpn_home% ../../easy-rsa/easyrsa3/easyrsa init-pki
+# /my/proj/ansible/roles/openvpn_server/files/vpn_home% ../../easy-rsa/easyrsa3/easyrsa gen-dh
+# /my/proj/ansible/roles/openvpn_server/files/vpn_home% openvpn --genkey --secret ta.key
+# /my/proj/ansible/roles/openvpn_server/files/vpn_home% ../../easy-rsa/easyrsa3/easyrsa build-ca nopass
+# /my/proj/ansible/roles/openvpn_server/files/vpn_home% ../../easy-rsa/easyrsa3/easyrsa gen-req vpn_home_server nopass
+# /my/proj/ansible/roles/openvpn_server/files/vpn_home% ../../easy-rsa/easyrsa3/easyrsa sign-req server vpn_home_server
+
+
+
+
