@@ -14,50 +14,85 @@
 
 
     
+- name: sign client key
+  delegate_to: bang
+  shell: "{{easyrsa}}  --batch sign-req client {{vpn_net_name}}"
+  args:
+    chdir: "{{vpn_root_dir}}"
+    creates: "{{vpn_root_dir}}/pki/issued/{{vpn_net_name}}.crt"
+
+
+
+- file: path={{vpn_config_dir}} state=directory
+    
 - copy:
-    dest=/etc/openvpn/ca.crt
-    src=../../openvpn_server/files/ca.crt
+    dest={{vpn_config_dir}}/ca.crt
+    src={{vpn_root_dir}}/pki/ca.crt
     owner=root
     group=root
     mode=0644
+  notify: openvpn restart
     
-- template: dest=/etc/openvpn/{{ remote }}.conf src=local.conf.j2 owner=root group=root
+- template:
+    dest=/etc/openvpn/{{ vpn_net_name }}.conf
+    src=local.conf.j2
+    owner=root
+    group=root
+  notify: openvpn restart
 
 - name: install tls-auth
   copy:
-    dest=/etc/openvpn/ta.key
-    src=../../openvpn_server/files/ta.key
+    dest={{vpn_config_dir}}/ta.key
+    src={{vpn_root_dir}}/ta.key
     owner=root
     group=root
     mode=0600
   notify: openvpn restart
-
-
-  
+ 
 - name: install key
   copy:
-    dest=/etc/openvpn/{{ remote }}.key
-    src=/etc/openvpn/keys/{{ remote }}.key
+    dest={{vpn_config_dir}}/{{ vpn_net_name }}.key
+    src={{vpn_root_dir}}/pki/private/{{vpn_net_name}}.key
     owner=root
     group=root
     mode=0600
+  notify: openvpn restart
 
 - name: install crt
   copy:
-    dest=/etc/openvpn/{{ remote }}.crt
-    src=/etc/openvpn/keys/{{ remote }}.crt
+    dest={{vpn_config_dir}}/{{ vpn_net_name }}.crt
+    src={{vpn_root_dir}}/pki/issued/{{vpn_net_name}}.crt
     owner=root
     group=root
     mode=0600
   notify: openvpn restart
 
-
-  
-- name: write server-side config to give client a fixed address
-  delegate_to: prime
-  copy:
-    dest=/etc/openvpn/client/{{ remote }}
-    content="ifconfig-push {{ vpn_remote_addr }} 10.3.0.0"
+- name: enable openvpn
+  lineinfile:
+    path=/etc/default/openvpn
+    regexp='AUTOSTART="all"'
+    line='AUTOSTART="all"'
   notify: openvpn restart
+
+- shell: systemctl daemon-reload
+- shell: systemctl restart openvpn
+  
+- name: write server-side config to give client a fixed address on prime
+  # doesn't work to use the name 'prime' here- ansible ignores the
+  # ansible_ssh_host setting
+  delegate_to: public.bigasterisk.com
+  copy:
+    dest="{{ vpn_config_dir }}/client/{{vpn_net_name}}"
+    content="ifconfig-push {{ vpn_remote_addr }} {{vpn_network}}"
+  notify: openvpn restart
+  when: vpn_net == 'vpn_ext'
+
+- name: write server-side config to give client a fixed address on bang
+  delegate_to: bang
+  copy:
+    dest="{{ vpn_config_dir }}/client/{{vpn_net_name}}"
+    content="ifconfig-push {{ vpn_remote_addr }} {{vpn_network}}"
+  notify: openvpn restart
+  when: "vpn_net == 'vpn_home'"
 
   

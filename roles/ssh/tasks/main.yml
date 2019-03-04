@@ -1,0 +1,10 @@
+---
+
+- systemd: name=ssh enabled=true state=started 
+- lineinfile: path=/etc/ssh/ssh_config regexp="HashKnownHosts" line="HashKnownHosts no"
+
+  
+- authorized_key: user=pi key="ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNlR7hereUHqw/RHQau0F7+vQZKAxduM+SD4R76FhC+4Zi078Pv04ZLe9qdM/NBlB/grLGhG58vaGmnWPpJ3QJs= drewp@plus"
+  when: ansible_distribution == "Debian"
+- authorized_key: user=pi key="ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBOR+iV8Qm/rAfmq0epXYfnp5ZTfBl8eidFzw1GmyZ3fPUFAshWn839fQ5DPj9xDPtMy9kTtrB5bK1SnynFzDqzQ= drewp@bang"
+  when: ansible_distribution == "Debian"

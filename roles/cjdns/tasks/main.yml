@@ -6,6 +6,7 @@
 # hard to use bang6 here upon 1st setup. Need an simpler access to the repo.
 - set_fact: image=bang:5000/{{job}}_{{base_image_platform}}:{{image_tag}}
 - set_fact: image=bang6:5000/{{job}}_{{base_image_platform}}:{{image_tag}}
+  when: inventory_hostname == "piedmont"
 - docker_image: name={{image}} force=yes
 
 

@@ -1,16 +1,31 @@
 ---
-- apt: pkg=libopenal1 state=present
-- apt: pkg=libalut0 state=present
-- apt: pkg=festival state=present 
-- apt: pkg=sox
 
-# currently breaking pulseaudio for everyone else :(
 - file: path=/var/lib/supervisor.d/speechMusic_9049.conf state=absent
   notify: supervisord update
 
-#- supervisor_process_mod:
-#    name=speechMusic_9049
-#    directory=/my/proj/homeauto/service/speechMusic
-#    command="/my/proj/homeauto/service/speechMusic/bin/{{ 'python' if ansible_architecture == 'x86_64' else 'python32' }} speechMusic.py"
-#    user=drewp
-    
+- set_fact: job=speech_music port=9049 image_tag="latest"
+- set_fact: base_image_platform="{{'pi' if ansible_architecture=='armv7l' else 'x86'}}"
+- set_fact: image=bang6:5000/{{job}}_{{base_image_platform}}:{{image_tag}}
+- docker_image: name={{image}} force=yes
+
+
+- supervisor_process_mod:
+    name="{{job}}_{{port}}"
+    command="docker run --name {{job}} --rm -v /tmp/pulseaudio:/tmp/pulseaudio -p {{port}}:{{port}} --net=host {{image}}"
+    user=drewp
+    priority=1200
+  notify: supervisord update
+
+- set_fact:
+    name: "{{ansible_hostname}}_{{job}}"
+    domain: "bigasterisk.com"
+    path: "/{{job}}/{{ansible_hostname}}/"
+    upstreamTarget: "http://{{ansible_hostname}}.bigasterisk.com:{{port}}/"
+    openid: admin
+    useWebsocketPath: yes
+
+- template:
+    dest=/var/lib/openid_proxy.d/{{name}}.n3
+    src=openid_proxy_statements.n3.j2
+  notify: openid_proxy restart    
+  delegate_to: bang

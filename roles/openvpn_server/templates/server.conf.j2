@@ -1,0 +1,50 @@
+ca {{vpn_config_dir}}/ca.crt
+cert {{vpn_config_dir}}/server.crt
+key {{vpn_config_dir}}/server.key
+dh {{vpn_config_dir}}/dh2048.pem
+tls-crypt {{vpn_config_dir}}/ta.key
+
+dev tun
+
+server {{vpn_network}} {{vpn_netmask}}
+
+client-config-dir {{vpn_config_dir}}/client
+
+# may be disrupting bang's boot since openvpn and local net can't both route 10.1.0.1. Unsed by anyone else?
+#push "route {{vpn_network}}  10.1.0.0 255.255.0.0"
+
+# no effect
+#push "dhcp-option DOMAIN bigasterisk.com"
+#push "dhcp-option DNS 192.168.0.2"
+
+cipher AES-256-CBC
+tls-server
+
+{% if vpn_net == 'vpn_home' %}
+# trying to fix terrible latency (5-40ms)
+tun-mtu 9000
+sndbuf 393216
+rcvbuf 393216
+push "sndbuf 393216"
+push "rcvbuf 393216"
+txqueuelen 0
+push "txqueuelen 0"
+{% endif %}
+
+{% if vpn_net != 'vpn_home' %}
+comp-lzo
+{% endif %}
+
+
+keepalive 300 600
+
+ping-timer-rem
+persist-tun
+persist-key
+
+management 127.0.0.1 2005
+
+
+verb 4
+
+client-to-client

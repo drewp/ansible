@@ -14,22 +14,32 @@
 
 # supervisord is installed as a dependency. put meta/main.yml in those roles
     
+
+- hosts: pi
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    # this should run before supervisord
+    - {role: raspi_system, tags: ['raspi_system']}
+
+- hosts: 10.1.0.9
+  roles:
+    - {role: docker, tags: ['docker']}
+
 - hosts: all
   handlers:
     - include: handlers/main.yml
   roles:
+    - {role: ssh, tags: ['ssh']}
     - {role: ppa, tags: ['ppa']}
+    - {role: docker, tags: ['docker']}
     - {role: supdebug, tags: ['supdebug']}
-    - {role: cjdns, tags: ['cjdns']}
-  tasks:
-    - apt: pkg=djbdns state=present
-      tags: ['djbdns']
-      when: ansible_distribution != "Debian"
   
 - hosts: big
   handlers:
     - include: handlers/main.yml
   roles:
+    - {role: ubuntu_system, tags: ['ubuntu_system']}
     - {role: nodejs, tags: ['nodejs']}
     - {role: bigasterisk_users, tags: ['bigasterisk_users']}
     - {role: unison, tags: ['unison']}
@@ -45,14 +55,14 @@
     - include: handlers/main.yml
   roles:
     - {role: bigasterisk_users, tags: ['bigasterisk_users']}
+    - {role: hosts, tags: ['hosts']}
     - {role: nginx_ssl_certs, tags: ['nginx_forward', 'nginx_ssl_certs']}
     - {role: nginx_forward, tags: ['nginx_forward', 'nginx_server']}
     - {role: nginx_static_data, tags: ['nginx_forward', 'nginx_static_data']}
     - {role: postfix, tags: ['postfix']}
     - {role: dovecot, tags: ['dovecot']}
-    - {role: docker, tags: ['docker']}
     - {role: map_mqtt_receiver, tags: ['map_mqtt_receiver']}
-    - {role: openvpn_server, tags: ['openvpn_server']}
+    - {role: openvpn_server, tags: ['openvpn_server'], vpn_net: 'vpn_ext'}
     - {role: prime_firewall, tags: ['prime_firewall']}
   tasks:
     - hostname: name=prime
@@ -63,21 +73,21 @@
   roles:
     - {role: supervisord_local, tags: ['supervisord_local']}
     - {role: elastic, tags: ['elastic']}
-    - {role: graphite, tags: ['graphite']}
+#    - {role: graphite, tags: ['graphite']}
+    - {role: openvpn_server, tags: ['openvpn_server'], vpn_net: 'vpn_home'}
     - {role: mongo, tags: ['mongo']}
     - {role: sesame, tags: ['sesame']}
-    - {role: ajaxterm, tags: ['ajaxterm']}
+    - {role: web_ssh, tags: ['web_ssh']}
     - {role: blog, tags: ['blog']}
     - {role: checkvistpost, tags: ['checkvistpost']}
-    - {role: dnscache, tags: ['dnscache']}
     - {role: dovecot_home, tags: ['dovecot_home']}
     - {role: dropbox, tags: ['dropbox']}
-    - {role: hosts, tags: ['hosts']}
     - {role: mail_bang, tags: ['mail']}
     - {role: map_mqtt_receiver, tags: ['map_mqtt_receiver']} # for phone talking to bigasterisk.com at home
 #    - {role: minetest_server, tags: ['minetest_server']}
     - {role: minecraft, tags: ['minecraft']}
     - {role: network_bigasterisk_gateway, tags: ['network_bigasterisk_gateway']}
+    - {role: dnsmasq, tags: ['dnsmasq']}
     - {role: nginx_ssl_certs, tags: ['nginx_ssl_certs']}
     - {role: photo, tags: ['photo']}
     - {role: photo_worker, tags: ['photo_worker']}
@@ -91,9 +101,18 @@
     - {role: zfs_server, tags: ['zfs_server']}
     - {role: zfs_monitorable, tags: ['zfs_monitorable']}
     - {role: zfs_auto_snapshot, tags: ['zfs_auto_snapshot']}
-    - {role: bigasterisk_users, tags: ['bigasterisk_users']}
+    - {role: etcd, tags: ['etcd']}
+    - {role: docker_registry, tags: ['docker_registry']}
+    - {role: webcam, tags: ['webcam'], camName: 'livingRoom', internalPort: 9016, camArgs: '--dafang http://10.2.0.32/ --location livingRoom' }
+    - {role: webcam, tags: ['webcam'], camName: 'garden', internalPort: 9017, camArgs: '--dafang http://gardencam/ --location garden' }
+    - {role: webcam, tags: ['webcam'], camName: 'baby', internalPort: 10014, camArgs: '--esp http://10.2.0.44/ --location baby' }
+    - {role: mosquitto, tags: ['mosquitto'], pport: 1883, id: 'public'}
+    - {role: mosquitto, tags: ['mosquitto'], pport: 10010, id: 'frontDoor'}
+    - {role: ntopng, tags: ['ntop']}
     
   tasks:
+    - apt: pkg=dphys-swapfile state=absent
+      tags: ['swap']
     - apt: pkg=nginx-extras
       tags: ['nginx']
     - service: name=nginx enabled=no
@@ -114,7 +133,7 @@
     - {role: photo_worker, tags: ['photo_worker']}
     - {role: ruler_client, tags: ['ruler']}
     - {role: ruler_server, tags: ['ruler']}
-    - { role: webcam, tags: ['webcam'], camName: 'dash', internalPort: 9016, camArgs: '--v4l /dev/v4l/by-id/usb-0c45_USB_camera-video-index0 --location office' }
+#    - {role: webcam, tags: ['webcam'], camName: 'dash', internalPort: 9016, camArgs: '--v4l /dev/v4l/by-id/usb-0c45_USB_camera-video-index0 --location office' }
   tasks:
     - supervisor_process_mod:
         name=picinput_11008
@@ -137,19 +156,23 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: bigasterisk_users, tags: ['bigasterisk_users']}
-    - {role: hosts, tags: ['hosts']}
     - {role: supervisord, tags: ['supervisord']}
     - {role: laptop_x11, tags: ['laptop_x11']}
+    - {role: ubuntu_system, tags: ['ubuntu_system']}
+    - {role: openvpn_client, tags: ['openvpn_client'], vpn_remote_addr: '10.3.0.30'}
+    - {role: openvpn_client, tags: ['openvpn_client'], vpn_remote_addr: '10.4.0.30'}
 
-- hosts: brace
+    
+- hosts: dot
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: x11servescreen, tags: ['x11servescreen']}
-    - {role: ari_room_screen, tags: ['ari_room_screen']}
+    #- {role: ari_room_screen, tags: ['ari_room_screen']}
 #    - { role: webcam, tags: ['webcam'], camName: 'brace', internalPort: 9020, camArgs: '--v4l /dev/v4l/by-id/usb-Chicony_Electronics_Co.__Ltd._HP_Webcam_SN0001-video-index0 --location ariDesk' }
-#    - { role: webcam, tags: ['webcam'], camName: 'braceScreen', internalPort: 9021, camArgs: '--screen --location braceScreen' }
+    - { role: webcam, tags: ['webcam'], camName: 'dotScreen', internalPort: 9021, camArgs: '--screen --location dotScreen' }
+#/etc/NetworkManager/NetworkManager.conf
+
+
 
 - hosts: with_speakers
   handlers:
@@ -165,7 +188,6 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: raspi_system, tags: ['raspi_system']}
     - {role: raspi_network, tags: ['raspi_network']}
     - {role: pi_users, tags: ['pi_users']}
     - {role: hosts, tags: ['hosts']}
@@ -210,14 +232,7 @@
         src=10.1.0.1:/stor6/my
         state=mounted
         
-- hosts: sshfs_client
-  handlers:
-    - include: handlers/main.yml
-  roles:
-    - {role: my_sshfs, tags: ['my_sshfs']}
-
 - hosts: vpn_client
-  #gather_facts: no
   handlers:
     - include: handlers/main.yml
   roles:
@@ -228,9 +243,11 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-Generic_FULL_HD_1080P_Webcam_200901010001-02.analog-stereo"}
-    - { role: webcam, tags: ['webcam'], camName: 'livingRoom', internalPort: 9016, camArgs: '--v4l /dev/v4l/by-id/usb-Generic_FULL_HD_1080P_Webcam_200901010001-video-index0 --location livingRoom' }
+    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono"}
+    #- {role: webcam, tags: ['webcam'], camName: 'livingRoom', internalPort: 9016, camArgs: '--v4l /dev/v4l/by-id/usb-Generic_FULL_HD_1080P_Webcam_200901010001-video-index0 --location livingRoom' }
     - {role: raspi_airport_speaker, tags: ['raspi_speaker']}
+    - {role: raspi_lirc, tags: ['raspi_lirc'], gpio_in_pin: 23, gpio_out_pin: 22}
+    - {role: raspi_icecast, tags: ['raspi_icecast'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono", ice_mount: "mic"}
 
 - hosts: changing
   handlers:
@@ -243,28 +260,45 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: raspi_kiosk_chrome, tags: ['raspi_kiosk']}
+    - {role: raspi_kiosk_chrome, tags: ['raspi_kiosk'], url: 'https://bigasterisk.com/login?redir=/room/ari/frontDoor.html'}
     - { role: webcam, tags: ['webcam'], camName: 'frontdoor', internalPort: 9020, camArgs: '--pi --location frontYard' }
-    
+#    - { role: webcam, tags: ['webcam'], camName: 'frontdoor_screen', internalPort: 9021, camArgs: '--screen --location frontdoor_screen --nomotion' }
+  tasks:
+    - docker_image: name=bang6:5000/rfid_pn532_pi:latest force=yes
+      tags: ['rfid']
+    - supervisor_process_mod:
+        name=rfid_pn532
+        command="docker run --rm --name rfid --net=host --privileged bang6:5000/rfid_pn532_pi"
+        user=pi
+      notify: supervisord update
+      tags: ['rfid']
+
+
 - hosts: piedmont
   roles:
     - {role: raspi_kiosk, tags: ['raspi_kiosk']}
+    - {role: raspi_kiosk_chrome, tags: ['raspi_kiosk'], url: 'https://photo.bigasterisk.com/login?redir=/kiosk/'}    
     
 - hosts: frontbed
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-GeneralPlus_USB_Audio_Device-00.analog-mono"}
+    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono"}
+    - {role: raspi_icecast, tags: ['raspi_icecast'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono", ice_mount: "mic"}
 
 - hosts: kitchen
   handlers:
     - include: handlers/main.yml
   roles:
     - {role: pulse, tags: ['pulse']}
-    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-0d8c_C-Media_USB_Audio_Device-00.analog-mono"}
-
+    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono"}
+    - {role: raspi_lirc, tags: ['raspi_lirc'], gpio_in_pin: 18, gpio_out_pin: 22}
+    - {role: google_assistant, tags: ['google_assistant']}
+    
 - hosts: bed
   handlers:
     - include: handlers/main.yml
   roles:
     - {role: raspi_airport_speaker, tags: ['raspi_speaker']}
+    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono"}
+    - {role: raspi_icecast, tags: ['raspi_icecast'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono", ice_mount: "mic"}

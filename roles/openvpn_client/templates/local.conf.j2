@@ -1,26 +1,48 @@
 client
 
-ca /etc/openvpn/ca.crt
-cert /etc/openvpn/{{ remote }}.crt
-key /etc/openvpn/{{ remote }}.key
-tls-auth /etc/openvpn/ta.key 1
+{% if inventory_hostname != 'drewnote' %}
+ca {{vpn_config_dir}}/ca.crt
+cert {{vpn_config_dir}}/{{ vpn_net_name }}.crt
+key {{vpn_config_dir}}/{{ vpn_net_name }}.key
+tls-crypt {{vpn_config_dir}}/ta.key
+{% else %}
+
+<ca>
+{% include 'server_files/%s/pki/ca.crt' % vpn_net %}
+
+</ca>
+<key>
+{% include 'server_files/%s/pki/private/%s.key' % (vpn_net, vpn_net_name) %}
+
+</key>
+<cert>
+{% include 'server_files/%s/pki/issued/%s.crt' % (vpn_net, vpn_net_name) %}
+
+</cert>
+<tls-auth>
+{% include 'server_files/%s/ta.key' % vpn_net %}
+
+</tls-auth>
+{% endif %}
 
 dev tun
 proto udp4
 resolv-retry infinite
 nobind
 
-remote vpn.bigasterisk.com
+remote {{vpn_net.replace('_','-')}}.bigasterisk.com
 
 float
 
 cipher AES-256-CBC
-comp-lzo
 
-# Our up script will establish routes once the VPN is alive.
-# Running scripts need the script-security set to 2.
-#script-security 2
-#up ./openvpn.up
+{% if vpn_net != 'vpn_home' %}
+comp-lzo
+{% endif %}
+
+{% if vpn_net == 'vpn_home' %}
+tun-mtu 9000
+{% endif %}
 
 persist-tun
 persist-key
@@ -30,13 +52,9 @@ persist-key
 # 1 -- mostly quiet, but display non-fatal network errors.
 # 3 -- medium output, good for normal operation.
 # 9 -- verbose, good for troubleshooting
-verb 0
+verb 1
 
-# Log files
-log-append {{ openvpn_log_dir }}/openvpn.log
-
-
-#  Inactivity timeout
+# Inactivity timeout
 # suggested by http://www.jethrocarr.com/2012/06/17/keeping-android-wifi-awake/
 keepalive 300 600 
 #ping-timer-rem
@@ -44,17 +62,14 @@ keepalive 300 600
 # TLS handshake timeout
 hand-window 10
 
-# i need these settings to talk to boxes on the other side, but they
-# might not work under linux. is there a similar thing to edit
-# resolv.conf at the right times?
-dhcp-option DOMAIN bigasterisk.com
-dhcp-option DNS 10.1.0.1
-
-{% if remote == 'bang' %}
+{% if inventory_hostname == 'bang' %}
 management 127.0.0.1 9018
 {% endif %}
 
-{% if remote == 'drewnote' %}
+{% if inventory_hostname == 'drewnote' %}
 dev-node /dev/tun
 {% endif %}
 
+user nobody
+group nogroup
+remote-cert-tls server

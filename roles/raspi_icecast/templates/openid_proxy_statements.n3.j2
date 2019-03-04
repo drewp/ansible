@@ -5,7 +5,7 @@
 site:icecast{{ansible_hostname.capitalize()}}
   :host "bigasterisk.com";
   :requestPrefix "/piAudio/{{ansible_hostname}}/";
-  :proxyUrlPrefix "http://[{{ansible_tun0.ipv6[0].address}}]:8000/" .
+  :proxyUrlPrefix "http://[{{ansible_hostname}}]:8000/" .
 
 :admin1 acl:accessTo site:icecast{{ansible_hostname.capitalize()}} .
 :admin2 acl:accessTo site:icecast{{ansible_hostname.capitalize()}} .

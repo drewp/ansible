@@ -8,19 +8,19 @@ site:{{name}}
   :proxyUrlPrefix "{{upstreamTarget}}" .
 
 {% if openid == 'anonymous' %}
-  :publicAccess acl:accessTo site:{{name}} .
+  :publicAccess acl:accessTo site:{{site_name}} .
 {% elif openid == 'no' %}
-  site:{{name}} a :NonOpenidProxiedSite .
+  site:{{site_name}} a :NonOpenidProxiedSite .
 {% else %}
-  :admin1 acl:accessTo site:{{name}} .
-  :admin2 acl:accessTo site:{{name}} .
+:admin1 acl:accessTo site:{{site_name}} .
+:admin2 acl:accessTo site:{{site_name}} .
 {% endif %}
       
 {% if (useWebsocketPath | default('no')) == 'yes' %}
-  site:{{name}} a :Websocket .
+site:{{site_name}} a :Websocket .
 {% endif %}
 
 {% for origin in (accessControlAllowOrigin | default([])) %}
-site:{{name}} :accessControlAllowOrigin "{{origin}}" .
+site:{{site_name}} :accessControlAllowOrigin "{{origin}}" .
 {% endfor %}
 
