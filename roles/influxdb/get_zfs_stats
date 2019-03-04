@@ -1,0 +1,39 @@
+#!/usr/bin/python3
+import requests, subprocess, time
+from influxdb import InfluxDBClient
+
+influx = InfluxDBClient('bang', 9060, 'root', 'root', 'main')
+
+now = int(time.time())
+points = []
+
+for line in subprocess.check_output(['/sbin/zfs', 'get', '-Hp', 'available', 'stor6']).splitlines():
+    words = line.split(b'\t')
+    points.append({
+        'measurement': 'available_bytes',
+        "tags": {'volume': 'stor6'},
+        "fields": {"value": int(words[2])},
+        "time": now
+    })
+
+
+for line in subprocess.check_output(['/sbin/zfs', 'get', '-Hp', '-t', 'filesystem', 'usedbydataset']).splitlines():
+    words = line.split(b'\t')
+
+    points.append({
+        'measurement': 'used_bytes',
+        "tags": {'dataset': words[0].decode('ascii')},
+        "fields": {"value": int(words[2])},
+        "time": now
+    })
+
+points.append({
+    'measurement': 'used_bytes',
+    "tags": {'dataset': 'stor6/my/archive/ALL'},
+    "fields": {"value": sum(p['fields']['value'] for p in points if p['tags'].get('dataset', '').startswith('stor6/my/archive'))},
+    "time": now
+})
+
+# also get snapshots
+
+influx.write_points(points, time_precision='s')
