@@ -95,7 +95,7 @@ def discrete_panel(title, dtype, measurement, tags):
           ],
           "metricNameColor": "#000000",
           "rangeMaps": [],
-          "rowHeight": 50,
+          "rowHeight": 25,
           "showDistinctCount": false,
           "showLegend": true,
           "showLegendCounts": false, "showLegendNames": true, "showLegendPercent": true, "showLegendTime": true, "showLegendValues": true, "showTransitionCount": true,
@@ -174,11 +174,9 @@ def writeDashboard(title, rows, timeSpan='3h'):
 clearDir()
 writeDashboard('pi cpu', [
     {"height": 250, "panels": [cpu_usage_panel(process_name='piNode', hosts=piNodes)],},
-    {"height": 250, "panels": [cpu_usage_panel(process_name='arduinoNode', hosts=['bang', 'slash'])],},
+    {"height": 250, "panels": [cpu_usage_panel(process_name='arduinoNode', hosts=['bang'])],},
     {"height": 250, "panels": [cpu_usage_panel(process_name='rssiscan', hosts=piNodes + ['bang', 'dash'])],},
-    {"height": 250, "panels": [cpu_usage_panel_targets('webcam', [
-            metric(alias=alias, measurement="procstat", field="cpu_usage", tags=t) for alias, t in webcamTags
-        ])],},
+    {"height": 250, "panels": [cpu_usage_panel_targets('webcam', [metric(alias=alias, measurement="procstat", field="cpu_usage", tags=t) for alias, t in webcamTags])],},
     {"height": 250, "panels": [cpu_usage_panel(process_name='chromium', hosts=['frontdoor'])],},
 ])
 
@@ -191,85 +189,83 @@ writeDashboard('ping from bang', [
      ]}])
 
 def audioPanel(title, loc):
+    sel = {"type": "percentile", "params": ["90"]}
     return {
-  "datasource": "main",
-  "id": nextId(),
-  "interval": ">10s",
-  "span": 12,
-  "targets": [
-    {
-      "alias": "lo",
-      "dsType": "influxdb",
-      "groupBy": [{"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-      "measurement": "audioLevel",
-      "select": [[{"params": ["lo"], "type": "field"}, {"params": [], "type": "mean"}]],
-      "tags": [{"key": "location", "operator": "=", "value": loc}],
-      "policy": "default",
-      "resultFormat": "time_series",
-      "orderByTime": "ASC",
-      "refId": "A"
-    },
-    {
-      "alias": "mid",
-      "dsType": "influxdb",
-      "groupBy": [{"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-      "measurement": "audioLevel",
-      "select": [[{"params": ["mid"], "type": "field"}, {"params": [], "type": "mean"}]],
-      "tags": [{"key": "location", "operator": "=", "value": loc}],
-      "policy": "default",
-      "resultFormat": "time_series",
-      "orderByTime": "ASC",
-      "refId": "B"
-    },
-    {
-      "alias": "hi",
-      "dsType": "influxdb",
-      "groupBy": [{"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-      "measurement": "audioLevel",
-      "select": [[{"params": ["hi"], "type": "field"}, {"params": [], "type": "mean"}]],
-      "tags": [{"key": "location", "operator": "=", "value": loc}],
-      "policy": "default",
-      "resultFormat": "time_series",
-      "orderByTime": "ASC",
-      "refId": "C"
-    }
-  ],
-  "title": title,
-  "type": "graph",
-  "yaxes": [{"format": "short", "max": ".5", "min": 0, "show": true, "decimals": null}, {"format": "short", "min": 0, "show": true}],
-  "renderer": "flot",
-  "xaxis": {"show": true, "mode": "time", "name": null, "values": [], "buckets": null},
-  "lines": true,
-  "fill": 1,
-  "linewidth": 1,
-  "dashes": false,
-  "dashLength": 10,
-  "spaceLength": 10,
-  "points": false,
-  "pointradius": 5,
-  "bars": false,
-  "stack": false,
-  "percentage": false,
-  "legend": {"show": true, "values": false, "min": false, "max": false, "current": false, "total": false, "avg": false},
-  "nullPointMode": "null",
-  "steppedLine": false,
-  "tooltip": {"value_type": "individual", "shared": true, "sort": 0},
-  "timeFrom": null,
-  "timeShift": null,
-  "aliasColors": {},
-  "seriesOverrides": [
-    {"alias": "lo", "color": "#0a50a1"},
-    {"alias": "mid", "color": "#5195ce"},
-    {"alias": "hi", "color": "#64b0c8"}
-  ],
+        "datasource": "main",
+        "id": nextId(),
+        "interval": ">10s",
+        "span": 12,
+        "targets": [
+            {"alias": "lo",
+             "dsType": "influxdb",
+             "groupBy": [{"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
+             "measurement": "audioLevel",
+             "select": [[{"params": ["lo"], "type": "field"}, sel]],
+             "tags": [{"key": "location", "operator": "=", "value": loc}],
+             "policy": "default",
+             "resultFormat": "time_series",
+             "orderByTime": "ASC",
+             "refId": "A"
+         },
+            {"alias": "mid",
+             "dsType": "influxdb",
+             "groupBy": [{"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
+             "measurement": "audioLevel",
+             "select": [[{"params": ["mid"], "type": "field"}, sel]],
+             "tags": [{"key": "location", "operator": "=", "value": loc}],
+             "policy": "default",
+             "resultFormat": "time_series",
+             "orderByTime": "ASC",
+             "refId": "B"
+         },
+            {"alias": "hi",
+             "dsType": "influxdb",
+             "groupBy": [{"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
+             "measurement": "audioLevel",
+             "select": [[{"params": ["hi"], "type": "field"}, sel]],
+             "tags": [{"key": "location", "operator": "=", "value": loc}],
+             "policy": "default",
+             "resultFormat": "time_series",
+             "orderByTime": "ASC",
+             "refId": "C"
+         }
+        ],
+        "title": title,
+        "type": "graph",
+        "yaxes": [{"format": "short", "max": "2.5", "min": 0, "show": true, "decimals": null}, {"format": "short", "min": 0, "show": true}],
+        "renderer": "flot",
+        "xaxis": {"show": true, "mode": "time", "name": null, "values": [], "buckets": null},
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "dashes": false,
+        "dashLength": 10,
+        "spaceLength": 10,
+        "points": false,
+        "pointradius": 5,
+        "bars": false,
+        "stack": false,
+        "percentage": false,
+        "legend": {"show": true, "values": false, "min": false, "max": false, "current": false, "total": false, "avg": false},
+        "nullPointMode": "null",
+        "steppedLine": false,
+        "tooltip": {"value_type": "individual", "shared": true, "sort": 0},
+        "timeFrom": null,
+        "timeShift": null,
+        "aliasColors": {},
+        "seriesOverrides": [
+            {"alias": "lo", "color": "#0a50a1"},
+            {"alias": "mid", "color": "#5195ce"},
+            {"alias": "hi", "color": "#64b0c8"}
+        ],
   "thresholds": [],
-  "links": []
-}
+        "links": []
+    }
 writeDashboard('audio level', [
     {"height": 250,
      "panels": [
-        #float_panel(datasource='main', title=title, max=1,
-        #            targets=[metric(alias='level', measurement='audioLevel',  field='value', tags=[('location', loc)])])
+         #float_panel(datasource='main', title=title, max=1,
+         #            targets=[metric(alias='level', measurement='audioLevel',  field='value', tags=[('location', loc)])])
          audioPanel(title, loc)
      ],
  } for title, loc in audioHosts
@@ -277,57 +273,16 @@ writeDashboard('audio level', [
 
 
 writeDashboard('presence', [
-    {
-        "collapse": false,
-        "height": 100,
-        "panels": [
-            {
-                "aliasColors": {},
-                "bars": false,
-                "dashLength": 10,
-                "dashes": false,
-                "datasource": null,
-                "fill": 1,
-                "id": nextId(),
-                "legend": {"avg": false, "current": false, "max": false, "min": false, "show": false, "total": false, "values": false},
-                "lines": false,
-                "linewidth": 1,
-                "nullPointMode": "null",
-                "percentage": false,
-                "pointradius": 5,
-                "points": false,
-                "renderer": "flot",
-                "seriesOverrides": [],
-                "spaceLength": 10,
-                "span": 12,
-                "stack": false,
-                "steppedLine": false,
-                "targets": [{"hide": false, "refId": "A"}],
-                "thresholds": [],
-                "timeFrom": null,
-                "timeShift": null,
-                "title": "time",
-                "tooltip": {"shared": true, "sort": 0, "value_type": "individual"},
-                "type": "graph",
-                "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []},
-                "yaxes": [{"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": false},
-                          {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": false}]
-            }
-        ],
-        "repeat": null,
-        "repeatIteration": null,
-        "repeatRowId": null,
-        "showTitle": false,
-        "title": "Dashboard Row",
-        "titleSize": "h6"
-    },
-    
     {'height': 30, 'panels': [discrete_panel('dash idle',                 dtype='busy', measurement='presence', tags=[('sensor', 'xidle'), ('host', 'dash')])]},
     {'height': 30, 'panels': [discrete_panel('slash idle',                dtype='busy', measurement='presence', tags=[('sensor', 'xidle'), ('host', 'slash')])]},
     {'height': 30, 'panels': [discrete_panel('front door open',           dtype='open', measurement='state',    tags=[('sensor', 'open'), ('location', "frontDoor")]),]},
 ] + [
-    {'height': 30, 'panels': [discrete_panel('%s on wifi' % name,         dtype='on', measurement='presence', tags=[('sensor', 'wifi'), ('address', addr)])]} for name, addr in wifis
+    {'height': 30, 'panels': [discrete_panel('%s on wifi' % name,         dtype='on',   measurement='presence', tags=[('sensor', 'wifi'), ('address', addr)])]} for name, addr in wifis
 ] + [
+    
+    ])
+
+writeDashboard('motion', [
     {'height': 30, 'panels': [discrete_panel("motion storage",            dtype='motion', measurement="presence", tags=[("location", "storage")])] },
     {'height': 30, 'panels': [discrete_panel("motion bed",                dtype='motion', measurement="presence", tags=[("location", "bed")])] },
     {'height': 30, 'panels': [discrete_panel("motion ari bed",            dtype='motion', measurement="presence", tags=[("location", "ariBed")])] },
@@ -523,7 +478,7 @@ def cam_panel(location):
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "repeat": null,
+          
           "scopedVars": {"location": {"selected": false, "text": "ari", "value": "ari"}},
           "seriesOverrides": [],
           "spaceLength": 10,
@@ -591,42 +546,61 @@ writeDashboard('cameras', [
          },
 ])
 
+def zfsDatasetTargets():
+    return [{
+        "alias": p,
+        "groupBy": [{ "params": ["$__interval"],"type": "time" },{ "params": ["null"],"type": "fill" }],
+        "measurement": "used_bytes",
+        "orderByTime": "ASC",
+        "policy": "default",
+        "refId": nextId(),
+        "resultFormat": "time_series",
+        "select": [[{ "params": ["value"],"type": "field" },{ "params": [],"type": "mean" }]],"tags": [{ "key": "dataset","operator": "=","value": "stor6"+p }]
+    } for p in [
+#'/my',
+'/my/archive/ALL',
+'/my/backup',
+#'/my/backup/ffg',
+'/my/backup/mongo',
+#'/my/cvsroot',
+#'/my/darcs',
+#'/my/darcs2',
+'/my/dl',
+#'/my/doc',
+'/my/home',
+#'/my/irc',
+'/my/log',
+'/my/mail',
+'/my/music',
+'/my/music/projects',
+'/my/pda',
+'/my/pic',
+'/my/pic/digicam',
+'/my/pic/phonecam',
+#'/my/post',
+'/my/proj',
+#'/my/rayz',
+'/my/site',
+#'/my/tv',
+'/my/video',
+
+    ]]
+
 writeDashboard('disk-free-space', timeSpan='7d', rows=[
     {
-      "collapse": false,
       "height": "250px",
       "panels": [
+        
         {
           "aliasColors": {}, "bars": false, "dashLength": 10, "dashes": false, "datasource": "telegraf", "editable": true, "error": false,
-          "fill": 1, "grid": {}, "id": 4, "legend": {"avg": false, "current": false, "max": false, "min": false, "show": false, "total": false, "values": false},
-          "lines": true, "linewidth": 2, "links": [], "nullPointMode": "null", "percentage": false, "pointradius": 5, "points": false, "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 3, "stack": false, "steppedLine": false,
-          "targets": [
-            {
-              "dsType": "influxdb",
-              "groupBy": [{"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "disk", "orderByTime": "ASC", "policy": "default", "refId": "A", "resultFormat": "time_series",
-              "select": [[{"params": ["free"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [
-                {"key": "host", "operator": "=", "value": "bang"},
-                {"condition": "AND", "key": "path", "operator": "=", "value": "/stor6/my"}
-              ]
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "/my",
-          "tooltip": {"msResolution": true, "shared": true, "sort": 0, "value_type": "cumulative"},
-          "type": "graph",
-          "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []},
-          "yaxes": [
-            {"format": "bytes", "label": null, "logBase": 1, "max": null, "min": 0, "show": true},
-            {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}
-          ]
-        },
-        {
-          "aliasColors": {}, "bars": false, "dashLength": 10, "dashes": false, "datasource": "telegraf", "editable": true, "error": false,
-          "fill": 1, "grid": {}, "id": 2, "legend": {"avg": false, "current": false, "max": false, "min": false, "show": false, "total": false, "values": false},
+          "fill": 1,
+               "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+"id": 2, "legend": {"avg": false, "current": false, "max": false, "min": false, "show": false, "total": false, "values": false},
           "lines": true, "linewidth": 2, "links": [], "nullPointMode": "null", "percentage": false, "pointradius": 5, "points": false, "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 3, "stack": false, "steppedLine": false,
           "targets": [
             {
@@ -654,7 +628,12 @@ writeDashboard('disk-free-space', timeSpan='7d', rows=[
         },
         {
           "aliasColors": {}, "bars": false, "dashLength": 10, "dashes": false, "datasource": "telegraf", "editable": true, "error": false,
-          "fill": 1, "grid": {}, "id": 5, "legend": {"avg": false, "current": false, "max": false, "min": false, "show": false, "total": false, "values": false},
+          "fill": 1,  "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },"id": 5, "legend": {"avg": false, "current": false, "max": false, "min": false, "show": false, "total": false, "values": false},
           "lines": true, "linewidth": 2, "links": [], "nullPointMode": "null", "percentage": false, "pointradius": 5, "points": false, "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 3, "stack": false, "steppedLine": false,
           "targets": [
             {
@@ -682,7 +661,12 @@ writeDashboard('disk-free-space', timeSpan='7d', rows=[
         },
         {
           "aliasColors": {}, "bars": false, "dashLength": 10, "dashes": false, "datasource": "telegraf", "editable": true, "error": false,
-          "fill": 1, "grid": {}, "id": 6, "legend": {"avg": false, "current": false, "max": false, "min": false, "show": false, "total": false, "values": false},
+          "fill": 1,    "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },"id": 6, "legend": {"avg": false, "current": false, "max": false, "min": false, "show": false, "total": false, "values": false},
           "lines": true, "linewidth": 2, "links": [], "nullPointMode": "null", "percentage": false, "pointradius": 5, "points": false, "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 3, "stack": false, "steppedLine": false,
           "targets": [
             {
@@ -707,7 +691,41 @@ writeDashboard('disk-free-space', timeSpan='7d', rows=[
             {"format": "bytes", "label": null, "logBase": 1, "max": null, "min": 0, "show": true},
             {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}
           ]
-        }
+        },
+          {
+              "aliasColors": {}, "bars": false, "dashLength": 10, "dashes": false, "datasource": "main", "fill": 1,
+              "gridPos": { "h": 20,"w": 24,"x": 0,"y": 7 },
+              "id": nextId(),  "interval": "10m",
+              "legend": {"alignAsTable": true, "avg": false, "current": true, "hideZero": false, "max": false, "min": false, "rightSide": true, "show": true, "total": false, "values": true},
+              "lines": true, "linewidth": 1, "links": [], "nullPointMode": "null", "percentage": false, "pointradius": 5, "points": false, "renderer": "flot",
+              "seriesOverrides": [], "spaceLength": 10, "stack": true, "steppedLine": false,
+              "targets": list(reversed([
+                  {
+                      "alias": "free",
+                      "groupBy": [{ "params": ["$__interval"],"type": "time" },{ "params": ["null"],"type": "fill" }],
+                      "measurement": "available_bytes",
+                      "orderByTime": "ASC",
+                      "policy": "default",
+                      "refId": "A",
+                      "resultFormat": "time_series",
+                      "select": [[{ "params": ["value"],"type": "field" },{ "params": [],"type": "mean" }]],"tags": [{ "key": "volume","operator": "=","value": "stor6" }]
+                  },
+              ] + zfsDatasetTargets())),
+              "thresholds": [],
+              "timeFrom": null,
+              "timeRegions": [],
+              "timeShift": null,
+              "title": "zfs stor6",
+              "tooltip": { "shared": true,"sort": 0,"value_type": "individual" },
+              "type": "graph",
+              "xaxis": { "buckets": null,"mode": "time","name": null,"show": true,"values": [] },
+              "yaxes": [
+                  { "format": "bytes","label": null,"logBase": 1,"max": null,"min": "0","show": true },
+                  { "format": "short","label": null,"logBase": 1,"max": null,"min": null,"show": true }
+              ],
+              "yaxis": { "align": false,"alignLevel": null }
+          }
+          
       ],
      
     },
@@ -715,7 +733,6 @@ writeDashboard('disk-free-space', timeSpan='7d', rows=[
 
 writeDashboard('mongodb', timeSpan='1d', rows=[
     {
-      "collapse": false,
       "height": "250px",
       "panels": [
         {
@@ -764,7 +781,6 @@ writeDashboard('mongodb', timeSpan='1d', rows=[
 
 writeDashboard('power-usage', [
     {
-        "collapse": false,
         "height": "500px",
         "panels": [
             {
@@ -785,7 +801,6 @@ writeDashboard('power-usage', [
 
 writeDashboard('ruler', timeSpan='7d', rows=[
     {
-      "collapse": false,
       "height": "600px",
       "panels": [
         {
@@ -847,15 +862,10 @@ writeDashboard('ruler', timeSpan='7d', rows=[
           "yaxes": [{"format": "short", "label": "count", "logBase": 1, "max": null, "min": 0, "show": true}, {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}]
         }
       ],
-      "repeat": null,
-      "repeatIteration": null,
-      "repeatRowId": null,
-      "showTitle": false,
-      "title": "Row",
-      "titleSize": "h6"
+      
+     
     },
     {
-      "collapse": false,
       "height": 261,
       "panels": [
         {
@@ -885,15 +895,10 @@ writeDashboard('ruler', timeSpan='7d', rows=[
             "yaxes": [{"format": "bytes", "label": null, "logBase": 1, "max": null, "min": null, "show": true}, {"format": "bytes", "label": null, "logBase": 1, "max": null, "min": null, "show": false}]
         }
       ],
-      "repeat": null,
-      "repeatIteration": null,
-      "repeatRowId": null,
-      "showTitle": false,
-      "title": "New row",
-      "titleSize": "h6"
+      
+   
     },
     {
-      "collapse": false,
       "height": 255,
       "panels": [
         {
@@ -935,850 +940,196 @@ writeDashboard('ruler', timeSpan='7d', rows=[
             "yaxes": [ { "format": "bytes", "label": null, "logBase": 1, "max": null, "min": null, "show": true }, { "format": "bytes", "label": null, "logBase": 1, "max": null, "min": null, "show": false } ]
         }
       ],
-      "repeat": null,
-      "repeatIteration": null,
-      "repeatRowId": null,
-      "showTitle": false,
-      "title": "Dashboard Row",
-      "titleSize": "h6"
+      
+    
     },
   
   
     ])
 
-writeDashboard('temperatures', timeSpan='1d', rows=[
-    {
-      "collapse": false,
-      "height": 392,
-      "panels": [
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "main",
-          "editable": true,
-          "error": false,
-          "fill": 1,
-          "grid": {"leftLogBase": 1, "leftMax": null, "leftMin": null, "rightLogBase": 1, "rightMax": null, "rightMin": null},
-          "id": 3,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 2,
-          "links": [],
-          "nullPointMode": "connected",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "span": 12,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "alias": "greenhouse",
+
+def tempTarget(location, measurement='temperatureF'):
+    return {
+              "alias": location,
               "dsType": "influxdb",
               "fill": "",
-              "groupBy": [{"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}
-              ],
-              "measurement": "temperatureF",
+              "groupBy": [{"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
+              "measurement": measurement,
               "orderByTime": "ASC",
               "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"location\" = 'greenhouse' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "A",
+              "query": "SELECT mean(\"value\") AS \"value\" FROM \"%s\" WHERE \"location\" = '%s' AND $timeFilter GROUP BY time(undefined), \"undefined\"" % (measurement, location),
+              "refId": nextId(),
               "resultFormat": "time_series",
               "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "median"}]],
-              "tags": [{"key": "location", "operator": "=", "value": "greenhouse"}]
-            },
-            {
-              "alias": "storage",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "temperatureF",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"location\" = 'storage' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "B",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "location", "operator": "=", "value": "storage"}]
-            },
-            {
-              "alias": "ariUnderBed",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "temperatureF",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"location\" = 'ariUnderBed' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "C",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "location", "operator": "=", "value": "ariUnderBed"}]
-            },
-            {
-              "alias": "workshop",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "temperatureF",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"location\" = 'workshop' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "D",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "location", "operator": "=", "value": "workshop"}]
-            },
-            {
-              "alias": "garage",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "temperatureF",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"location\" = 'garage' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "E",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "location", "operator": "=", "value": "garage"}]
-            },
-            {
-              "alias": "bedroom",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "temperatureF",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"location\" = 'bedroom' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "F",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "location", "operator": "=", "value": "bedroom"}]
-            },
-            {
-              "alias": "livingRoomCeiling",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "temperatureF",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"location\" = 'livingRoomCeiling' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "G",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "location", "operator": "=", "value": "livingRoomCeiling"}]
-            },
-            {
-              "alias": "kitchenCounter",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "temperatureF",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"location\" = 'kitchenCounter' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "H",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "location", "operator": "=", "value": "kitchenCounter"}]
+              "tags": [{"key": "location", "operator": "=", "value": location}]
             }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "house temperatures",
-          "tooltip": {"msResolution": true, "shared": true, "sort": 2, "value_type": "cumulative"},
-          "type": "graph",
-          "x-axis": true,
-          "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []},
-          "y-axis": true,
-          "y_formats": [
-            "short",
-            "short"
-          ],
-          "yaxes": [
-            {"format": "farenheit", "label": "", "logBase": 1, "max": 110, "min": "40", "show": true},
+    
+
+def tempRow(title, targets, yFormat='farenheit', yMin=40, yMax=110):
+    return {"height": "450px", "panels": [{
+        "aliasColors": {}, "bars": false, "dashLength": 10, "dashes": false, "datasource": "main", "editable": true, "error": false, "fill": 1,
+        "grid": {"leftLogBase": 1, "leftMax": null, "leftMin": null, "rightLogBase": 1, "rightMax": null, "rightMin": null},
+        "id": nextId(),
+        "legend": {"avg": false, "current": false, "max": false, "min": false, "show": true, "total": false, "values": false},
+        "lines": true, "linewidth": 2, "links": [], "nullPointMode": "connected",
+        "percentage": false, "pointradius": 5, "points": false, "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 12, "stack": false, "steppedLine": false,
+        "targets": targets,
+        "thresholds": [], "timeFrom": null, "timeShift": null,
+        "title": title,
+        "tooltip": {"msResolution": true, "shared": true, "sort": 2, "value_type": "cumulative"},
+        "type": "graph",
+        "x-axis": true,
+        "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []},
+        "y-axis": true,
+        "y_formats": ["short", "short"],
+        "yaxes": [
+            {"format": yFormat, "label": "", "logBase": 1, "max": yMax, "min": yMin, "show": true},
             {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}
-          ]
-        }
-      ],
-      "repeat": null,
-      "repeatIteration": null,
-      "repeatRowId": null,
-      "showTitle": false,
-      "title": "Row",
-      "titleSize": "h6"
-    },
-    {
-      "collapse": false,
-      "height": "250px",
-      "panels": [
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "main",
-          "editable": true,
-          "error": false,
-          "fill": 1,
-          "grid": {"leftLogBase": 1, "leftMax": null, "leftMin": null, "rightLogBase": 1, "rightMax": null, "rightMin": null},
-          "id": 2,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 2,
-          "links": [],
-          "nullPointMode": "connected",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "span": 12,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
+        ]
+        }],  }
+     
+
+writeDashboard('temperatures', timeSpan='1d', rows=[
+
+          tempRow(title="house temperatures", targets=[
+            tempTarget("greenhouse"),
+            tempTarget("storage"),
+            tempTarget("frontbedUnderDesk"),
+            tempTarget("workshop"),
+            tempTarget("printer-low"),
+            tempTarget("printer-mid"),
+            tempTarget("printer-high"),
+            tempTarget("garage"),
+            tempTarget("bedroom"),
+            tempTarget("livingRoomCeiling"),
+            tempTarget("kitchenCounter"),
+          ]),
+          tempRow(title="humidity", targets=[
+              tempTarget('greenhouse', 'humidity'),
+              tempTarget('livingRoomCeiling', 'humidity'),
+              tempTarget('kitchenCounter', 'humidity'),
+              tempTarget('workshop', 'humidity'),
+          ], yFormat='short', yMin=0, yMax=100),
+          tempRow(title='NOAA', targets= [
+              tempTarget('koak'),
+              tempTarget('kmhr'),
+              tempTarget('kont'),
+              tempTarget('ksfo'),
+          ]),
+          tempRow(title="Pi board temperatures", targets=[
+              tempTarget('changingPi'),
+              tempTarget('bedPi'),
+              tempTarget('kitchenPi'),
+              tempTarget('livingPi'),
+              tempTarget('garagePi'),
+              tempTarget('frontDoor'),
+              tempTarget('frontbed'),
+          ]),
+          tempRow(title="bang sensors", targets=[
             {
-              "alias": "greenhouse",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "humidity",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"humidity\" WHERE \"location\" = 'greenhouse' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "A",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "location", "operator": "=", "value": "greenhouse"}]
-            },
-            {
-              "alias": "living room ceiling",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "humidity",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"humidity\" WHERE \"location\" = 'livingRoomCeiling' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "B",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "location", "operator": "=", "value": "livingRoomCeiling"}]
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "humidity",
-          "tooltip": {
-            "msResolution": true,
-            "shared": true,
-            "sort": 0,
-            "value_type": "cumulative"
-          },
-          "type": "graph",
-          "x-axis": true,
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "y-axis": true,
-          "y_formats": [
-            "short",
-            "short"
-          ],
-          "yaxes": [
-            {
-              "format": "short",
-              "label": "",
-              "logBase": 1,
-              "max": "100",
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ]
-        }
-      ],
-      "repeat": null,
-      "repeatIteration": null,
-      "repeatRowId": null,
-      "showTitle": false,
-      "title": "New row",
-      "titleSize": "h6"
-    },
-    {
-      "collapse": false,
-      "height": "250px",
-      "panels": [
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "main",
-          "editable": true,
-          "error": false,
-          "fill": 1,
-          "grid": {"leftLogBase": 1, "leftMax": null, "leftMin": null, "rightLogBase": 1, "rightMax": null, "rightMin": null},
-          "id": 1,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 2,
-          "links": [],
-          "nullPointMode": "connected",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "span": 12,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "alias": "koak",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "temperatureF",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"source\" = 'noaa' AND \"location\" = 'koak' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "B",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "source", "operator": "=", "value": "noaa"}, {
-                  "condition": "AND",
-                  "key": "location",
-                  "operator": "=",
-                  "value": "koak"
-                }
-              ]
-            },
-            {
-              "alias": "kmhr",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "temperatureF",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"source\" = 'noaa' AND \"location\" = 'kmhr' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "A",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "source", "operator": "=", "value": "noaa"}, {
-                  "condition": "AND",
-                  "key": "location",
-                  "operator": "=",
-                  "value": "kmhr"
-                }
-              ]
-            },
-            {
-              "alias": "kont",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "temperatureF",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"source\" = 'noaa' AND \"location\" = 'kont' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "C",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "source", "operator": "=", "value": "noaa"}, {
-                  "condition": "AND",
-                  "key": "location",
-                  "operator": "=",
-                  "value": "kont"
-                }
-              ]
-            },
-            {
-              "alias": "ksfo",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "temperatureF",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"source\" = 'noaa' AND \"location\" = 'ksfo' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "D",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "source", "operator": "=", "value": "noaa"}, {
-                  "condition": "AND",
-                  "key": "location",
-                  "operator": "=",
-                  "value": "ksfo"
-                }
-              ]
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "NOAA",
-          "tooltip": {
-            "msResolution": true,
-            "shared": true,
-            "sort": 2,
-            "value_type": "cumulative"
-          },
-          "type": "graph",
-          "x-axis": true,
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "y-axis": true,
-          "y_formats": [
-            "short",
-            "short"
-          ],
-          "yaxes": [
-            {
-              "format": "farenheit",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ]
-        }
-      ],
-      "repeat": null,
-      "repeatIteration": null,
-      "repeatRowId": null,
-      "showTitle": false,
-      "title": "New row",
-      "titleSize": "h6"
-    },
-    {
-      "collapse": false,
-      "height": "250px",
-      "panels": [
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "main",
-          "editable": true,
-          "error": false,
-          "fill": 1,
-          "grid": {"leftLogBase": 1, "leftMax": null, "leftMin": null, "rightLogBase": 1, "rightMax": null, "rightMin": null},
-          "id": 4,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 2,
-          "links": [],
-          "nullPointMode": "connected",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "span": 12,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "alias": "changing",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "temperatureF",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"location\" = 'changingPi' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "A",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "location", "operator": "=", "value": "changingPi"}]
-            },
-            {
-              "alias": "bed",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "temperatureF",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"location\" = 'bedPi' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "B",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "location", "operator": "=", "value": "bedPi"}]
-            },
-            {
-              "alias": "kitchen",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "temperatureF",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"location\" = 'kitchenPi' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "C",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "location", "operator": "=", "value": "kitchenPi"}]
-            },
-            {
-              "alias": "living",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "temperatureF",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"location\" = 'livingPi' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "D",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "location", "operator": "=", "value": "livingPi"}]
-            },
-            {
-              "alias": "garage",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "temperatureF",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"location\" = 'garagePi' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "E",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "location", "operator": "=", "value": "garagePi"}]
-            },
-            {
-              "alias": "frontDoor",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "hide": false,
-              "measurement": "temperatureF",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"location\" = 'frontDoor' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "F",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "location", "operator": "=", "value": "frontDoor"}]
-            },
-            {
-              "alias": "frontbed",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "temperatureF",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "query": "SELECT mean(\"value\") AS \"value\" FROM \"temperatureF\" WHERE \"location\" = 'frontbed' AND $timeFilter GROUP BY time(undefined), \"undefined\"",
-              "refId": "G",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "location", "operator": "=", "value": "frontbed"}]
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Pi board temperatures",
-          "tooltip": {
-            "msResolution": true,
-            "shared": true,
-            "sort": 0,
-            "value_type": "cumulative"
-          },
-          "type": "graph",
-          "x-axis": true,
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "y-axis": true,
-          "y_formats": [
-            "short",
-            "short"
-          ],
-          "yaxes": [
-            {
-              "format": "farenheit",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ]
-        }
-      ],
-      "repeat": null,
-      "repeatIteration": null,
-      "repeatRowId": null,
-      "showTitle": false,
-      "title": "New row",
-      "titleSize": "h6"
-    },
-    {
-      "collapse": false,
-      "height": 250,
-      "panels": [
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "telegraf",
-          "editable": true,
-          "error": false,
-          "fill": 1,
-          "grid": {"leftLogBase": 1, "leftMax": null, "leftMin": null, "rightLogBase": 1, "rightMax": null, "rightMin": null},
-          "id": 5,
-          "legend": {
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 1,
-          "links": [],
-          "nullPointMode": "connected",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "span": 12,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "alias": "core0",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "sensors",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "I",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["temp_input"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "host", "operator": "=", "value": "bang"}, {
-                  "condition": "AND",
-                  "key": "feature",
-                  "operator": "=",
-                  "value": "core_0"
-                }
-              ]
-            },
-            {
-              "alias": "core1",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "sensors",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "A",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["temp_input"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "host", "operator": "=", "value": "bang"}, {
-                  "condition": "AND",
-                  "key": "feature",
-                  "operator": "=",
-                  "value": "core_1"
-                }
-              ]
-            },
-            {
-              "alias": "core2",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "sensors",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "B",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["temp_input"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "host", "operator": "=", "value": "bang"}, {
-                  "condition": "AND",
-                  "key": "feature",
-                  "operator": "=",
-                  "value": "core_2"
-                }
-              ]
-            },
-            {
-              "alias": "core3",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "sensors",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "C",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["temp_input"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "host", "operator": "=", "value": "bang"}, {
-                  "condition": "AND",
-                  "key": "feature",
-                  "operator": "=",
-                  "value": "core_3"
-                }
-              ]
-            },
-            {
-              "alias": "temp1",
-              "dsType": "influxdb",
-              "groupBy": [
-                {"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "sensors",
-              "orderByTime": "ASC",
-              "policy": "default",
-              "refId": "D",
-              "resultFormat": "time_series",
-              "select": [[{"params": ["temp_input"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [{"key": "host", "operator": "=", "value": "bang"}, {
-                  "condition": "AND",
-                  "key": "feature",
-                  "operator": "=",
-                  "value": "temp1"
-                }
-              ]
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "bang sensors",
-          "tooltip": {
-            "msResolution": true,
-            "shared": true,
-            "sort": 2,
-            "value_type": "cumulative"
-          },
-          "type": "graph",
-          "x-axis": true,
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "y-axis": true,
-          "y_formats": [
-            "short",
-            "short"
-          ],
-          "yaxes": [
-            {
-              "format": "celsius",
-              "label": "",
-              "logBase": 1,
-              "max": "60",
-              "min": "26",
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ]
-        }
-      ],
-      "repeat": null,
-      "repeatIteration": null,
-      "repeatRowId": null,
-      "showTitle": false,
-      "title": "Dashboard Row",
-      "titleSize": "h6"
-    }
+                "alias": c,
+                "dsType": "influxdb", "groupBy": [{"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
+                "measurement": "sensors", "orderByTime": "ASC", "policy": "default", "refId": nextId(),
+                "resultFormat": "time_series",
+                "select": [[{"params": ["temp_input"], "type": "field"}, {"params": [], "type": "mean"}]],
+                "tags": [{"key": "host", "operator": "=", "value": "bang"}, {"condition": "AND", "key": "feature", "operator": "=", "value": c}]
+            } for c in ['core_0', 'core_1', 'core_2', 'core_3', 'temp1']
+          ], yFormat='celsius', yMin=26, yMax=60),
     ])
+
+def netRow(host):
+    return { "dashLength": 10, "dashes": false, "datasource": "telegraf", "fill": 1, "id": nextId(), "interval": ">10s", 
+             "legend": { "show": true},
+             "lines": true, "linewidth": 1, "links": [], "nullPointMode": "null", "percentage": false, "pointradius": 5, "points": false,
+             "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 4, "stack": false, "steppedLine": false, 
+             "targets": [{
+                 "alias": "recv",
+                 "dsType": "influxdb",
+                 "groupBy": [{"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
+                 "measurement": "net", "orderByTime": "ASC", "policy": "default", "refId": "A",
+                 "resultFormat": "time_series", 
+                 "select": [[{"params": ["bytes_recv"], "type": "field"},
+                             {"params": [], "type": "mean"},
+                             {"params": ["1s"], "type": "non_negative_derivative"}]], 
+                 "tags": [{"key": "host", "operator": "=", "value": host}]},
+                         {"alias": "sent", "dsType": "influxdb",
+                          "groupBy": [{"params": ["$__interval"], "type": "time"},
+                                      {"params": ["null"], "type": "fill"}],
+                          "measurement": "net", "orderByTime": "ASC", "policy": "default",
+                          "refId": "B", "resultFormat": "time_series", 
+                          "select": [[{"params": ["bytes_sent"], "type": "field"},
+                                      {"params": [], "type": "mean"}, {"params": ["1s"], "type": "non_negative_derivative"}]], 
+                          "tags": [{"key": "host", "operator": "=", "value": host}]}], 
+             "thresholds": [], "timeFrom": null, "timeShift": null,
+             "title": "%s net" % host,
+             "tooltip": {"shared": true, "sort": 0, "value_type": "individual"},
+             "type": "graph", 
+             "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []}, 
+             "yaxes": [{"format": "bytes", "min": "0", "max":500000, "show": true},
+                       {"format": "short", "show": true}]}
+    
+
+writeDashboard('network', timeSpan='1d', rows=[
+    {"height": "450px", "panels": [
+        { "dashLength": 10, "dashes": false, "datasource": "main", "editable": true, "error": false, "fill": 1, "grid": {}, "id": 1, 
+          "legend": { "show": false}, "lines": true, "linewidth": 2, "links": [], "nullPointMode": "connected", "percentage": false, "pointradius": 5, "points": false,
+          "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 12, "stack": false, "steppedLine": false, 
+          "targets": [{
+              "alias": "in", "dsType": "influxdb",
+              "groupBy": [{"params": ["$interval"], "type": "time"},
+                          {"params": ["null"], "type": "fill"}],
+              "measurement": "bytesPerSec", "policy": "default",
+              "query": "SELECT moving_average(mean(\"value\"), 10)  * -1 FROM \"bytesPerSec\" WHERE \"source\" = 'isp' AND $timeFilter GROUP BY time($interval) fill(null)",
+              "rawQuery": false,
+              "refId": "B",
+              "resultFormat": "time_series", 
+              "select": [[{"params": ["value"], "type": "field"},
+                          {"params": [], "type": "max"}]], 
+              "tags": [{"key": "source", "operator": "=", "value": "isp"}]}], 
+          "thresholds": [], "timeFrom": null, "timeShift": null,
+          "title": "in from ISP",
+          "tooltip": {"msResolution": true, "shared": true, "sort": 0, "value_type": "cumulative"},
+          "type": "graph", 
+          "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []}, 
+          "yaxes": [{"format": "Bps", "label": "", "logBase": 1, "max": 1500000, "min": 0, "show": true}, {"format": "short", "show": true}]
+      },
+        { "dashLength": 10, "dashes": false, "datasource": "main", "editable": true, "error": false, "fill": 1, "grid": {}, "id": nextId(), 
+          "legend": { "show": false}, "lines": true, "linewidth": 2, "links": [], "nullPointMode": "connected", "percentage": false, "pointradius": 5, "points": false,
+          "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 12, "stack": false, "steppedLine": false, 
+          "targets": [{
+              "alias": "out", "dsType": "influxdb", "groupBy": [{"params": ["$interval"], "type": "time"},
+                                                                {"params": ["null"], "type": "fill"}], "measurement": "bytesPerSec", "policy": "default", "refId": nextId(), "resultFormat": "time_series", 
+              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "max"}]], 
+              "tags": [{"key": "source", "operator": "=", "value": "bang"}]}], 
+          "thresholds": [], "timeFrom": null, "timeShift": null,
+          "title": "out to ISP", "tooltip": {"msResolution": true, "shared": true, "sort": 0, "value_type": "cumulative"}, "type": "graph", 
+          "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []}, 
+          "yaxes": [{"format": "Bps", "label": null, "logBase": 1, "max": 210000, "min": 0, "show": true},
+                    {"format": "short", "show": true}]
+      }]},
+    {"height": 250, "panels": [
+        { "dashLength": 10, "dashes": false, "datasource": "telegraf", "fill": 1, "id": 3, 
+          "legend": { "show": true}, "lines": true, "linewidth": 1, "links": [], "nullPointMode": "null", "percentage": false, "pointradius": 5, "points": false,
+          "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 12, "stack": false, "steppedLine": false, 
+          "targets": [{"dsType": "influxdb", "groupBy": [
+              {"params": ["$__interval"], "type": "time"},
+              {"params": ["null"], "type": "fill"}
+          ], "measurement": "procstat", "orderByTime": "ASC", "policy": "default", "refId": nextId(), "resultFormat": "time_series", 
+                       "select": [[{"params": ["cpu_usage"], "type": "field"}, {"params": [], "type": "mean"}]], 
+                       "tags": [{"key": "process_name", "operator": "=", "value": "netbars"}]}], 
+          "thresholds": [], "timeFrom": null, "timeShift": null,
+          "title": "netbars cpu usage", "tooltip": {"shared": true, "sort": 0, "value_type": "individual"}, "type": "graph", 
+          "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []}, 
+          "yaxes": [{"format": "short", "show": true}, {"format": "short", "show": true}]}
+    ],  },
+    
+    {"height": 239, "panels": [
+        netRow('changing'),
+        netRow('slash'),
+        netRow('bed'),
+        netRow('dash'),
+        netRow('garage'),
+        netRow('frontdoor'),
+        netRow('kitchen'),
+        netRow('living'),
+    ]}])
