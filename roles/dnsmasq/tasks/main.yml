@@ -1,4 +1,7 @@
 ---
+
+- service: name=dnsmasq enabled=no state=stopped
+
 - set_fact: job=dnsmasq port=53 image_tag="latest"
 - set_fact: image=bang6:5000/{{job}}:{{image_tag}}
 
@@ -9,20 +12,23 @@
 - set_fact: net=10.1
 - template: src=hosts.j2 dest=/opt/dnsmasq/10.1/hosts
 - template: src=dnsmasq.conf.j2 dest=/opt/dnsmasq/10.1/dnsmasq.conf
+- template: src=dhcp_hosts.j2 dest=/opt/dnsmasq/10.1/dhcp_hosts
 
 - set_fact: net=10.2
 - template: src=hosts.j2 dest=/opt/dnsmasq/10.2/hosts
 - template: src=dnsmasq.conf.j2 dest=/opt/dnsmasq/10.2/dnsmasq.conf
-
+- template: src=dhcp_hosts.j2 dest=/opt/dnsmasq/10.2/dhcp_hosts
+# these need to notify a restart
+  
 - docker_image: name={{image}} force=yes
 - supervisor_process_mod:
     name="dnsmasq_10_1"
-    command="docker run --name dnsmasq_10_1 --rm -v /opt/dnsmasq/10.1:/opt/dnsmasq {{image}}"
+    command="docker run --name dnsmasq_10_1 --rm --net=host --cap-add NET_BROADCAST --privileged -v /opt/dnsmasq/10.1:/opt/dnsmasq {{image}}"
     user=root
   notify: supervisord update
 - supervisor_process_mod:
     name="dnsmasq_10_2"
-    command="docker run --name dnsmasq_10_2 --rm -v /opt/dnsmasq/10.2:/opt/dnsmasq {{image}}"
+    command="docker run --name dnsmasq_10_2 --rm --net=host --cap-add NET_BROADCAST --privileged -v /opt/dnsmasq/10.2:/opt/dnsmasq {{image}}"
     user=root
   notify: supervisord update
 
