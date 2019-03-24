@@ -2,6 +2,7 @@
 Description=supervisord - Supervisor process control system for UNIX
 Documentation=http://supervisord.org
 After=remote-fs.target
+After=docker.service
 
 [Service]
 Type=forking
