@@ -8,15 +8,32 @@
     # for homepage
     - apt: pkg=darcs
     - apt: pkg=xsltproc
-    # for arduinonode
-    - apt: pkg=arduino-mk
-    - apt: pkg=indent
     # for heist
     - apt: pkg=uuid-runtime
     # for blog feeds
     - apt: pkg=python-dateutil
     # for firedata
     - apt: pkg=coffeescript
+    # for search (dev)
+    - apt: pkg=golang-1.8
+    # for arduinoNode
+    - docker_image: name=bang6:5000/arduino_node force=yes
+      tags: ['arduinoNode']
+    - docker_image: name=bang6:5000/collector_x86:latest force=yes
+      tags: ['reasoning']
+    - docker_image: name=bang6:5000/mqtt_graph_bridge_x86:latest force=yes
+      tags: ['reasoning']
+    - docker_image: name=bang6:5000/front_door_lock_x86:latest force=yes
+      tags: ['door']
+    - docker_image: name=bang6:5000/wifi_x86:latest force=yes
+      tags: ['wifi']
+    - copy: dest="/var/lib/openid_proxy.d/sse_collector-log.n3" content="<http://bigasterisk.com/openidProxySite/sse_collector> <http://bigasterisk.com/openid_proxy#accessLogKey> \"bigasterisk.com-sse_collector\" . "
+      tags: ['reasoning']
+    - docker_image: name=bang6:5000/ntopng:latest force=yes
+      tags: ['ntop']
+    - copy: dest="/var/lib/openid_proxy.d/ntop-log.n3" content="<http://bigasterisk.com/openidProxySite/ntop> <http://bigasterisk.com/openid_proxy#accessLogKey> \"bigasterisk.com-ntop\" . "
+      tags: ['ntop']
+
   roles:
     - role: site
       site_name: 'heist_querytransactions'
@@ -49,17 +66,6 @@
       process:
         directory: "/my/proj/href"
         command: "/my/proj/href/run"
-
-#    - role: site
-#      name: 'thermostat'
-#      path: "/thermostat/"
-#      openid: "admin"
-#      serverHost: "bang"
-#      accessLog: false
-#      internalPort: "10001"
-#      process:
-#        directory: "/my/proj/homeauto/service/thermostat"
-#        command: "/my/proj/homeauto/service/thermostat/bin/python thermostat.py"
 
     - role: site
       tags: ['babysitcoop']
@@ -125,10 +131,8 @@
       serverHost: "bang"
       internalPort: "9096"
       process:
-        directory: "/my/proj/search"
-        command: "java -jar /my/proj/search/target/search-assembly-1.7.jar 9096"
-        stdout_logfile_backups: 2
-        stderr_logfile_backups: 2
+        directory: "/my/proj/search/v2"
+        command: "/my/proj/search/v2/search"
 
     - role: site
       site_name: 'searchFiles'
@@ -237,17 +241,6 @@
         command: "/my/proj/pimscreen/bin/python daily.py"
       openid: "admin"
       tags: ['daily']
-
-    - role: site
-      name: 'timebank'
-      path: "/timebank/"
-      openid: "admin"
-      serverHost: "bang"
-      internalPort: "10006"
-      process:
-        directory: "/my/proj/ariRoom"
-        command: "/my/proj/ariRoom/bin/python timebank.py"
-      tags: ['timebank']
         
     - role: site
       site_name: 'dhcpleases'
@@ -256,8 +249,7 @@
       serverHost: "bang"
       internalPort: "9073"
       process:
-        directory: "/my/proj/homeauto/service/dhcpleases/"
-        command: "/my/proj/homeauto/service/dhcpleases/bin/python dhcpleases.py"
+        command: "docker run --rm --name=dhcpleases -p 9073:9073 -v /opt/dnsmasq:/opt/dnsmasq bang6:5000/dhcpleases_x86:latest"
       tags: ['dhcpleases']
 
     - role: site
@@ -267,10 +259,19 @@
       serverHost: "bang"
       internalPort: "9070"
       process:
-        directory: "/my/proj/homeauto/service/tomatoWifi/"
-        command: "/my/proj/homeauto/service/tomatoWifi/bin/python tomatoWifi.py"
+        command: "docker run --rm --net=host --name wifi bang6:5000/wifi_x86:latest"
       tags: ['wifi']
 
+    - role: site
+      site_name: 'powerEagle'
+      path: '/powerEagle/'
+      openid: 'admin'
+      serverHost: 'bang'
+      internalPort: '10016'
+      process:
+        command: 'docker run --rm --name=powerEagle -p 10016:10016 --net=host bang6:5000/powereagle_x86:latest python3 reader.py'
+      tags: ['powerEagle']
+        
     - role: site
       site_name: 'beacon'
       path: "/beacon/"
@@ -300,12 +301,42 @@
       serverHost: "bang"
       internalPort: "9072"
       process:
-        directory: "/my/proj/homeauto/service/reasoning/"
-        command: "/my/proj/homeauto/service/reasoning/bin/python sse_collector.py"
+        command: "docker run --rm -p 9072:9072 --net=host --name collector bang6:5000/collector_x86:latest"
       tags: ['reasoning']
       
     - role: site
-      name: 'magma'
+      site_name: 'mqtt_graph_bridge'
+      path: "/mqtt_graph_bridge/"
+      openid: "admin"
+      serverHost: "bang"
+      internalPort: "10008"
+      process:
+        command: "docker run --rm -p 10008:10008 --net=host --name mqtt_graph_bridge bang6:5000/mqtt_graph_bridge_x86:latest"
+      tags: ['reasoning']
+
+    - role: site
+      site_name: 'ntop'
+      path: "/ntop/"
+      openid: "admin"
+      serverHost: "bang"
+      internalPort: "3000"
+      process:
+        command: "docker run --rm --net=host --user root --name ntop -v /opt/ntopng:/opt/ntopng -v /opt/ntopng/local:/usr/share/ntopng/scripts/lua/local bang6:5000/ntopng:latest --community --dns-mode 1 -i any --http-port 3000 --local-networks 10.1.0.0/16,10.2.0.0/16,10.3.0.0/16,192.168.1.1/24,172.17.0.0/16,127.0.0.0/24 --disable-login 1 --sticky-hosts local --http-prefix /ntop --data-dir /opt/ntopng --redis localhost:6379@ntop --user ntopnghost"
+      tags: ['ntop']
+
+    - role: site
+      site_name: 'front_door_lock'
+      path: "/frontDoorLock/"
+      openid: "admin"
+      serverHost: "bang"
+      internalPort: "10011"
+      process:
+        command: "docker run --rm -p 10011:10011 --net=host --name front_door_lock bang6:5000/front_door_lock_x86:latest"
+        autorestart: true
+      tags: ['door']
+      
+    - role: site
+      site_name: 'magma'
       path: "/magma/"
       openid: "admin"
       serverHost: "bang"
@@ -313,6 +344,18 @@
       process:
         directory: "/my/site/magma/"
         command: "/my/site/magma/env/bin/python serve_magma.py"
+      tags: ['magma']
+
+    # done as a server site instead of serveRoot so it doesn't have to be synced to prime yet
+    - role: site
+      site_name: 'magmaChat'
+      path: "/chat/"
+      openid: "anonymous"
+      serverHost: "bang"
+      internalPort: "8011"
+      process:
+        directory: "/my/site/magma/chat2"
+        command: "/my/site/magma/chat2/env/bin/python chat.py"
       tags: ['magma']
       
     - role: site
@@ -350,22 +393,46 @@
         command: "docker run --rm --name grafana --net=host -p 9067:9067 -v /opt/grafana:/opt/grafana bang6:5000/grafana_x86:latest"
       tags: ['grafana']
 
-- hosts: brace
+    - role: site
+      site_name: 'timebank'
+      path: "/timebank/"
+      openid: "admin"
+      serverHost: "bang"
+      internalPort: "10006"
+      process:
+        user: root
+        command: "docker run --name timebank --rm --network=host --privileged bang6:5000/timebank_x86 python3 timebank.py"
+      tags: ['timebank']
+      
+    - role: site
+      site_name: "store"
+      path: "/store/"
+      openid: "admin"
+      serverHost: "bang"
+      internalPort: 10015
+      process:
+        command: "docker run --rm --name store -p 10015:10015 -v /opt/homeauto_store:/opt/homeauto_store bang6:5000/store_x86:latest python store.py"
+        user: "root"
+      tags: ['store']
+
+- hosts: frontdoor
   gather_facts: no
   handlers:
     - include: handlers/main.yml
   tasks:
-    # for arduinonode
-    - apt: pkg=arduino-mk
-    - apt: pkg=indent
+    - docker_image: name=bang6:5000/bluetooth_buttons_pi:latest force=yes
+      tags: ['bluetooth_buttons']
+    - docker_image: name=bang6:5000/rfid_pn532_py_pi:latest force=yes
+      tags: ['rfid']     
+    - docker_image: name=bang6:5000/tiny_screen_pi:latest force=yes
+      tags: ['tiny_screen']
   roles:
     - role: site
-      name: 'arduinoNodeBrace'
-      path: "/arduino/brace/"
+      site_name: "bluetooth_buttons"
+      path: "/bluetoothButtons/"
       openid: "admin"
-      serverHost: "brace"
-      internalPort: "9059"
-      useWebsocketPath: "yes"
+      serverHost: "frontdoor"
+      internalPort: 10014
       process:
         directory: "/my/proj/homeauto/service/arduinoNode/"
         command: "/my/proj/homeauto/service/arduinoNode/bin/python arduinoNode.py"
@@ -384,6 +451,20 @@
       internalPort: "9059"
       useWebsocketPath: "yes"
       process:
-        directory: "/my/proj/homeauto/service/arduinoNode/"
-        command: "/my/proj/homeauto/service/arduinoNode/bin/python arduinoNode.py"
-      tags: ['arduinoNode']
+        command: "docker run --rm --net=host --privileged -v /dev:/dev --hostname=frontdoor --name rfid_pn532_py bang6:5000/rfid_pn532_py_pi:latest python3 rfid.py"
+        user: "root"
+        autorestart: true
+      tags: ['rfid']
+    - role: site
+      site_name: "tiny_screen"
+      path: "/frontDoor/screen/"
+      openid: "admin"
+      serverHost: "frontdoor"
+      internalPort: 10013
+      process:
+        command: "docker run --rm --net=host --privileged --name tiny_screen bang6:5000/tiny_screen_pi:latest python tiny_screen.py"
+        user: "root"
+        autorestart: true
+      tags: ['tiny_screen']
+
+    

@@ -63,13 +63,6 @@
 - apt: pkg=mini-httpd
   tags: ['sites', 'adkins']
 - supervisor_process_mod: 
-    name=adkins_9021
-    command="mini_httpd -p 9021 -d /my/site/adkinslawgroup/cgi -c * -D -l /tmp/adkins-thttpd.log"
-    user=drewp
-  notify: supervisord update
-  tags: ['sites', 'adkins']
-
-- supervisor_process_mod: 
     name=sfd_9024
     directory=/my/proj/sfd
     command="/my/proj/sfd/bin/python /my/proj/sfd/sfd.py"
@@ -136,17 +129,12 @@
   notify: supervisord update
   tags: ['sites']
 
-# see netbars/setup.py
-- apt: pkg=python-webpy
-  tags: ['sites', 'netbars']
-- apt: pkg=python-libpcap
-  tags: ['sites', 'netbars']
-- apt: pkg=python-docopt
+- docker_image: name=bang6:5000/netbars_x86:latest force=yes
   tags: ['sites', 'netbars']
 - supervisor_process_mod: 
     name=netbars_3001
     directory=/my/proj/netbars
-    command="/my/proj/netbars/install-env/bin/python install-env/bin/netbars --port 3001 --iface ens6 --local 10.1.10.10"
+    command="docker run --rm -p 3001 --net=host --privileged --name netbars bang6:5000/netbars_x86:latest python scripts/netbars --port 3001 --iface ens5 --local 192.168.1.1"
     user=root
   notify: supervisord update
   tags: ['sites', 'netbars']
@@ -159,13 +147,13 @@
   notify: supervisord update
   tags: ['sites']
 
+- docker_image: name=bang6:5000/environment_x86:latest force=yes
 - supervisor_process_mod: 
     name=envgraph_9075
-    directory=/my/proj/homeauto/service/environment
-    command="/my/proj/homeauto/service/environment/bin/python environment.py"
+    command="docker run --rm -p 9075:9075 --net=host  bang6:5000/environment_x86:latest python environment.py"
     user=drewp
   notify: supervisord update
-  tags: ['sites']
+  tags: ['sites','env']
 
 - supervisor_process_mod: 
     name=timelinereview_9087

@@ -44,15 +44,6 @@
 #  notify: supervisord update
 
 - supervisor_process_mod:
-    name=powerEagleReader
-    directory=/my/proj/homeauto/service/powerEagle
-    command="/my/proj/homeauto/service/powerEagle/bin/python reader.py"
-    user=drewp
-    autostart=true
-  notify: supervisord update
-  tags: ['ha']
-
-- supervisor_process_mod:
     name=whatsplayingnext_9110
     directory=/my/site/whatsplayingnext
     command="/my/site/whatsplayingnext/bin/python whatsplayingnext.py"
@@ -95,14 +86,6 @@
     name=pim_twitterwatch
     directory=/my/proj/pimscreen
     command="/my/proj/pimscreen/bin/python twitterwatch"
-    user=drewp
-  notify: supervisord update
-  tags: ['pim']
-
-- supervisor_process_mod: 
-    name=pim_deliciouswatch
-    directory=/my/proj/pimscreen
-    command="/my/proj/pimscreen/bin/python deliciouswatch"
     user=drewp
   notify: supervisord update
   tags: ['pim']
@@ -226,16 +209,27 @@
   notify: supervisord update
   tags: ['csigen']
 
+
+- docker_image: name=bang6:5000/reasoning_x86:latest force=yes
+  tags: ['ha', 'reasoning']
 - supervisor_process_mod: 
     name=reasoning_9071
-    directory=/my/proj/homeauto/service/reasoning
-    command="/my/proj/homeauto/service/reasoning/bin/python reasoning.py"
+    command="docker run --rm -p 9071:9071 --net=host --name reasoning bang6:5000/reasoning_x86:latest"
     user=drewp
     stdout_logfile_backups=2
     stderr_logfile_backups=2
   notify: supervisord update
-  tags: ['ha']
+  tags: ['ha', 'reasoning']
 
+- docker_image: name=bang6:5000/traffic_shaping_to_influx:latest force=yes
+  tags: ['net', 'traffic_shaping_to_influx']
+- supervisor_process_mod: 
+    name=traffic_shaping_to_influx
+    command="docker run --rm --net=host --name traffic_shaping_to_influx bang6:5000/traffic_shaping_to_influx:latest"
+    user=drewp
+  notify: supervisord update
+  tags: ['net', 'traffic_shaping_to_influx']
+  
 - supervisor_process_mod: 
     name=pim_newlist_summary_9090
     directory=/home/drewp/mailprocess

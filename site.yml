@@ -263,16 +263,6 @@
     - {role: raspi_kiosk_chrome, tags: ['raspi_kiosk'], url: 'https://bigasterisk.com/login?redir=/room/ari/frontDoor.html'}
     - { role: webcam, tags: ['webcam'], camName: 'frontdoor', internalPort: 9020, camArgs: '--pi --location frontYard' }
 #    - { role: webcam, tags: ['webcam'], camName: 'frontdoor_screen', internalPort: 9021, camArgs: '--screen --location frontdoor_screen --nomotion' }
-  tasks:
-    - docker_image: name=bang6:5000/rfid_pn532_pi:latest force=yes
-      tags: ['rfid']
-    - supervisor_process_mod:
-        name=rfid_pn532
-        command="docker run --rm --name rfid --net=host --privileged bang6:5000/rfid_pn532_pi"
-        user=pi
-      notify: supervisord update
-      tags: ['rfid']
-
 
 - hosts: piedmont
   roles:
