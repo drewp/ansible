@@ -366,8 +366,7 @@
       internalPort: "9059"
       useWebsocketPath: "yes"
       process:
-        directory: "/my/proj/homeauto/service/arduinoNode/"
-        command: "/my/proj/homeauto/service/arduinoNode/bin/python arduinoNode.py"
+        command: "docker run --name arduinoNode --rm -p 9059:9059 --device=/dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A900cepU-if00-port0 --net=host bang6:5000/arduino_node python ./arduinoNode.py"
       tags: ['arduinoNode']
 
     - role: site
