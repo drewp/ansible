@@ -3,11 +3,11 @@
   
 - file: path=/opt/dovecot state=directory
 - file: path=/opt/dovecot/install state=directory
-- get_url: url=http://dovecot.org/releases/2.2/dovecot-2.2.21.tar.gz dest=/opt/dovecot/dovecot-2.2.21.tar.gz
-- command: tar xzf dovecot-2.2.21.tar.gz chdir=/opt/dovecot creates=/opt/dovecot/dovecot-2.2.21/configure
-- command: ./configure --with-pam --prefix /opt/dovecot/install chdir=/opt/dovecot/dovecot-2.2.21/ creates=/opt/dovecot/dovecot-2.2.21/Makefile
-- command: make -j 4 chdir=/opt/dovecot/dovecot-2.2.21/
-- command: make install chdir=/opt/dovecot/dovecot-2.2.21/
+- get_url: url=http://dovecot.org/releases/2.3/dovecot-2.3.6.tar.gz dest=/opt/dovecot/dovecot-2.3.6.tar.gz
+- command: tar xzf dovecot-2.3.6.tar.gz chdir=/opt/dovecot creates=/opt/dovecot/dovecot-2.3.6/configure
+- command: ./configure --with-pam --prefix /opt/dovecot/install chdir=/opt/dovecot/dovecot-2.3.6/ creates=/opt/dovecot/dovecot-2.3.6/Makefile
+- command: make -j 4 chdir=/opt/dovecot/dovecot-2.3.6/
+- command: make install chdir=/opt/dovecot/dovecot-2.3.6/
 
 - file: path=/etc/dovecot state=directory
   
@@ -31,3 +31,8 @@
     command="/opt/dovecot/install/sbin/dovecot -F -c /etc/dovecot/dovecot.conf"
     user=root
   notify: supervisord update
+
+
+#---------------------------------------------
+#- copy: dest=/etc/pam.d/dovecot contents="auth     required        pam_unix.so nullok\naccount  required        pam_unix.so \npassword  required        pam_unix.so \nsession  required        pam_unix.so "
+#- copy: dest=/etc/dovecot/dovecot.conf src=dovecot.conf
