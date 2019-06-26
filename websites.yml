@@ -217,8 +217,7 @@
       serverHost: "bang"
       internalPort: "3192"
       process:
-        directory: "/my/proj/firedata"
-        command: "/usr/bin/coffee zipborders.coffee"
+        command: "docker run --name=firedata_zipborders -p 3192:3192 --rm drewp/firedata_zipborders"
       tags: ['firedata']
 
     - role: site
@@ -411,6 +410,28 @@
         command: "docker run --rm --name store -p 10015:10015 -v /opt/homeauto_store:/opt/homeauto_store bang6:5000/store_x86:latest python store.py"
         user: "root"
       tags: ['store']
+    - role: site
+      site_name: "nodered"
+      path: "/nodered/"
+      openid: "admin"
+      serverHost: "bang"
+      internalPort: 1880
+      process:
+        command: "docker run --rm -p 1880:1880 -v /opt/nodered:/data --net=host --name nodered nodered/node-red-docker"
+        user: "drewp"
+        autorestart: true
+      tags: ['nodered']
+    - role: site
+      site_name: "kms"
+      path: "/cam/mediaServer/"
+      openid: "admin"
+      serverHost: "bang"
+      internalPort: 8888
+      process:
+        command: "docker run --rm --name kms -p 8888:8888 --net=host kurento/kurento-media-server:latest"
+        user: "root"
+        autorestart: true
+      tags: ['webcam', 'kms']
 
 - hosts: frontdoor
   gather_facts: no
