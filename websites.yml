@@ -376,9 +376,7 @@
       serverHost: "bang"
       internalPort: "9105"
       process:
-        environment: "HOME=/home/drewp"
-        directory: "/my/proj/pimscreen"
-        command: "/my/proj/pimscreen/bin/python gcalendarwatch"
+        command: "docker run --name gcalendarwatch --rm -p 9105:9105 --net=host bang6:5000/gcalendarwatch_x86:latest python3 gcalendarwatch"
       tags: ['gcalendarwatch']
 
     - role: site
