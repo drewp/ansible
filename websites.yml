@@ -269,7 +269,7 @@
       serverHost: 'bang'
       internalPort: '10016'
       process:
-        command: 'docker run --rm --name=powerEagle -p 10016:10016 --net=host bang6:5000/powereagle_x86:latest python3 reader.py'
+        command: 'docker run --rm --name=powerEagle -p 10016:10016 -v /etc/resolv.conf:/etc/resolv.conf --net=host bang6:5000/powereagle_x86:latest python3 reader.py'
       tags: ['powerEagle']
         
     - role: site
