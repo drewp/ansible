@@ -3,7 +3,7 @@ FROM bang6:5000/base_x86
 WORKDIR /opt
 
 RUN apt-get install -y libfontconfig
-RUN wget https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana_5.4.0_amd64.deb && dpkg -i grafana_5.4.0_amd64.deb && rm grafana_5.4.0_amd64.deb
+RUN wget https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana_5.4.2_amd64.deb && dpkg -i grafana_5.4.2_amd64.deb && rm grafana_5.4.2_amd64.deb
 
 RUN wget -O diagram.zip https://grafana.com/api/plugins/jdbranham-diagram-panel/versions/1.4.3/download
 RUN wget -O panel.zip https://grafana.com/api/plugins/natel-discrete-panel/versions/0.0.8-pre/download
