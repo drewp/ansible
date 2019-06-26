@@ -2,23 +2,15 @@
 - group: gid=14564 name=dropbox
 - user: name=dropbox uid=14564 group=dropbox
 
-- file: path=/etc/apt/sources.list.d/dropbox.list state=absent
-- get_url:
-    dest=/home/dropbox/dropbox-lnx.x86_64.tgz
-    url=https://www.dropbox.com/download?plat=lnx.x86_64
-- file: path=/home/dropbox/.dropbox-dist state=absent
-- unarchive: src=/home/dropbox/dropbox-lnx.x86_64.tgz dest=/home/dropbox
-- file: path=/home/dropbox/.dropbox-dist state=directory recurse=yes owner=dropbox
-
-- file: path=/home/dropbox/Dropbox state=directory owner=dropbox group=drewp mode=0750
-- copy: dest=/home/dropbox/run_dropbox mode=a+rx content="#!/bin/sh\nexec /home/dropbox/.dropbox-dist/dropbox-lnx.x86_64-*/dropbox"
+# /my/proj/ansible/roles/dropbox/docker-dropbox/ contains https://github.com/janeczku/docker-dropbox.git
   
-# This works in /home/dropbox/.dropbox and /home/dropbox/Dropbox
+# docker build -t bang6:5000/dropbox:latest /my/proj/ansible/roles/dropbox/docker-dropbox/
+
+# docker run -it --rm --name=dropbox -v /home/dropbox/top/Dropbox:/dbox/Dropbox -v /home/dropbox/top/.dropbox:/dbox/.dropbox -v /home/dropbox/opt:/opt/dropbox  -e DBOX_UID=14564 -e DBOX_GID=14564 bang6:5000/dropbox:latest
+
 - supervisor_process_mod: 
     name=dropbox
-    environment="HOME=/home/dropbox"
-    command="/home/dropbox/run_dropbox"
-    user=dropbox
+    command="docker run --rm --name=dropbox -v /home/dropbox/top/Dropbox:/dbox/Dropbox -v /home/dropbox/top/.dropbox:/dbox/.dropbox -v /home/dropbox/opt:/opt/dropbox  -e DBOX_UID=14564 -e DBOX_GID=14564 bang6:5000/dropbox:latest"
     stopasgroup=true
   notify: supervisord update
 
