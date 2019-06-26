@@ -236,8 +236,7 @@
       serverHost: "bang"
       internalPort: "9111"
       process:
-        directory: "/my/proj/pimscreen/daily"
-        command: "/my/proj/pimscreen/bin/python daily.py"
+        command: "docker run --rm --name=daily -p 9111:9111 --net=host bang6:5000/daily_x86:latest python daily.py"
       openid: "admin"
       tags: ['daily']
         
