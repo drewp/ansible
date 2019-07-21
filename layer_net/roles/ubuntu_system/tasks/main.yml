@@ -1,0 +1,8 @@
+---
+
+- hostname: name={{ansible_hostname}}
+- timezone: name="America/Los_Angeles"
+
+- lineinfile: path=/etc/update-manager/release-upgrades regexp="^Prompt=" line="Prompt=normal"
+  
+# todo: install invoke pkg in ../filss
