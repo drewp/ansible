@@ -1,30 +1,27 @@
-[kube]
-10.1.0.9
-
 [all]
 dash
-plus ansible_ssh_host=10.2.0.30
+plus
 bang
 slash
 prime ansible_ssh_host=public.bigasterisk.com
 drewnote ansible_ssh_port=2222
 dot
-kitchen ansible_ssh_host=10.2.0.126
+kitchen
 living
 changing
 piedmont ansible_ssh_host=piedmont6
-garage ansible_ssh_host=10.1.0.124
+garage
 frontbed
 frontdoor
 bed
-workshop ansible_ssh_host=10.2.0.22
+workshop
 
 [big]
 dash
 bang
 slash
 dot
-plus ansible_ssh_host=fc7b:54e8:69a9:e165:86c8:9d42:6cc5:b2a1
+plus
 
 [remote]
 plus
@@ -82,20 +79,20 @@ dot
 bang
 slash
 
+# get these from /my/proj/ansible/roles/dnsmasq/templates/hosts.j2
 [vpn_client]
 bang      vpn_remote_addr=10.3.0.37
 piedmont  vpn_remote_addr=10.3.0.8
 
-bed       vpn_remote_addr=10.4.0.49
-changing  vpn_remote_addr=10.4.0.34
-dash      vpn_remote_addr=10.4.0.229
-dot       vpn_remote_addr=10.4.0.23
-frontbed  vpn_remote_addr=10.4.0.79
-frontdoor vpn_remote_addr=10.4.0.38
-garage    vpn_remote_addr=10.4.0.3
-kitchen   vpn_remote_addr=10.4.0.126
-living    vpn_remote_addr=10.4.0.28
-workshop  vpn_remote_addr=10.4.0.22
+bed       vpn_remote_addr=10.4.0.15
+changing  vpn_remote_addr=10.4.0.16
+dot       vpn_remote_addr=10.4.0.30
+frontbed  vpn_remote_addr=10.4.0.17
+frontdoor vpn_remote_addr=10.4.0.12
+garage    vpn_remote_addr=10.4.0.14
+kitchen   vpn_remote_addr=10.4.0.10
+living    vpn_remote_addr=10.4.0.11
+workshop  vpn_remote_addr=10.4.0.13
 
 
 [hosted]
