@@ -1,4 +1,0 @@
----
-# special supervisor instance to leave running even when nfs isn't working
-- copy: dest=/etc/supervisord-local.conf src=supervisord-local.conf
-  

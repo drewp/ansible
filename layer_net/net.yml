@@ -41,7 +41,6 @@
     - include: handlers/main.yml
   roles:
     - {role: docker_registry, tags: ['docker_registry']}
-    - {role: supervisord_local, tags: ['supervisord_local']}
     - {role: openvpn_server, tags: ['openvpn_server'], vpn_net: 'vpn_home'}
     - {role: network_bigasterisk_gateway, tags: ['network_bigasterisk_gateway']}
     - {role: dnsmasq, tags: ['dnsmasq']}
