@@ -3,6 +3,7 @@
 - template: dest=/etc/hosts src=hosts.j2
 
 - apt: pkg=resolvconf
+  name: "apt resolvconf"
   when: ansible_hostname != 'bang'
 - copy: dest="/etc/resolvconf/resolv.conf.d/base" content="nameserver 10.2.0.1\ndomain bigasterisk.com\n"
   when: ansible_hostname != 'bang'

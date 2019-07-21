@@ -1,7 +1,10 @@
 ---
 
-- apt: pkg=pulseaudio
 - apt: pkg=pulseaudio-module-x11 state=absent
+- apt:
+    pkg:
+      - pulseaudio
+      - pavucontrol
 
 - copy: dest=/etc/pulse/client.conf src=client.conf owner=root mode=0644
 - copy: dest=/etc/pulse/daemon.conf src=daemon.conf owner=root mode=0644
@@ -9,23 +12,26 @@
   
 - copy: dest=/etc/libao.conf content="default_driver=pulse\n"
 
-- set_fact: user="drewp"
+- set_fact: user="root"
 - set_fact: user="pi"
   when: ansible_distribution == "Debian"
 
-- copy: dest=/opt/start_pulse content="#!/bin/sh\nexport USER=drewp HOME=/home/drewp XDG_RUNTIME_DIR=/run/user/501\nexec /usr/bin/pulseaudio\n" mode=755
+- copy: dest=/opt/start_pulse content="#!/bin/sh\nrm -r /tmp/pulseaudio\nexport USER=drewp HOME=/home/drewp XDG_RUNTIME_DIR=/run/user/501\nexec sudo -u drewp -E /usr/bin/pulseaudio\n" mode=755
 
-- copy: dest=/opt/start_pulse content="#!/bin/sh\nsudo install --directory /run/user/1000/pulse --owner=pi\nsudo chown pi /run/user/1000\nexport USER=pi HOME=/home/pi XDG_RUNTIME_DIR=/run/user/1000\nexec /usr/bin/pulseaudio\n" mode=755
+- copy: dest=/opt/start_pulse content="#!/bin/sh\nsudo rm -r /tmp/pulseaudio\nsudo install --directory /run/user/1000/pulse --owner=pi\nsudo chown pi /run/user/1000\nexport USER=pi HOME=/home/pi XDG_RUNTIME_DIR=/run/user/1000\nexec /usr/bin/pulseaudio\n" mode=755
   when: ansible_distribution == "Debian"
 
 #- name: fix bang's output from getting mysteriously flipped to IEC958
 #  cron: minute=*/5 user=drewp job="/usr/bin/pactl set-card-profile 0 output:analog-surround-51+input:analog-stereo"
 #  when: ansible_hostname == 'bang'
 
+# priority is to try to beat audio_input_levels/etc who will make
+# their own /tmp/pulseaudio/ if we haven't made the socket yet.
 - supervisor_process_mod:
     name=pulseaudio
     user="{{user}}"
     command="/opt/start_pulse"
+    priority=800
     autorestart=true
   notify:
     - supervisord update

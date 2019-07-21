@@ -1,0 +1,22 @@
+---
+
+- name: install the other standard nginx conf files
+  copy:
+    src=/my/proj/openid_proxy/build_nginx/{{ item }}
+    dest=/etc/nginx/{{ item }}
+    owner=root
+    group=root
+    mode=0644
+  with_items:
+    - gzip.conf
+    - http-proxy-header.conf
+    - http.conf
+    - mime.types
+    - top.conf
+    - tiny.conf
+    - default_server.conf
+    - server.conf
+    - location_access_test.conf
+  notify: nginx update
+  tags:
+    - nginx_conf

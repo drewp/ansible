@@ -2,6 +2,11 @@
 - set_fact:
     ext="10.2.0.1"
     prime="162.243.138.136"
+
+- apt: name=network-manager state=absent
+- command: systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+  name: disable sleep/suspend
+
     
 - template:
     dest=/etc/network/interfaces

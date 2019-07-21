@@ -1,9 +1,12 @@
 ---
+- set_fact: job=dpms port=9095 image_tag="latest"
+- set_fact: base_image_platform="{{'pi' if ansible_architecture=='armv7l' else 'x86'}}"
+- set_fact: image=bang6:5000/{{job}}_{{base_image_platform}}:{{image_tag}}
+- docker_image: name={{image}} force=yes
+
 - supervisor_process_mod:
-    name=dpms_9095
-    directory=/my/proj/homeauto/service/dpms
-    command="/my/proj/homeauto/service/dpms/{{ 'bin/python' if ansible_architecture == 'x86_64' else 'env32/bin/python' }} dpms.py"
-    environment=DISPLAY=:0,XAUTHORITY=/home/drewp/.Xauthority
+    name="{{job}}_{{port}}"
+    command="docker run --name {{job}} --rm -v /tmp/.X11-unix/:/tmp/.X11-unix/ -v /home/drewp/.Xauthority:/root/.Xauthority -p {{port}}:{{port}} --net=host {{image}}"
     user=drewp
   notify: supervisord update
 

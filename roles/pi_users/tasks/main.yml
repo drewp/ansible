@@ -2,5 +2,5 @@
 
 - group: name=fuse
   tags: ['users']
-- user: name=pi uid=1000 group=7 groups=lp,adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,netdev,i2c,input,spi,gpio,fuse
+- user: name=pi uid=1000 group=7 groups=lp,adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,netdev,i2c,input,spi,gpio,fuse,docker
   tags: ['users']

@@ -31,10 +31,10 @@
 # this can be run on bang too, but I'm trying it on prime since I had
 # stalls when there was more latency between mqtt_receiver and mqtt
 # server
+- docker_image: name=bang6:5000/map_mqtt_receiver_x86:latest force=yes
 - supervisor_process_mod: 
     name=map_mqtt_receiver
-    directory=/my/site/maps 
-    command="/my/site/maps/bin/python mqtt_receiver.py"
+    command="docker run --rm --net=host --name map_mqtt_receiver bang6:5000/map_mqtt_receiver_x86:latest"
     user=drewp
   notify: supervisord update
 

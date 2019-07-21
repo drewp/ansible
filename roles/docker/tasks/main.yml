@@ -1,4 +1,33 @@
 ---
-- apt_key: url="http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xD8576A8BA88D21E9" state=present
-- apt_repository: repo="deb http://get.docker.io/ubuntu docker main" state=present
-- apt: update_cache=yes pkg=lxc-docker=1.9.1
+- apt: pkg=docker.io state=absent
+
+- apt:
+    pkg:
+      - python-docker
+      - apt-transport-https
+  
+- apt_key: url="https://download.docker.com/linux/raspbian/gpg"
+  when: ansible_distribution == "Debian"
+- apt_repository: repo="deb [arch=armhf] https://download.docker.com/linux/raspbian stretch stable"
+  when: ansible_distribution == "Debian"
+
+- apt_key: url="https://download.docker.com/linux/ubuntu/gpg"
+  when: ansible_distribution != "Debian"
+- apt_repository: repo="deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+  when: ansible_distribution != "Debian"
+
+# don't try to get aufs-dkms on rpi-- https://github.com/docker/for-linux/issues/709
+- apt: pkg=docker-ce install_recommends=no
+  notify: "restart docker"
+
+- copy: dest=/etc/docker/daemon.json content='{ "insecure-registries":["bang6:5000","bang:5000"] }'
+  notify: "restart docker"
+
+#notify wasn't running soon enough, and we need docker config in the next role, so here's an extra restart
+- service: name=docker state=restarted
+
+# don't lose these just because some other step depended on docker and
+# ran this role. Or, fix the 'restarted' on the prev line to run only
+# at good times
+- command: supervisorctl start dnsmasq_10_1 dnsmasq_10_2 docker_registry_5000
+  when: inventory_hostname == "bang"

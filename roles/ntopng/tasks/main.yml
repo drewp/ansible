@@ -1,0 +1,8 @@
+---
+- user: name=ntopng uid=14571
+
+- file: path=/opt/ntopng state=directory owner=ntopng
+
+# all in websites.yml
+
+# config data goes to system redis, i think

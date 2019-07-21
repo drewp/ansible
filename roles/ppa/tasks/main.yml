@@ -1,33 +1,33 @@
 ---
+
+# fix pi 2017-11-25
+- apt: pkg=gnupg2
+  when: ansible_distribution == "Debian"
+  name: gnupg2
+- apt: pkg=dirmngr
+  when: ansible_distribution == "Debian"
+  name: dirmngr
+
 - apt_key: keyserver=keyserver.ubuntu.com id=36A1D7869245C8950F966E92D8576A8BA88D21E9
 - apt_key: keyserver=keyserver.ubuntu.com id=A040830F7FAC5991
 - apt_key: keyserver=keyserver.ubuntu.com id=E601AAF9486D3664
 - apt_key: keyserver=keyserver.ubuntu.com id=46830400C4A100CF
 - apt_key: keyserver=keyserver.ubuntu.com id=B5115B98AA836CA8
 - apt_key: keyserver=keyserver.ubuntu.com id=0CD0F565F8CDAB41
-- apt_key: url=https://dl-ssl.google.com/linux/linux_signing_key.pub
-- apt_key: url=https://repos.influxdata.com/influxdb.key
+#- apt_key: url=https://dl-ssl.google.com/linux/linux_signing_key.pub
 
 - apt: pkg=apt-transport-https
+  name: apt https
     
 - apt_repository: repo='deb [arch=amd64] https://dl-ssl.google.com/linux/chrome/deb/ stable main'
   when: ansible_distribution != "Debian"
 
-- apt_repository: repo='deb https://repos.influxdata.com/ubuntu xenial stable'
-  when: ansible_distribution != "Debian"
-
-# consider https://launchpad.net/~minetestdevs/+archive/ubuntu/daily-builds
-- apt_repository: repo='deb http://ppa.launchpad.net/minetestdevs/stable/ubuntu xenial main'
-  when: ansible_distribution != "Debian"
-- apt_repository: repo='ppa:kdenlive/kdenlive-testing'
-  when: ansible_distribution != "Debian"
 - apt_repository: repo='ppa:thomas-schiex/blender'
   when: ansible_distribution != "Debian"
-- apt_repository: repo='ppa:inkscape.dev/stable'
+
+- apt_repository: repo='ppa:mongoose-os/mos'
   when: ansible_distribution != "Debian"
 
-# not yet for 16.04
-#- apt_repository: repo='ppa:zfs-native/stable'
-#  when: ansible_distribution != "Debian"
-#- apt_repository: repo='deb http://ppa.launchpad.net/anatol/tup/ubuntu precise main'
-#  when: ansible_distribution != "Debian"
+- apt_repository: repo='ppa:ansible/ansible'
+  when: ansible_hostname in "bang"
+  

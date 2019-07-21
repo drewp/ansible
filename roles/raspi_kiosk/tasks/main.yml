@@ -1,35 +1,20 @@
 ---
 
-# see raspi_kiosk_chrome/tasks/main.yml for a way easier version
+# just leftover setup for this one kiosk. see raspi_kiosk_chrome/tasks/main.yml for the main steps.
 
 # boot-to-x:
 # Created symlink from /etc/systemd/system/default.target to /lib/systemd/system/graphical.target.
 
-# for chromium instead, per https://drive.google.com/file/d/0B2X5T2P-KI8mUVNGSlVhYjVnNGc/view
-#  wget -qO - http://bintray.com/user/downloadSubjectPublicKey\?username\=bintray | sudo apt-key add -
-#  echo "deb http://dl.bintray.com/kusti8/chromium-rpi jessie main" | sudo tee -a /etc/apt/sources.list
-#  aptitude install chromium-browser
-
-
-- apt: pkg=iceweasel
-
-- copy: src=firefox.desktop dest=/home/pi/.config/autostart/firefox.desktop
-
-# need julia for this one
-- copy: src=pir_screen.desktop dest=/home/pi/.config/autostart/pir_screen.desktop
-
-# somehow install https://addons.mozilla.org/en-US/firefox/addon/r-kiosk/?src=api
-- copy: src=user.js dest=/home/pi/.mozilla/firefox/i4k3m1mm.default/user.js
-
-
-# in prefs.js
-# user_pref("browser.startup.homepage", "https://bigasterisk.com/");
-
-# move url to priv.yml
-- lineinfile:
-    dest=/home/pi/.mozilla/firefox/i4k3m1mm.default/prefs.js
-    line='user_pref("browser.startup.homepage", "https://bigasterisk.com/");'
+- apt: pkg=julia
 
 - copy: src=/my/proj/raspberry_pi_kiosk/pir_screen.jl dest=/home/pi/
 
 - copy: src=wpa_supplicant.conf dest=/etc/wpa_supplicant/wpa_supplicant.conf
+
+- supervisor_process_mod:
+    name=pir_screen
+    environment="DISPLAY=:0.0"
+    directory=/home/pi
+    command="/usr/bin/julia pir_screen.jl 4 60"
+    user=pi
+#  notify: supervisord update

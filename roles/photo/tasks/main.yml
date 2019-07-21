@@ -1,7 +1,7 @@
 ---
 
 - apt: pkg=python-twisted
-- apt: pkg=libav-tools
+- apt: pkg=ffmpeg
 - apt: pkg=exif
 - apt: pkg=libimage-exiftool-perl
 
@@ -9,7 +9,7 @@
     name=photo_{{item}}
     directory=/my/site/photo
     user=drewp
-    command="/my/site/photo/bin/python /usr/bin/twistd --pidfile= -noy serve"
+    command="/my/site/photo/bin/python serve"
     environment="PORT={{item}}"
     stopsignal=KILL
     startsecs=10
@@ -33,18 +33,6 @@
     - 8034
     - 8035
     - 8036
-    - 8037
-    - 8038
-    - 8039
-    - 8040
-    - 8046 
-    - 8047 
-    - 8048 
-    - 8049 
-    - 8050 
-    - 8051 
-    - 8052 
-    - 8053 
     
 - supervisor_process_mod:
     name=photo_sesameSyncImport_9042

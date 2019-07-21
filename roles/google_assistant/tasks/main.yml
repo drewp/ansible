@@ -6,6 +6,6 @@
 
 - supervisor_process_mod:
     name="{{job}}"
-    command="docker run --rm --name {{job}} --net=host -v /tmp/pulseaudio:/tmp/pulseaudio {{image}}"
+    command="docker run --rm --name {{job}} --net=host --mount type=bind,source=/tmp/pulseaudio,target=/tmp/pulseaudio {{image}}"
     user=drewp
   notify: supervisord update

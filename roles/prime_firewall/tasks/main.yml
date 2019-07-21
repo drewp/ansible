@@ -10,8 +10,8 @@
 - ufw: rule=allow proto=tcp to_port=imaps
 - ufw: rule=allow to_port=openvpn
 
-- name: mqtt
-  ufw: rule=allow to_port=1883
+#- name: mqtt
+#  ufw: rule=allow to_port=1883
 
 - name: bling openvpn
   ufw: rule=allow to_port=1195
@@ -31,4 +31,14 @@
 # also one in roles/minecraft (at least)
 
 - ufw: state=enabled
+
+# for minecraft tunnel
+- lineinfile:
+    dest=/etc/ssh/sshd_config
+    line="GatewayPorts clientspecified"
+    regexp="^GatewayPorts"
+  notify: sshd restart
+
+# for disk space:
+- lineinfile: dest=/etc/systemd/journald.conf line="MaxFileSec=7day" regexp="MaxFileSec"
   

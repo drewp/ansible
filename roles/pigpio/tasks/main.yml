@@ -1,10 +1,15 @@
 ---
 
-# was in supervisor; now the package comes with systemd service
-- file: path=/var/lib/supervisor.d/pigpiod_8888.conf state=absent
-  notify: supervisord update
-
-- apt: pkg=pigpio
+- apt: pkg=pigpiod
+  name: pigpio pkg
 - service: name=pigpiod enabled=yes state=started
 - apt: pkg=python-pigpio
   
+# pi4:
+#
+# testing V70
+#pi@frontdoor:~/PIGPIO $ head /sys/class/dma/*/in_use
+#
+#~/PIGPIO $ sudo killall pigpiod; sudo ./pigpiod -d 6 -e 14; sleep 2; ./pigs pud 5 up
+# still breaks. And all reads are always 0.
+# Watching https://github.com/joan2937/pigpio/issues/278

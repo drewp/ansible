@@ -1,15 +1,22 @@
 ---
 - set_fact: job=pi_node port=9059 image_tag="latest"
 - set_fact: base_image_platform="{{'pi' if ansible_architecture=='armv7l' else 'x86'}}"
-- set_fact: image=bang6:5000/{{job}}_{{base_image_platform}}:{{image_tag}}
+- set_fact: image=bang6:5000/pinode_{{base_image_platform}}:{{image_tag}}
 - docker_image: name={{image}} force=yes
 
 - lineinfile: dest=/etc/modules line="ipv6"
 
 # using 1-wire? (piNode program knows if this is the case)
 - lineinfile: dest=/boot/config.txt line="dtoverlay=w1-gpio,gpiopin=17,pullup=y"
-  when: inventory_hostname in ["frontbed", "kitchen", "living", "garage", "frontdoor", "workshop"]
+  when: inventory_hostname in ["frontbed", "kitchen", "living", "garage", "frontdoor", "workshop", "bed"]
 
+- lineinfile: dest=/boot/config.txt line="dtparam=i2c_arm=on"
+  when: inventory_hostname in ["frontdoor", "workshop"]
+
+- lineinfile: dest=/etc/modules line="i2c-dev"
+  when: inventory_hostname in ["frontdoor", "workshop"]
+
+  
 # pi 3 onboard audio conflicts with pwm used for ws2812 leds. https://github.com/jgarff/rpi_ws281x/wiki
 - lineinfile: dest=/boot/config.txt line="dtparam=audio=off" regexp="^dtparam=audio="
 
@@ -21,7 +28,7 @@
     autostart=true
     user=root
     startsecs=30
-    command="docker run --name {{job}} --rm -p {{port}}:{{port}} --uts=host --net=host --cap-add SYS_RAWIO --device /dev/mem  --privileged {{image}}"
+    command="docker run --name {{job}} --rm -p {{port}}:{{port}} --uts=host --net=host --cap-add SYS_RAWIO --device /dev/mem  --privileged --memory=400m {{image}}"
   notify: supervisord update
 
 

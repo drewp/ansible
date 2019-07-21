@@ -10,6 +10,7 @@
 # prime has something on 109
 - group: name=lpadmin gid=200
 - group: name=plugdev gid=46
+- group: name=docker system=yes
 
 - group: name=damon gid=3011
 - group: name=ffg gid=3008
@@ -18,7 +19,9 @@
 - group: name=sensu gid=147
 - user: name=sensu uid=139
 
-- user: name=drewp uid=501 group=drewp groups=adm,cdrom,sudo,dip,plugdev,lpadmin,ffg,dialout,lp,audio,fuse,drewnote,video
+- group: name=drewnote gid=1009
+
+- user: name=drewp uid=501 group=drewp groups=adm,cdrom,sudo,dip,plugdev,lpadmin,ffg,dialout,lp,audio,fuse,drewnote,video,docker
 - user: name=damon uid=3011 group=damon groups=ffg
 
 - group: name=brettw gid=3012

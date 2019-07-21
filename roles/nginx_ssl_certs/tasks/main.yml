@@ -25,7 +25,6 @@
       - darcs.bigasterisk.com
       - gametag.bigasterisk.com
       - graphite.bigasterisk.com
-      - issues.bigasterisk.com
       - karinandjohn.bigasterisk.com
       - light9.bigasterisk.com
       - lisa.bigasterisk.com
@@ -65,5 +64,5 @@
   become_user: drewp
   delegate_to: bang
 
-- synchronize: dest=/var/lib/nginx.d/ssl/site/ src=/my/doc/ssl/letsencrypt/site/
+- synchronize: dest=/var/lib/nginx.d/ssl/site/ src=/my/doc/ssl/letsencrypt/site/ recursive=yes delete=yes
   notify: nginx restart

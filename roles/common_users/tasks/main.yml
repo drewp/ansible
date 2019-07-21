@@ -6,6 +6,7 @@
 # setups so hopefully it won't matter much that drew group has a
 # different id.
 - set_fact: drewp_gid={{1000 if ansible_distribution != "Debian" else 501}}
+  tags: ['users']
 
 - group: name=fuse
 - group: name=spi
@@ -13,10 +14,11 @@
 - group: name=i2c
 - group: name=input
 - group: name=netdev
+- group: name=docker
 
 - group: name=drewp gid={{drewp_gid}}
   tags: ['users']
-- user: name=drewp uid=501 group=drewp groups=lp,adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,netdev,i2c,input,spi,gpio,fuse
+- user: name=drewp uid=501 group=drewp groups=lp,adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,netdev,i2c,input,spi,gpio,fuse,docker
   tags: ['users']
 - file: path=/home/drewp state=directory owner=drewp group=drewp
   tags: ['users']

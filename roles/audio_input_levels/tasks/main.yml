@@ -11,7 +11,7 @@
 
 - supervisor_process_mod:
     name={{job}}
-    command="docker run --name {{job}} --rm -v /etc/pulse:/etc/pulse  -v /tmp/pulseaudio:/tmp/pulseaudio --net=host {{image}} python ./audioInputLevelsPulse.py --source {{pulse_input}}"
+    command="docker run --name {{job}} --rm --mount type=bind,source=/etc/pulse,target=/etc/pulse  --mount type=bind,source=/tmp/pulseaudio,target=/tmp/pulseaudio --net=host {{image}} python ./audioInputLevelsPulse.py --source {{pulse_input}}"
     user=drewp
     autostart=true
   notify: supervisord update

@@ -39,7 +39,9 @@
     user=root
     stopasgroup=true
   notify: supervisord update
-  
+
+# notify wasn't running soon enough
+- command: "/usr/local/bin/supervisorctl update"
   
 # write some /etc/hosts
 

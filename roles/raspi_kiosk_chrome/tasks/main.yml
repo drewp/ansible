@@ -1,10 +1,15 @@
 ---
 
-- apt: pkg=xserver-xorg
+- apt: pkg=xserver-xorg-core
+- apt: pkg=xserver-xorg-input-evdev
+- apt: pkg=xserver-xorg-video-fbturbo
+  
+
   
 - apt: pkg=lightdm state=absent
-- apt: pkg=slim
+- apt: pkg=nodm
 
+- apt: pkg=chromium state=absent
 - apt: pkg=chromium-browser
   
 - copy: dest=/etc/slim.conf src=slim.conf

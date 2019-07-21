@@ -3,16 +3,23 @@
 - apt: pkg=easy-rsa state=present
 
 - set_fact:
+    easyrsa=/my/proj/ansible/roles/openvpn_server/easy-rsa/easyrsa3/easyrsa
     openvpn_log_dir=/var/log
     remote={{ inventory_hostname }}
-
+    vpn_net={{ ['vpn_ext', 'vpn_home'][vpn_remote_addr.startswith('10.4.')] }}
+- set_fact:
+    vpn_network={{ dict(vpn_ext='10.3.0.0', vpn_home='10.4.0.0')[vpn_net] }}
+    vpn_netmask=255.255.255.0
+    vpn_net_name={{vpn_net}}_{{inventory_hostname}}
+    vpn_root_dir=/my/proj/ansible/roles/openvpn_server/files/{{vpn_net}}
+    vpn_config_dir=/etc/openvpn/{{vpn_net}}
+    
 - name: make new client key
   delegate_to: bang
-  shell:
-    sh /my/proj/ansible/roles/openvpn_client/files/create-key {{ remote }}
-    creates=/etc/openvpn/keys/{{ remote }}.key
-
-
+  shell: "EASYRSA_REQ_CN={{vpn_net_name}} {{easyrsa}}  --batch gen-req {{ vpn_net_name }} nopass"
+  args:
+    chdir: "{{vpn_root_dir}}"
+    creates: "{{vpn_root_dir}}/pki/private/{{vpn_net_name}}.key"
     
 - name: sign client key
   delegate_to: bang

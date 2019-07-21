@@ -1,37 +1,18 @@
 ---
+- set_fact: job=beacon image_tag="latest"
+- set_fact: base_image_platform="{{'pi' if ansible_architecture=='armv7l' else 'x86'}}"
+- set_fact: image=bang6:5000/{{job}}_{{base_image_platform}}:{{image_tag}}
+- docker_image: name={{image}} force=yes
 
+# clean up old ones for while
 - file:  path=/opt/beacon_env state=absent
 
-- file: state=directory path=/opt/beacon_env
-- apt: pkg=build-essential
-- apt: pkg=python-dev
-- apt: pkg=bluez
-- apt: pkg=libbluetooth-dev
-
-# pi may need pi-bluetooth pkg too
-
-- synchronize:
-    src=/my/proj/homeauto/service/beacon/
-    dest=/opt/beacon
-    archive=yes
-    delete=yes
-  
-    
-- pip:
-    chdir=/opt/beacon_env
-    requirements=/opt/beacon/requirements.txt
-    virtualenv=/opt/beacon_env
-
-- set_fact: bang_addr="bang6"
-
-- set_fact: bang_addr="bang"
-  when: "ansible_default_ipv4['network'] == '10.1.0.0'"
+- set_fact: bang_addr="bang.vpn-home.bigasterisk.com"
 
 - supervisor_process_mod:
     name=rssiscan
     user=root
-    directory=/opt/beacon
-    command="/opt/beacon_env/bin/python /opt/beacon/rssiscan.py {{bang_addr}} {{ansible_hostname}}"
+    command="docker run --name rssiscan --rm --net=host {{image}} python rssiscan.py {{bang_addr}} {{ansible_hostname}}"
   notify:
     - supervisord update
   
