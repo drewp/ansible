@@ -1,9 +1,0 @@
-#!/bin/sh
-
-if=$1
-
-line=`ifconfig ${if} | grep bytes`
-host=`hostname`
-now=`date +%s`
-echo host.${host}.net.${if}_rx_bytes `echo ${line} | perl -lpe '($_)=/RX bytes:(\d+)/'` ${now}
-echo host.${host}.net.${if}_tx_bytes `echo ${line} | perl -lpe '($_)=/TX bytes:(\d+)/'` ${now}

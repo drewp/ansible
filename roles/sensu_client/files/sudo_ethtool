@@ -1,1 +1,0 @@
-sensu ALL = (root) NOPASSWD: /sbin/ethtool eth1, /sbin/ethtool eth2, /sbin/ethtool eth3

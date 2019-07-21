@@ -1,6 +1,0 @@
----
-dependencies:
-# broken, don't care about updates now
-#  - { role: sensu_pkg }
-  - { role: supervisord }
-  
