@@ -1,0 +1,12 @@
+---
+
+- import_tasks: secrets.yml
+
+- systemd: name=ssh enabled=true state=started 
+- lineinfile: path=/etc/ssh/ssh_config regexp="HashKnownHosts" line="HashKnownHosts no"
+
+  
+- authorized_key: user=pi key={{key_plus_drewp}}
+  when: ansible_distribution == "Debian"
+- authorized_key: user=pi key={{key_bang_drewp}}
+  when: ansible_distribution == "Debian"
