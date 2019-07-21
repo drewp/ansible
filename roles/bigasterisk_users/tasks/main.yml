@@ -1,4 +1,7 @@
 ---
+
+# also see roles/pi_users/tasks/main.yml
+
 - group: name=adm gid=4
 - group: name=cdrom gid=24
 - group: name=dialout gid=20

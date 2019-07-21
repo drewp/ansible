@@ -42,6 +42,7 @@
 - name: update timezone
   command: dpkg-reconfigure --frontend noninteractive tzdata
 
+# might kill all the services
 - name: restart docker
   service: name=docker state=restarted
 

@@ -1,4 +1,8 @@
 ---
+# it would be better to run all of cups and cloudprint inside a docker image
+
+# before this part, get Brother printer drivers and install.
+
 - apt: name=cups-daemon
 - apt: name=cups-browsed
 - template: dest=/etc/cups/cupsd.conf src=cupsd.conf.j2
@@ -16,3 +20,4 @@
     user=drewp
     stopasgroup=true
   notify: supervisord update
+  
