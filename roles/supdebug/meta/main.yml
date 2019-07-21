@@ -1,7 +1,0 @@
----
-dependencies:
-  - { role: supervisord }
-  - { role: docker }
-  - { role: cjdns }
-
-  

@@ -1,8 +1,0 @@
----
-dependencies:
-  - { role: supervisord }
-  - { role: docker } 
-  - { role: common_users }
-  - { role: hosts }
-
-  

@@ -1,6 +1,0 @@
----
-dependencies:
-  - { role: supervisord }
-  - { role: bigasterisk_users }
-  - { role: mpd }
-  

@@ -1,4 +1,0 @@
----
-dependencies:
-  - { role: raspi_io_node }
-  
