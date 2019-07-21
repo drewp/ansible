@@ -6,30 +6,45 @@
 - set_fact: image=bang6:5000/{{job}}:{{image_tag}}
 
 - file: path=/opt/dnsmasq state=directory
-- file: path=/opt/dnsmasq/10.1 state=directory
-- file: path=/opt/dnsmasq/10.2 state=directory
 
 - set_fact: net=10.1
-- template: src=hosts.j2 dest=/opt/dnsmasq/10.1/hosts
+- file: path=/opt/dnsmasq/10.1 state=directory
 - template: src=dnsmasq.conf.j2 dest=/opt/dnsmasq/10.1/dnsmasq.conf
+  notify: dnsmasq restart
+- template: src=hosts.j2 dest=/opt/dnsmasq/10.1/hosts
+  notify: dnsmasq hup
 - template: src=dhcp_hosts.j2 dest=/opt/dnsmasq/10.1/dhcp_hosts
+  notify: dnsmasq hup
 
 - set_fact: net=10.2
-- template: src=hosts.j2 dest=/opt/dnsmasq/10.2/hosts
+- file: path=/opt/dnsmasq/10.2 state=directory
 - template: src=dnsmasq.conf.j2 dest=/opt/dnsmasq/10.2/dnsmasq.conf
+  notify: dnsmasq restart
+- template: src=hosts.j2 dest=/opt/dnsmasq/10.2/hosts
+  notify: dnsmasq hup
 - template: src=dhcp_hosts.j2 dest=/opt/dnsmasq/10.2/dhcp_hosts
-# these need to notify a restart
-  
-- docker_image: name={{image}} force=yes
-- supervisor_process_mod:
-    name="dnsmasq_10_1"
-    command="docker run --name dnsmasq_10_1 --rm --net=host --cap-add NET_BROADCAST --privileged -v /opt/dnsmasq/10.1:/opt/dnsmasq {{image}}"
-    user=root
-  notify: supervisord update
-- supervisor_process_mod:
-    name="dnsmasq_10_2"
-    command="docker run --name dnsmasq_10_2 --rm --net=host --cap-add NET_BROADCAST --privileged -v /opt/dnsmasq/10.2:/opt/dnsmasq {{image}}"
-    user=root
-  notify: supervisord update
+  notify: dnsmasq hup
+
+- docker_container:
+    name: "dnsmasq_10_1"
+    image: "{{image}}"
+    volumes:
+      - "/opt/dnsmasq/10.1:/opt/dnsmasq"
+    network_mode: host
+    capabilities:
+      - NET_BROADCAST
+    privileged: "yes"
+    restart_policy: always
+
+- docker_container:
+    name: "dnsmasq_10_2"
+    image: "{{image}}"
+    volumes:
+      - "/opt/dnsmasq/10.2:/opt/dnsmasq"
+    network_mode: host
+    capabilities:
+      - NET_BROADCAST
+    privileged: "yes"
+    restart_policy: always
 
 # old dnscache comes from link in /etc/service/dnscache -> /etc/sv/dnscache

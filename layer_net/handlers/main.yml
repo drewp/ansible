@@ -1,0 +1,32 @@
+---
+  
+- name: wifi net reset
+  shell: "/sbin/ifdown ens5; /sbin/ifup ens5"
+
+- name: firewall setup
+  command: /bin/sh /etc/network/firewall-setup
+
+- name: openid_proxy restart
+  command: "/usr/local/bin/supervisorctl restart openid_proxy_9023"
+
+- name: reload telegraf
+  command: "/usr/local/bin/supervisorctl restart telegraf"
+
+- name: sshd restart
+  service: name=ssh enabled=yes state=reloaded
+
+- name: openvpn restart
+  service: name=openvpn enabled=yes state=reloaded
+
+- name: update timezone
+  command: dpkg-reconfigure --frontend noninteractive tzdata
+
+# might kill all the services
+- name: restart docker
+  service: name=docker state=restarted
+
+- name: dnsmasq restart
+  command: "docker restart dnsmasq_10_1 dnsmasq_10_2"
+  
+- name: dnsmasq hup
+  command: "docker kill --signal HUP dnsmasq_10_1 dnsmasq_10_2"
