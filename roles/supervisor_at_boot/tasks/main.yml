@@ -1,5 +1,0 @@
----
-# may not be safe yet for machines that use nfs- untested
-- copy: dest=/etc/systemd/system/supervisord.service src=supervisord.service
-- service: name=supervisord enabled=true state=started
-

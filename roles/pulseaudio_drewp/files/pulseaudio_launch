@@ -1,8 +1,0 @@
-#!/bin/sh
-DISPLAY=:0.0
-exec /usr/bin/pulseaudio --start --log-target=stderr -v --daemonize=false
-
-# then it would be good to run this, but I don't know how to launch it
-#after. supervisord priority level? Do those do anything?
-#/usr/bin/pactl set-sink-volume 0 65000
-# http://www.ansibleworks.com/docs/modules.html#wait-for maybe

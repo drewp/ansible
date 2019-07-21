@@ -1,2 +1,0 @@
-#!/bin/sh
-exec /opt/git-annex/git-annex.linux/git-annex-shell $@
