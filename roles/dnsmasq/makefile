@@ -14,4 +14,8 @@ shell: build_image
 
 test_dhcp:
 	/usr/lib/nagios/plugins/check_dhcp -v -s 10.1.0.1 -i enp1s0 || true
-	/usr/lib/nagios/plugins/check_dhcp -v -s 10.2.0.1 -i ens6 || true
+	/usr/lib/nagios/plugins/check_dhcp -v -s 10.2.0.1 -i ens5 || true
+
+redeploy: build_image
+	sudo /my/proj/ansible/playbook -l bang -t dnsmasq
+	docker kill dnsmasq_10_1 dnsmasq_10_2
