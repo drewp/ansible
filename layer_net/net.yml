@@ -1,0 +1,85 @@
+---
+# Get hosts configured and networked, with docker and an empty
+# supervisord. No services or unnecessary setups yet. We should only
+# have to run this on a new box or when this config changes, and it
+# shouldn't be easy to break this layer when setting up other
+# less-core services.
+
+- hosts: pi
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    # this should run before supervisord
+    - {role: raspi_system, tags: ['raspi_system']}
+    - {role: raspi_network, tags: ['raspi_network']}
+    - {role: pi_users, tags: ['pi_users']}
+    - {role: hosts, tags: ['hosts']}
+
+- hosts: all
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - {role: ssh, tags: ['ssh']}
+    - {role: ppa, tags: ['ppa']}
+    - {role: docker, tags: ['docker']}
+    - {role: supervisord, tags: ['supervisord']}
+      
+- hosts: big
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - {role: ubuntu_system, tags: ['ubuntu_system']}
+    - {role: bigasterisk_users, tags: ['bigasterisk_users']}
+    - {role: hosts, tags: ['hosts']}
+  tasks:
+    - name: no UseDNS on ssh server
+      lineinfile: dest=/etc/ssh/sshd_config regexp="^UseDNS\b" line="UseDNS no"
+      notify: sshd restart
+
+- hosts: bang
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - {role: docker_registry, tags: ['docker_registry']}
+    - {role: supervisord_local, tags: ['supervisord_local']}
+    - {role: openvpn_server, tags: ['openvpn_server'], vpn_net: 'vpn_home'}
+    - {role: network_bigasterisk_gateway, tags: ['network_bigasterisk_gateway']}
+    - {role: dnsmasq, tags: ['dnsmasq']}
+    
+- hosts: prime
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - {role: bigasterisk_users, tags: ['bigasterisk_users']}
+    - {role: hosts, tags: ['hosts']}
+    - {role: openvpn_server, tags: ['openvpn_server'], vpn_net: 'vpn_ext'}
+    - {role: prime_firewall, tags: ['prime_firewall']}
+  tasks:
+    - hostname: name=prime
+
+- hosts: dash
+  handlers:
+    - include: handlers/main.yml
+  roles:
+# get these from /my/proj/ansible/roles/dnsmasq/templates/hosts.j2
+    - {role: openvpn_client, tags: ['openvpn_client'], vpn_remote_addr: '10.3.0.5'}
+    - {role: openvpn_client, tags: ['openvpn_client'], vpn_remote_addr: '10.4.0.5'}
+
+- hosts: slash
+  handlers:
+    - include: handlers/main.yml
+  roles:
+
+- hosts: plus
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - {role: ubuntu_system, tags: ['ubuntu_system']}
+    - {role: openvpn_client, tags: ['openvpn_client'], vpn_remote_addr: '10.3.0.30'}
+    - {role: openvpn_client, tags: ['openvpn_client'], vpn_remote_addr: '10.4.0.30'}
+        
+- hosts: vpn_client
+  handlers:
+    - include: handlers/main.yml
+  roles:
+    - {role: openvpn_client, tags: ['openvpn_client']}

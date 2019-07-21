@@ -2,18 +2,18 @@
 
 # one time:
 # cd ../openvpn_server/files/vpn_home
-# EASYRSA_REQ_CN=vpn_home_drewnote /my/proj/ansible/roles/openvpn_server/easy-rsa/easyrsa3/easyrsa --batch gen-req vpn_home_drewnote nopass
-# /my/proj/ansible/roles/openvpn_server/easy-rsa/easyrsa3/easyrsa  --batch sign-req client vpn_home_drewnote
+# EASYRSA_REQ_CN=vpn_home_drewnote /my/proj/ansible/layer_net/roles/openvpn_server/easy-rsa/easyrsa3/easyrsa --batch gen-req vpn_home_drewnote nopass
+# /my/proj/ansible/layer_net/roles/openvpn_server/easy-rsa/easyrsa3/easyrsa  --batch sign-req client vpn_home_drewnote
 
 # cd ../openvpn_server/files/vpn_ext
-# EASYRSA_REQ_CN=vpn_ext_drewnote /my/proj/ansible/roles/openvpn_server/easy-rsa/easyrsa3/easyrsa --batch gen-req vpn_ext_drewnote nopass
-# /my/proj/ansible/roles/openvpn_server/easy-rsa/easyrsa3/easyrsa  --batch sign-req client vpn_ext_drewnote
+# EASYRSA_REQ_CN=vpn_ext_drewnote /my/proj/ansible/layer_net/roles/openvpn_server/easy-rsa/easyrsa3/easyrsa --batch gen-req vpn_ext_drewnote nopass
+# /my/proj/ansible/layer_net/roles/openvpn_server/easy-rsa/easyrsa3/easyrsa  --batch sign-req client vpn_ext_drewnote
 
 
 cd `dirname $0`/templates
 
-ansible all -i "localhost," -c local -m template -a "src=local.conf.j2 dest=../vpn_home_drewnote.conf" --extra-vars='{"inventory_hostname":"drewnote","vpn_config_dir":"?","vpn_net_name":"vpn_home_drewnote","vpn_net":"vpn_home","vpn_root_dir":"/my/proj/ansible/roles/openvpn_server/files/vpn_home"}'
-ansible all -i "localhost," -c local -m template -a "src=local.conf.j2 dest=../vpn_ext_drewnote.conf" --extra-vars='{"inventory_hostname":"drewnote","vpn_config_dir":"?","vpn_net_name":"vpn_ext_drewnote","vpn_net":"vpn_ext","vpn_root_dir":"/my/proj/ansible/roles/openvpn_server/files/vpn_ext"}'
+ansible all -i "localhost," -c local -m template -a "src=local.conf.j2 dest=../vpn_home_drewnote.conf" --extra-vars='{"inventory_hostname":"drewnote","vpn_config_dir":"?","vpn_net_name":"vpn_home_drewnote","vpn_net":"vpn_home","vpn_root_dir":"/my/proj/ansible/layer_net/roles/openvpn_server/files/vpn_home"}'
+ansible all -i "localhost," -c local -m template -a "src=local.conf.j2 dest=../vpn_ext_drewnote.conf" --extra-vars='{"inventory_hostname":"drewnote","vpn_config_dir":"?","vpn_net_name":"vpn_ext_drewnote","vpn_net":"vpn_ext","vpn_root_dir":"/my/proj/ansible/layer_net/roles/openvpn_server/files/vpn_ext"}'
 
 echo "ifconfig-push 10.3.0.23 10.3.0.0" | ssh root@prime "cat > /etc/openvpn/vpn_ext/client/vpn_ext_drewnote"
 echo "ifconfig-push 10.4.0.23 10.4.0.0" > /etc/openvpn/vpn_home/client/vpn_home_drewnote

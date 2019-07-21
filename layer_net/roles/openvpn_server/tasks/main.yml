@@ -1,7 +1,7 @@
 ---
 
 - set_fact:
-    vpn_root_dir=/my/proj/ansible/roles/openvpn_server/files/{{vpn_net}}
+    vpn_root_dir=/my/proj/ansible/layer_net/roles/openvpn_server/files/{{vpn_net}}
     vpn_config_dir=/etc/openvpn/{{vpn_net}}
     vpn_network={{ dict(vpn_ext='10.3.0.0', vpn_home='10.4.0.0')[vpn_net] }}
     vpn_netmask=255.255.255.0
@@ -19,8 +19,6 @@
 - copy: dest={{vpn_config_dir}}/server.key src={{vpn_root_dir}}/pki/private/{{vpn_net}}_server.key owner=root group=root mode=0600
 - copy: dest={{vpn_config_dir}}/dh2048.pem src={{vpn_root_dir}}/pki/dh.pem owner=root group=root mode=0600
 
-
-
 - name: enable openvpn
   lineinfile: path=/etc/default/openvpn regexp='AUTOSTART="all"' line='AUTOSTART="all"'
   notify: openvpn restart
@@ -31,12 +29,12 @@
 - service: name=openvpn enabled=yes state=reloaded
 
 # new setup, one-time:
-# /my/proj/ansible/roles/openvpn_server/files/vpn_home% ../../easy-rsa/easyrsa3/easyrsa init-pki
-# /my/proj/ansible/roles/openvpn_server/files/vpn_home% ../../easy-rsa/easyrsa3/easyrsa gen-dh
-# /my/proj/ansible/roles/openvpn_server/files/vpn_home% openvpn --genkey --secret ta.key
-# /my/proj/ansible/roles/openvpn_server/files/vpn_home% ../../easy-rsa/easyrsa3/easyrsa build-ca nopass
-# /my/proj/ansible/roles/openvpn_server/files/vpn_home% ../../easy-rsa/easyrsa3/easyrsa gen-req vpn_home_server nopass
-# /my/proj/ansible/roles/openvpn_server/files/vpn_home% ../../easy-rsa/easyrsa3/easyrsa sign-req server vpn_home_server
+# roles/openvpn_server/files/vpn_home% ../../easy-rsa/easyrsa3/easyrsa init-pki
+# roles/openvpn_server/files/vpn_home% ../../easy-rsa/easyrsa3/easyrsa gen-dh
+# roles/openvpn_server/files/vpn_home% openvpn --genkey --secret ta.key
+# roles/openvpn_server/files/vpn_home% ../../easy-rsa/easyrsa3/easyrsa build-ca nopass
+# roles/openvpn_server/files/vpn_home% ../../easy-rsa/easyrsa3/easyrsa gen-req vpn_home_server nopass
+# roles/openvpn_server/files/vpn_home% ../../easy-rsa/easyrsa3/easyrsa sign-req server vpn_home_server
 
 
 

@@ -1,4 +1,7 @@
 ---
+
+- lineinfile: path=/etc/resolv.conf regex="8\.8\.8\.8" line="nameserver 8.8.8.8"
+
 - apt: pkg=docker.io state=absent
 
 - apt:
@@ -26,8 +29,4 @@
 #notify wasn't running soon enough, and we need docker config in the next role, so here's an extra restart
 - service: name=docker state=restarted
 
-# don't lose these just because some other step depended on docker and
-# ran this role. Or, fix the 'restarted' on the prev line to run only
-# at good times
-- command: supervisorctl start dnsmasq_10_1 dnsmasq_10_2 docker_registry_5000
-  when: inventory_hostname == "bang"
+- lineinfile: path=/etc/resolv.conf regex="8\.8\.8\.8" line="#nameserver 8.8.8.8"

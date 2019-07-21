@@ -4,7 +4,7 @@ export OPENSSL="openssl"
 export PKCS11TOOL="pkcs11-tool"
 export GREP="grep"
 
-export KEY_CONFIG='/my/proj/ansible/roles/openvpn_server/files/new/openssl-1.0.0.cnf'
+export KEY_CONFIG='/my/proj/ansible/layer_net/roles/openvpn_server/files/new/openssl-1.0.0.cnf'
 export KEY_DIR="/etc/openvpn/keys"
 
 # PKCS11 fixes
@@ -36,4 +36,4 @@ export KEY_NAME="EasyRSA"
 # You will also need to make sure your OpenVPN server config has the duplicate-cn option set
 # export KEY_CN="CommonName"
 
-/my/proj/ansible/roles/openvpn_server/files/new/pkitool $1
+/my/proj/ansible/layer_net/roles/openvpn_server/files/new/pkitool $1

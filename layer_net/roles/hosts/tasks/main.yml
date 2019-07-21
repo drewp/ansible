@@ -16,7 +16,3 @@
   when: ansible_hostname == 'bang'
 
 
-
-# not sure what loses this, but without it dnscache stops running
-- file: path=/etc/service/dnscache state=link src=/etc/sv/dnscache
-  when: ansible_hostname == 'bang'
