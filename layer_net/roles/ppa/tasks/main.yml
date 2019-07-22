@@ -25,9 +25,6 @@
 - apt_repository: repo='ppa:thomas-schiex/blender'
   when: ansible_distribution != "Debian"
 
-- apt_repository: repo='ppa:mongoose-os/mos'
-  when: ansible_distribution != "Debian"
-
 - apt_repository: repo='ppa:ansible/ansible'
   when: ansible_hostname in "bang"
   
