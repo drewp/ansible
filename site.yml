@@ -14,56 +14,30 @@
 
 # supervisord is installed as a dependency. put meta/main.yml in those roles
     
-
-- hosts: pi
-  handlers:
-    - include: handlers/main.yml
-  roles:
-    # this should run before supervisord
-    - {role: raspi_system, tags: ['raspi_system']}
-
-- hosts: 10.1.0.9
-  roles:
-    - {role: docker, tags: ['docker']}
-
 - hosts: all
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: ssh, tags: ['ssh']}
-    - {role: ppa, tags: ['ppa']}
-    - {role: docker, tags: ['docker']}
     - {role: supdebug, tags: ['supdebug']}
   
 - hosts: big
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: ubuntu_system, tags: ['ubuntu_system']}
-    - {role: nodejs, tags: ['nodejs']}
-    - {role: bigasterisk_users, tags: ['bigasterisk_users']}
     - {role: unison, tags: ['unison']}
-    - {role: hosts, tags: ['hosts']}
     - {role: telegraf, tags: ['telegraf']}
-  tasks:
-    - name: no UseDNS on ssh server
-      lineinfile: dest=/etc/ssh/sshd_config regexp="^UseDNS\b" line="UseDNS no"
-      notify: sshd restart
+    - {role: nodejs, tags: ['nodejs']}
 
 - hosts: prime
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: bigasterisk_users, tags: ['bigasterisk_users']}
-    - {role: hosts, tags: ['hosts']}
     - {role: nginx_ssl_certs, tags: ['nginx_forward', 'nginx_ssl_certs']}
     - {role: nginx_forward, tags: ['nginx_forward', 'nginx_server']}
     - {role: nginx_static_data, tags: ['nginx_forward', 'nginx_static_data']}
     - {role: postfix, tags: ['postfix']}
     - {role: dovecot, tags: ['dovecot']}
     - {role: map_mqtt_receiver, tags: ['map_mqtt_receiver']}
-    - {role: openvpn_server, tags: ['openvpn_server'], vpn_net: 'vpn_ext'}
-    - {role: prime_firewall, tags: ['prime_firewall']}
   tasks:
     - hostname: name=prime
 
@@ -71,10 +45,7 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: supervisord_local, tags: ['supervisord_local']}
     - {role: elastic, tags: ['elastic']}
-#    - {role: graphite, tags: ['graphite']}
-    - {role: openvpn_server, tags: ['openvpn_server'], vpn_net: 'vpn_home'}
     - {role: mongo, tags: ['mongo']}
     - {role: sesame, tags: ['sesame']}
     - {role: web_ssh, tags: ['web_ssh']}
@@ -84,10 +55,7 @@
     - {role: dropbox, tags: ['dropbox']}
     - {role: mail_bang, tags: ['mail']}
     - {role: map_mqtt_receiver, tags: ['map_mqtt_receiver']} # for phone talking to bigasterisk.com at home
-#    - {role: minetest_server, tags: ['minetest_server']}
     - {role: minecraft, tags: ['minecraft']}
-    - {role: network_bigasterisk_gateway, tags: ['network_bigasterisk_gateway']}
-    - {role: dnsmasq, tags: ['dnsmasq']}
     - {role: nginx_ssl_certs, tags: ['nginx_ssl_certs']}
     - {role: photo, tags: ['photo']}
     - {role: photo_worker, tags: ['photo_worker']}
@@ -95,21 +63,19 @@
     - {role: ruler_client, tags: ['ruler']}
     - {role: ruler_server, tags: ['ruler']}
     - {role: shortener, tags: ['shortener']}
-#    - {role: x_bang, tags: ['x_bang']}
     - {role: influxdb, tags: ['influxdb']}
     - {role: grafana, tags: ['grafana']}
     - {role: zfs_server, tags: ['zfs_server']}
     - {role: zfs_monitorable, tags: ['zfs_monitorable']}
     - {role: zfs_auto_snapshot, tags: ['zfs_auto_snapshot']}
     - {role: etcd, tags: ['etcd']}
-    - {role: docker_registry, tags: ['docker_registry']}
-    - {role: webcam, tags: ['webcam'], camName: 'livingRoom', internalPort: 9016, camArgs: '--dafang http://10.2.0.32/ --location livingRoom' }
+    - {role: webcam, tags: ['webcam'], camName: 'livingRoom', internalPort: 9016, camArgs: '--dafang http://livingcam/ --location livingRoom' }
     - {role: webcam, tags: ['webcam'], camName: 'garden', internalPort: 9017, camArgs: '--dafang http://gardencam/ --location garden' }
-    - {role: webcam, tags: ['webcam'], camName: 'baby', internalPort: 10014, camArgs: '--esp http://10.2.0.44/ --location baby' }
+    - {role: webcam, tags: ['webcam'], camName: 'baby', internalPort: 10017, camArgs: '--dafang http://babycam/ --location baby' }
+    - {role: webcam, tags: ['webcam'], camName: 'bed', internalPort: 10019, camArgs: '--dafang http://bedcam/ --location bed' }
     - {role: mosquitto, tags: ['mosquitto'], pport: 1883, id: 'public'}
     - {role: mosquitto, tags: ['mosquitto'], pport: 10010, id: 'frontDoor'}
     - {role: ntopng, tags: ['ntop']}
-    
   tasks:
     - apt: pkg=dphys-swapfile state=absent
       tags: ['swap']
@@ -127,13 +93,11 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: supervisord, tags: ['supervisord']}
     - {role: cups, tags: ['cups']}
     - {role: mail_relay, tags: ['mail_relay']}
     - {role: photo_worker, tags: ['photo_worker']}
     - {role: ruler_client, tags: ['ruler']}
     - {role: ruler_server, tags: ['ruler']}
-#    - {role: webcam, tags: ['webcam'], camName: 'dash', internalPort: 9016, camArgs: '--v4l /dev/v4l/by-id/usb-0c45_USB_camera-video-index0 --location office' }
   tasks:
     - supervisor_process_mod:
         name=picinput_11008
@@ -146,33 +110,29 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: supervisord, tags: ['supervisord']}
     - {role: photo_worker, tags: ['photo_worker']}
     - { role: webcam, tags: ['webcam'], camName: 'printer', internalPort: 9020, camArgs: '--v4l /dev/v4l/by-id/usb-HP_HP_Webcam_HD-4110-video-index0 --location printer' }
   tasks:
-    - include: tasks/slash_processes.yml
+    - apt: pkg=dphys-swapfile state=absent
+    - supervisor_process_mod:
+        name=octoprint_5000
+        directory=/home/drewp/OctoPrint
+        command="/home/drewp/OctoPrint/bin/python run"
+        user=drewp
+      notify: supervisord update
+      tags: ['octoprint']
 
 - hosts: plus
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: supervisord, tags: ['supervisord']}
     - {role: laptop_x11, tags: ['laptop_x11']}
-    - {role: ubuntu_system, tags: ['ubuntu_system']}
-    - {role: openvpn_client, tags: ['openvpn_client'], vpn_remote_addr: '10.3.0.30'}
-    - {role: openvpn_client, tags: ['openvpn_client'], vpn_remote_addr: '10.4.0.30'}
-
     
 - hosts: dot
   handlers:
     - include: handlers/main.yml
   roles:
-    #- {role: ari_room_screen, tags: ['ari_room_screen']}
-#    - { role: webcam, tags: ['webcam'], camName: 'brace', internalPort: 9020, camArgs: '--v4l /dev/v4l/by-id/usb-Chicony_Electronics_Co.__Ltd._HP_Webcam_SN0001-video-index0 --location ariDesk' }
     - { role: webcam, tags: ['webcam'], camName: 'dotScreen', internalPort: 9021, camArgs: '--screen --location dotScreen' }
-#/etc/NetworkManager/NetworkManager.conf
-
-
 
 - hosts: with_speakers
   handlers:
@@ -180,20 +140,13 @@
   roles:
     - {role: pulse, tags: ['pulse']}
     - {role: speech_music, tags: ['speech_music']}
-    #- {role: mpd, tags: ['mpd']}
-    #- {role: ympd, tags: ['ympd']}
-    #- {role: mpdweb, tags: ['mpdweb']} # to replace with mopidy
 
 - hosts: pi
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: raspi_network, tags: ['raspi_network']}
-    - {role: pi_users, tags: ['pi_users']}
-    - {role: hosts, tags: ['hosts']}
     - {role: pigpio, tags: ['pigpio']}
     - {role: raspi_io_node, tags: ['raspi_io_node']}    
-    - {role: raspi_ws2812, tags: ['raspi_ws2812']}
     - {role: raspi_shell, tags: ['raspi_shell']}
     - {role: telegraf, tags: ['telegraf']}
  
@@ -231,20 +184,12 @@
         name=/my
         src=10.1.0.1:/stor6/my
         state=mounted
-        
-- hosts: vpn_client
-  handlers:
-    - include: handlers/main.yml
-  roles:
-    - {role: openvpn_client, tags: ['openvpn_client']}
-
 
 - hosts: living
   handlers:
     - include: handlers/main.yml
   roles:
     - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono"}
-    #- {role: webcam, tags: ['webcam'], camName: 'livingRoom', internalPort: 9016, camArgs: '--v4l /dev/v4l/by-id/usb-Generic_FULL_HD_1080P_Webcam_200901010001-video-index0 --location livingRoom' }
     - {role: raspi_airport_speaker, tags: ['raspi_speaker']}
     - {role: raspi_lirc, tags: ['raspi_lirc'], gpio_in_pin: 23, gpio_out_pin: 22}
     - {role: raspi_icecast, tags: ['raspi_icecast'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono", ice_mount: "mic"}
@@ -260,7 +205,7 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: raspi_kiosk_chrome, tags: ['raspi_kiosk'], url: 'https://bigasterisk.com/login?redir=/room/ari/frontDoor.html'}
+    - {role: raspi_kiosk_chrome, tags: ['raspi_kiosk'], url: 'https://bigasterisk.com/login?redir=/homeauto/frontDoor/'}
     - { role: webcam, tags: ['webcam'], camName: 'frontdoor', internalPort: 9020, camArgs: '--pi --location frontYard' }
 #    - { role: webcam, tags: ['webcam'], camName: 'frontdoor_screen', internalPort: 9021, camArgs: '--screen --location frontdoor_screen --nomotion' }
 
@@ -282,7 +227,7 @@
   roles:
     - {role: pulse, tags: ['pulse']}
     - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono"}
-    - {role: raspi_lirc, tags: ['raspi_lirc'], gpio_in_pin: 18, gpio_out_pin: 22}
+#    - {role: raspi_lirc, tags: ['raspi_lirc'], gpio_in_pin: 18, gpio_out_pin: 22}  # install not working atm
     - {role: google_assistant, tags: ['google_assistant']}
     
 - hosts: bed
