@@ -4,6 +4,11 @@ from private import wifis, piNodes, webcamTags, pingHosts, audioHosts, camLocs, 
 null, true, false = None, True, False
 
 nextId = itertools.count().next
+def combine(*dicts):
+    out = dicts[0].copy()
+    for d in dicts[1:]:
+        out.update(d)
+    return out
 
 def tagList(tags):
     out = []
@@ -143,9 +148,9 @@ root = '/opt/grafana/dashboards'
 def clearDir():
     for p in os.listdir(root):
         os.unlink(root + '/' + p)
-    
-def writeDashboard(title, rows, timeSpan='3h'):
-    with open('%s/%s.json' % (root, title.replace(' ', '_')), 'w') as out:    
+
+def writeDashboard(title, rows=[], panels=[], timeSpan='3h'):
+    with open('%s/%s.json' % (root, title.replace(' ', '_')), 'w') as out:
         out.write(json.dumps({
             "__inputs": [
                 {"name": "DS_TELEGRAF", "label": "telegraf", "description": "", "type": "datasource", "pluginId": "influxdb", "pluginName": "InfluxDB"}
@@ -159,6 +164,7 @@ def writeDashboard(title, rows, timeSpan='3h'):
             "id": nextId(),
             "schemaVersion": 14,
             "rows": rows,
+            "panels": panels,
             "annotations": {"list": []},
             "tags": [],
             "time": {"from": "now-%s" % timeSpan, "to": "now"},
@@ -280,6 +286,16 @@ writeDashboard('presence', [
 
     ])
 
+writeDashboard('who', [
+    {'height': 30, 'panels': [discrete_panel('front door open',           dtype='open', measurement='state',    tags=[('sensor', 'open'), ('location', "frontDoor")]),]},
+] + [
+    {'height': 30, 'panels': [discrete_panel('%s on wifi' % name,         dtype='on',   measurement='presence', tags=[('sensor', 'wifi'), ('address', addr)])]} for name, addr in wifis if name in [
+        'kelsi iphone', 'drew phone', 'daniele phone1', 'ingrid phone',
+    ]
+] + [
+
+    ])
+
 writeDashboard('motion', [
     {'height': 30, 'panels': [discrete_panel("motion storage",            dtype='motion', measurement="presence", tags=[("location", "storage")])] },
     {'height': 30, 'panels': [discrete_panel("motion bed",                dtype='motion', measurement="presence", tags=[("location", "bed")])] },
@@ -397,7 +413,23 @@ def process_mem_panel(host, process):
 writeDashboard('bang mem', [
     {"height": 250, "panels": [mem_panel('bang'), swap_panel('bang')]},
     {"height": 250, "panels": [process_mem_panel(host='bang', process=p) for p in [
-        "arduinoNode", "dropbox",  "influxdb", "mongod",  "netbars", "pimscreen", "reasoning", "ruler-analysis", "ruler-server", "sse_collector", "supervisord", "sync_dropbox.py", "wallscreen",]]},
+        "mongod",
+        "elastic",
+        "reasoning",
+        "imageset",
+        "ntopng",
+        "kurento-media-server",
+        "dropbox",
+        "minecraft",
+        "netbars",
+        "pimscreen",
+        "ruler-analysis",
+        "ruler-server",
+        "sse_collector",
+        "supervisord",
+        "sync_dropbox.py",
+        "wallscreen",
+    ]]},
         ])
 
 
@@ -771,22 +803,99 @@ writeDashboard('mongodb', timeSpan='1d', rows=[
           "yaxes": [{"format": "bytes", "label": null, "logBase": 1, "max": null, "min": "0", "show": true}, {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}]} for db in mongoDbs
   ]}])
 
-writeDashboard('power-usage', [
+writeDashboard('power-usage', panels=[
     {
-        "height": "500px",
-        "panels": [
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": "main",
+        "editable": true,
+        "error": false,
+        "fill": 1,
+        "grid": {},
+        "gridPos": {"h": 13, "w": 24, "x": 0, "y": 0},
+        "id": nextId(),
+        "interval": "8s",
+        "legend": {"avg": false, "current": false, "max": false, "min": false, "show": false, "total": false, "values": false},
+        "lines": true,
+        "linewidth": 1,
+        "links": [],
+        "nullPointMode": "null",
+        "options": {},
+        "percentage": false,
+        "pointradius": 5,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
             {
-                "aliasColors": {}, "bars": false, "dashLength": 10, "dashes": false, "datasource": "main", "editable": true, "error": false, "fill": 1, "grid": {}, "id": 1, "interval": "8s", "legend": {"avg": false, "current": false, "max": false, "min": false, "show": false, "total": false, "values": false}, "lines": true, "linewidth": 1, "links": [], "nullPointMode": "null", "percentage": false, "pointradius": 5, "points": false, "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 12, "stack": false, "steppedLine": false, "targets": [{"dsType": "influxdb", "groupBy": [{"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}], "measurement": "housePowerW", "orderByTime": "ASC", "policy": "default", "refId": "A", "resultFormat": "time_series", "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]], "tags": [{"key": "house", "operator": "=", "value": "berkeley"}]}], "thresholds": [], "timeFrom": null, "timeShift": null, "title": "house power usage", "tooltip": {"msResolution": true, "shared": true, "sort": 0, "value_type": "cumulative"}, "type": "graph", "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []}, "yaxes": [{"format": "watt", "label": null, "logBase": 1, "max": null, "min": 0, "show": true}, {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}]
-            },
-            {
-                "aliasColors": {}, "bars": false, "dashLength": 10, "dashes": false, "datasource": "main", "editable": true, "error": false, "fill": 1, "grid": {}, "id": 2, "legend": {"avg": false, "current": false, "max": false, "min": false, "show": true, "total": false, "values": false}, "lines": true, "linewidth": 2, "nullPointMode": "connected", "percentage": false, "pointradius": 5, "points": false, "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 12, "stack": false, "steppedLine": false, "targets": [
-                    {"dsType": "influxdb", "groupBy": [{"params": ["$interval"], "type": "time"}], "measurement": "housePowerSumDeliveredKwh", "policy": "default", "refId": "B", "resultFormat": "time_series", "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "max"}, {"params": ["1h"], "type": "derivative"}]], "tags": [{"key": "house", "operator": "=", "value": "berkeley"}]}], "thresholds": [], "timeFrom": null, "timeShift": null, "title": "Panel Title", "tooltip": {"msResolution": true, "shared": true, "sort": 0, "value_type": "cumulative"}, "type": "graph", "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []}, "yaxes": [{"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}, {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}]
-            },
-            {
-                "aliasColors": {}, "bars": false, "dashLength": 10, "dashes": false, "datasource": "main", "editable": true, "error": false, "fill": 1, "grid": {}, "id": 3, "legend": {"alignAsTable": false, "avg": false, "current": false, "max": false, "min": false, "rightSide": false, "show": false, "total": false, "values": false}, "lines": true, "linewidth": 2, "links": [], "nullPointMode": "connected", "percentage": false, "pointradius": 5, "points": false, "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 12, "stack": false, "steppedLine": false, "targets": [{"dsType": "influxdb", "groupBy": [{"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}], "measurement": "housePowerW", "policy": "default", "refId": "A", "resultFormat": "table", "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "integral"}]], "tags": [{"key": "house", "operator": "=", "value": "berkeley"}]}], "thresholds": [], "timeFrom": null, "timeShift": null, "title": "house power usage", "tooltip": {"msResolution": true, "shared": true, "sort": 0, "value_type": "cumulative"}, "type": "graph", "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []}, "yaxes": [{"format": "watth", "label": null, "logBase": 1, "max": null, "min": 0, "show": true}, {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}]
+                "dsType": "influxdb",
+                "groupBy": [{"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
+                "measurement": "housePowerW",
+                "orderByTime": "ASC",
+                "policy": "default",
+                "refId": "A",
+                "resultFormat": "time_series",
+                "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
+                "tags": [{"key": "house", "operator": "=", "value": "berkeley"}]
             }
         ],
-        
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Electric power usage today",
+        "tooltip": {"msResolution": true, "shared": true, "sort": 0, "value_type": "cumulative"},
+        "type": "graph",
+        "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []},
+        "yaxes": [
+            {"format": "watt", "label": null, "logBase": 1, "max": null, "min": 0, "show": true},
+            {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}
+        ],
+        "yaxis": {"align": false, "alignLevel": null}
+    },
+    {
+        "aggregate": "AVG",
+        "cacheTimeout": null,
+        "color": {"colorScheme": "interpolateSpectral", "colorSpace": "RGB", "customColors": [{"color": "#006837"}, {"color": "#aa0526"}], "mode": "SPECTRUM", "nullColor": "transparent"},
+        "data": {"decimals": 3, "unitFormat": "none"},
+        "datasource": "main",
+        "fragment": "QUARTER",
+        "gridPos": {"h": 12, "w": 24, "x": 0, "y": 13},
+        "id": nextId(),
+        "interval": "1m",
+        "legend": {"show": true},
+        "links": [],
+        "options": {},
+        "pluginVersion": "6.2.5",
+        "scale": {"max": 2900, "min": 200},
+        "targets": [
+            {
+                "dsType": "influxdb",
+                "groupBy": [{"params": ["15m"], "type": "time"}, {"params": ["null"], "type": "fill"}],
+                "hide": false,
+                "measurement": "housePowerW",
+                "orderByTime": "ASC",
+                "policy": "default",
+                "query": "SELECT mean(\"value\") FROM \"housePowerW\" WHERE (\"house\" = 'berkeley') AND $timeFilter GROUP BY time($interval) fill(null)",
+                "rawQuery": false,
+                "refId": "A",
+                "resultFormat": "time_series",
+                "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "mean"}]],
+                "tags": [{"key": "house", "operator": "=", "value": "berkeley"}]
+            }
+        ],
+        "timeFrom": "90d",
+        "timeShift": null,
+        "title": "Recent days",
+        "tooltip": {"show": true},
+        "type": "petrslavotinek-carpetplot-panel",
+        "xAxis": {"labelFormat": "%Y-%m-%d", "minBucketWidthToShowWeekends": 4, "show": true, "showCrosshair": true, "showWeekends": true},
+        "yAxis": {"show": true, "showCrosshair": false}
     }
 ]
 )
@@ -1121,3 +1230,60 @@ writeDashboard('network', timeSpan='1d', rows=[
         netRow('kitchen'),
         netRow('living'),
     ]}])
+
+
+tempBase  = {
+    "color": {"colorScheme": "interpolateRdYlGn", "colorSpace": "RGB", "customColors": [{"color": "#006837"}, {"color": "#aa0526"}], "mode": "SPECTRUM", "nullColor": "rgb(133, 133, 133)"},
+    "aggregate": "AVG",
+    "data": {"decimals": null, "unitFormat": "short"},
+    "datasource": "main",
+    "fragment": "HOUR",
+    "interval": "1m",
+    "legend": {"show": false},
+    "scale": {"max": 90, "min": 60},
+    "tooltip": {"show": true},
+    "type": "petrslavotinek-carpetplot-panel",
+    "xAxis": {"labelFormat": "%m-%d", "minBucketWidthToShowWeekends": 4, "show": true, "showCrosshair": true, "showWeekends": false},
+    "yAxis": {"show": true, "showCrosshair": false}
+    }
+scaleRow = combine(tempBase, {
+        "gridPos": {"h": 3, "w": 23, "x": 0, "y": 0},
+        "id": nextId(),
+        "legend": {"show": true},
+        "targets": [{"groupBy": [{"params": ["1h"], "type": "time"}, {"params": ["none"], "type": "fill"}],
+                     "measurement": "temperatureF",
+                     "orderByTime": "ASC",
+                     "policy": "default",
+                     "query": "SELECT max(\"value\") FROM \"temperatureF\" WHERE $timeFilter GROUP BY time(1000h) fill(none)",
+                     "rawQuery": true,
+                     "refId": "A",
+                     "resultFormat": "time_series",
+                     "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "max"}]], "tags": []
+        }
+        ],
+        "title": "scale",
+        "tooltip": {"show": false},
+        "xAxis": {"hideLabels": true, "labelFormat": "%a %m/%d", "minBucketWidthToShowWeekends": 4, "show": true, "showCrosshair": false, "showWeekends": false},
+        "yAxis": {"hideLabels": true, "show": true, "showCrosshair": false}
+    })
+
+writeDashboard('tempHistory', timeSpan='90d', panels=[
+    scaleRow] + [
+    combine(tempBase, {
+        "gridPos": {"h": 11, "w": 23, "x": 0, "y": 3 + y * 11},
+        "id": nextId(),
+        "targets": [
+            {
+                "groupBy": [{"params": ["1h"], "type": "time"}, {"params": ["none"], "type": "fill"}],
+                "measurement": "temperatureF",
+                "orderByTime": "ASC",
+                "policy": "default",
+                "refId": "A",
+                "resultFormat": "time_series",
+                "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "max"}]],
+                "tags": [{"key": "location", "operator": "=", "value": loc}]
+            }
+        ],
+        "title": "%s temp" % loc,
+    }) for y, loc in enumerate(['livingRoomCeiling', 'garage', 'frontbedUnderDesk', 'kitchenCounter', 'workshop'])
+])
