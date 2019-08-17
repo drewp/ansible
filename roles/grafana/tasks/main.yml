@@ -2,6 +2,6 @@
 - user: name=grafana
 - file: path=/opt/grafana state=directory owner=grafana
   
-
+- copy: dest="/var/lib/openid_proxy.d/grafana-log.n3" content="<http://bigasterisk.com/openidProxySite/grafana> <http://bigasterisk.com/openid_proxy#accessLogKey> \"bigasterisk.com-grafana\" . "
   
 # rest of site is over in websites.yml
