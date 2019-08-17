@@ -1,5 +1,3 @@
-
-
 import json, itertools, os
 from private import wifis, piNodes, webcamTags, pingHosts, audioHosts, camLocs, mongoDbs
 
@@ -20,7 +18,7 @@ def metric(alias, measurement, field, tags, avg=0):
     funcs = []
     if avg:
         funcs.append({"params": [avg], "type": "moving_average"})
-   
+
     return {
         "alias": alias,
         "dsType": "influxdb",
@@ -36,14 +34,14 @@ def metric(alias, measurement, field, tags, avg=0):
                 {"params": [], "type": "mean"}
             ] + funcs
         ],
-        "tags": tagList(tags), 
+        "tags": tagList(tags),
     }
 
 def cpu_usage_panel(process_name, hosts):
     return cpu_usage_panel_targets(process_name, [
         metric(alias=n, measurement="procstat", field="cpu_usage", tags=[('host', n), ('process_name', process_name)]) for n in hosts
     ])
-    
+
 def cpu_usage_panel_targets(process_name, targets):
     return {
         'id': nextId(),
@@ -75,7 +73,7 @@ def float_panel(datasource, max, title, targets):
     }
 
 
-    
+
 def discrete_panel(title, dtype, measurement, tags):
     ret = {
           "backgroundColor": "rgba(128, 128, 128, 0.1)",
@@ -135,12 +133,12 @@ def discrete_panel(title, dtype, measurement, tags):
           "colorMaps": [{"color": "rgb(72, 111, 136)", "text": "motion"}, {"color": "rgb(3, 34, 54)", "text": "no"}],
           "valueMaps": [{"op": "=", "text": "motion", "value": "1"}, {"op": "=", "text": "no", "value": "0"},],
         })
-        
+
     else: raise NotImplementedError()
-        
+
     return ret
-    
-    
+
+
 root = '/opt/grafana/dashboards'
 def clearDir():
     for p in os.listdir(root):
@@ -279,7 +277,7 @@ writeDashboard('presence', [
 ] + [
     {'height': 30, 'panels': [discrete_panel('%s on wifi' % name,         dtype='on',   measurement='presence', tags=[('sensor', 'wifi'), ('address', addr)])]} for name, addr in wifis
 ] + [
-    
+
     ])
 
 writeDashboard('motion', [
@@ -290,10 +288,7 @@ writeDashboard('motion', [
     {'height': 30, 'panels': [discrete_panel("motion changing",           dtype='motion', measurement="presence", tags=[("location", "changing")])] },
     {'height': 30, 'panels': [discrete_panel("motion garage door inside", dtype='motion', measurement="presence", tags=[("location", "garageDoorInside")])] },
     {'height': 30, 'panels': [discrete_panel("motion front door inside",  dtype='motion', measurement="presence", tags=[("location", "frontdoorInside")])] },
-    
     ])
-
-
 
 def stacked_percent_panel(title, tags, measurement, fields):
     return {
@@ -336,7 +331,7 @@ def host_cpu_breakdown(host):
                                      #  https://github.com/influxdata/telegraf/blob/master/plugins/inputs/system/CPU_README.md#description
                                      'user', 'system',  'nice', 'iowait', 'irq', 'softirq', 'steal', 'guest', 'guest_nice','idle',
                                  ]])
-    
+
 writeDashboard('CPU', [
     {"height": "250px", "panels": [host_cpu_breakdown(host=h)]} for h in ['bang', 'dash', 'slash', 'prime']
     ])
@@ -358,13 +353,13 @@ def mem_panel(host):
         "type": "graph",
         "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []},
         "yaxes": [{"format": "bytes", "label": null, "logBase": 1, "max": null, "min": "0", "show": true}, {"show": false}]}
-    
+
 def swap_panel(host):
     return {
         "aliasColors": {}, "bars": false, "dashLength": 10, "dashes": false,
         "datasource": "telegraf", "fill": 1, "id": 5,
         "legend": {"avg": false, "current": false, "max": false, "min": false, "show": false, "total": false, "values": false},
-        "lines": true, "linewidth": 1, "nullPointMode": "null", "pointradius": 5, "points": false, "renderer": "flot", "spaceLength": 10, "span": 6, "stack": false, 
+        "lines": true, "linewidth": 1, "nullPointMode": "null", "pointradius": 5, "points": false, "renderer": "flot", "spaceLength": 10, "span": 6, "stack": false,
         "targets": [
             {"dsType": "influxdb",
              "groupBy": [{"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
@@ -382,7 +377,7 @@ def process_mem_panel(host, process):
         "aliasColors": {}, "bars": false, "dashLength": 10, "dashes": false, "datasource": "telegraf", "fill": 1, "id": nextId(),
         "legend": {"avg": false, "current": false, "max": false, "min": false, "show": true, "total": false, "values": false},
         "lines": true, "linewidth": 1, "nullPointMode": "null", "pointradius": 5, "points": false, "renderer": "flot",
-        "spaceLength": 10, "span": 4, "stack": true, 
+        "spaceLength": 10, "span": 4, "stack": true,
         "targets": [{"alias": "rss", "dsType": "influxdb",
                      "groupBy": [{"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
                      "measurement": "procstat", "orderByTime": "ASC", "policy": "default", "refId": "A", "resultFormat": "time_series",
@@ -391,14 +386,14 @@ def process_mem_panel(host, process):
                     {"alias": "swap", "dsType": "influxdb",
                      "groupBy": [{"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
                      "measurement": "procstat", "orderByTime": "ASC", "policy": "default", "refId": "B", "resultFormat": "time_series",
-                     "select": [[{"params": ["memory_swap"], "type": "field"}, {"params": [], "type": "mean"}]], 
-                     "tags": tags}], 
+                     "select": [[{"params": ["memory_swap"], "type": "field"}, {"params": [], "type": "mean"}]],
+                     "tags": tags}],
         "title": process,
         "tooltip": {"shared": true, "sort": 0, "value_type": "individual"},
-        "type": "graph", 
-        "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []}, 
+        "type": "graph",
+        "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []},
         "yaxes": [{"format": "bytes", "label": "", "logBase": 1, "max": "2000000000", "min": "0", "show": true}, {"show": false}]}
-    
+
 writeDashboard('bang mem', [
     {"height": 250, "panels": [mem_panel('bang'), swap_panel('bang')]},
     {"height": 250, "panels": [process_mem_panel(host='bang', process=p) for p in [
@@ -478,7 +473,6 @@ def cam_panel(location):
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          
           "scopedVars": {"location": {"selected": false, "text": "ari", "value": "ari"}},
           "seriesOverrides": [],
           "spaceLength": 10,
@@ -505,7 +499,7 @@ def cam_panel(location):
           ]
         }
 
-    
+
 writeDashboard('cameras', [
     {"height": 250, "panels": [cam_panel(location=loc)],} for loc in camLocs] + [
         {"height": 250, "panels": [
@@ -539,7 +533,7 @@ writeDashboard('cameras', [
                           "resultFormat": "table",
                           "select": [[{"params": ["*"], "type": "field"}]],
                           "tags": [{"key": "name", "operator": "=", "value": "unicam"}]}],
-             "timeFrom": "30s", 
+             "timeFrom": "30s",
              "title": "webcam service",
              "transform": "table",
              "type": "table"}],
@@ -590,7 +584,7 @@ writeDashboard('disk-free-space', timeSpan='7d', rows=[
     {
       "height": "250px",
       "panels": [
-        
+
         {
           "aliasColors": {}, "bars": false, "dashLength": 10, "dashes": false, "datasource": "telegraf", "editable": true, "error": false,
           "fill": 1,
@@ -725,9 +719,7 @@ writeDashboard('disk-free-space', timeSpan='7d', rows=[
               ],
               "yaxis": { "align": false,"alignLevel": null }
           }
-          
       ],
-     
     },
 ])
 
@@ -796,8 +788,8 @@ writeDashboard('power-usage', [
         ],
         
     }
-  ]
- )
+]
+)
 
 writeDashboard('ruler', timeSpan='7d', rows=[
     {
@@ -862,8 +854,8 @@ writeDashboard('ruler', timeSpan='7d', rows=[
           "yaxes": [{"format": "short", "label": "count", "logBase": 1, "max": null, "min": 0, "show": true}, {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}]
         }
       ],
-      
-     
+
+
     },
     {
       "height": 261,
@@ -895,8 +887,8 @@ writeDashboard('ruler', timeSpan='7d', rows=[
             "yaxes": [{"format": "bytes", "label": null, "logBase": 1, "max": null, "min": null, "show": true}, {"format": "bytes", "label": null, "logBase": 1, "max": null, "min": null, "show": false}]
         }
       ],
-      
-   
+
+
     },
     {
       "height": 255,
@@ -940,11 +932,7 @@ writeDashboard('ruler', timeSpan='7d', rows=[
             "yaxes": [ { "format": "bytes", "label": null, "logBase": 1, "max": null, "min": null, "show": true }, { "format": "bytes", "label": null, "logBase": 1, "max": null, "min": null, "show": false } ]
         }
       ],
-      
-    
     },
-  
-  
     ])
 
 
@@ -963,7 +951,7 @@ def tempTarget(location, measurement='temperatureF'):
               "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "median"}]],
               "tags": [{"key": "location", "operator": "=", "value": location}]
             }
-    
+
 
 def tempRow(title, targets, yFormat='farenheit', yMin=40, yMax=110):
     return {"height": "450px", "panels": [{
@@ -986,11 +974,11 @@ def tempRow(title, targets, yFormat='farenheit', yMin=40, yMax=110):
             {"format": yFormat, "label": "", "logBase": 1, "max": yMax, "min": yMin, "show": true},
             {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}
         ]
-        }],  }
-     
+        }],
+    }
+
 
 writeDashboard('temperatures', timeSpan='1d', rows=[
-
           tempRow(title="house temperatures", targets=[
             tempTarget("greenhouse"),
             tempTarget("storage"),
@@ -1038,42 +1026,42 @@ writeDashboard('temperatures', timeSpan='1d', rows=[
     ])
 
 def netRow(host):
-    return { "dashLength": 10, "dashes": false, "datasource": "telegraf", "fill": 1, "id": nextId(), "interval": ">10s", 
+    return { "dashLength": 10, "dashes": false, "datasource": "telegraf", "fill": 1, "id": nextId(), "interval": ">10s",
              "legend": { "show": true},
              "lines": true, "linewidth": 1, "links": [], "nullPointMode": "null", "percentage": false, "pointradius": 5, "points": false,
-             "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 4, "stack": false, "steppedLine": false, 
+             "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 4, "stack": false, "steppedLine": false,
              "targets": [{
                  "alias": "recv",
                  "dsType": "influxdb",
                  "groupBy": [{"params": ["$__interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
                  "measurement": "net", "orderByTime": "ASC", "policy": "default", "refId": "A",
-                 "resultFormat": "time_series", 
+                 "resultFormat": "time_series",
                  "select": [[{"params": ["bytes_recv"], "type": "field"},
                              {"params": [], "type": "mean"},
-                             {"params": ["1s"], "type": "non_negative_derivative"}]], 
+                             {"params": ["1s"], "type": "non_negative_derivative"}]],
                  "tags": [{"key": "host", "operator": "=", "value": host}]},
                          {"alias": "sent", "dsType": "influxdb",
                           "groupBy": [{"params": ["$__interval"], "type": "time"},
                                       {"params": ["null"], "type": "fill"}],
                           "measurement": "net", "orderByTime": "ASC", "policy": "default",
-                          "refId": "B", "resultFormat": "time_series", 
+                          "refId": "B", "resultFormat": "time_series",
                           "select": [[{"params": ["bytes_sent"], "type": "field"},
-                                      {"params": [], "type": "mean"}, {"params": ["1s"], "type": "non_negative_derivative"}]], 
-                          "tags": [{"key": "host", "operator": "=", "value": host}]}], 
+                                      {"params": [], "type": "mean"}, {"params": ["1s"], "type": "non_negative_derivative"}]],
+                          "tags": [{"key": "host", "operator": "=", "value": host}]}],
              "thresholds": [], "timeFrom": null, "timeShift": null,
              "title": "%s net" % host,
              "tooltip": {"shared": true, "sort": 0, "value_type": "individual"},
-             "type": "graph", 
-             "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []}, 
+             "type": "graph",
+             "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []},
              "yaxes": [{"format": "bytes", "min": "0", "max":500000, "show": true},
                        {"format": "short", "show": true}]}
-    
+
 
 writeDashboard('network', timeSpan='1d', rows=[
     {"height": "450px", "panels": [
-        { "dashLength": 10, "dashes": false, "datasource": "main", "editable": true, "error": false, "fill": 1, "grid": {}, "id": 1, 
+        { "dashLength": 10, "dashes": false, "datasource": "main", "editable": true, "error": false, "fill": 1, "grid": {}, "id": 1,
           "legend": { "show": false}, "lines": true, "linewidth": 2, "links": [], "nullPointMode": "connected", "percentage": false, "pointradius": 5, "points": false,
-          "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 12, "stack": false, "steppedLine": false, 
+          "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 12, "stack": false, "steppedLine": false,
           "targets": [{
               "alias": "in", "dsType": "influxdb",
               "groupBy": [{"params": ["$interval"], "type": "time"},
@@ -1082,47 +1070,47 @@ writeDashboard('network', timeSpan='1d', rows=[
               "query": "SELECT moving_average(mean(\"value\"), 10)  * -1 FROM \"bytesPerSec\" WHERE \"source\" = 'isp' AND $timeFilter GROUP BY time($interval) fill(null)",
               "rawQuery": false,
               "refId": "B",
-              "resultFormat": "time_series", 
+              "resultFormat": "time_series",
               "select": [[{"params": ["value"], "type": "field"},
-                          {"params": [], "type": "max"}]], 
-              "tags": [{"key": "source", "operator": "=", "value": "isp"}]}], 
+                          {"params": [], "type": "max"}]],
+              "tags": [{"key": "source", "operator": "=", "value": "isp"}]}],
           "thresholds": [], "timeFrom": null, "timeShift": null,
           "title": "in from ISP",
           "tooltip": {"msResolution": true, "shared": true, "sort": 0, "value_type": "cumulative"},
-          "type": "graph", 
-          "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []}, 
+          "type": "graph",
+          "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []},
           "yaxes": [{"format": "Bps", "label": "", "logBase": 1, "max": 1500000, "min": 0, "show": true}, {"format": "short", "show": true}]
       },
-        { "dashLength": 10, "dashes": false, "datasource": "main", "editable": true, "error": false, "fill": 1, "grid": {}, "id": nextId(), 
+        { "dashLength": 10, "dashes": false, "datasource": "main", "editable": true, "error": false, "fill": 1, "grid": {}, "id": nextId(),
           "legend": { "show": false}, "lines": true, "linewidth": 2, "links": [], "nullPointMode": "connected", "percentage": false, "pointradius": 5, "points": false,
-          "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 12, "stack": false, "steppedLine": false, 
+          "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 12, "stack": false, "steppedLine": false,
           "targets": [{
               "alias": "out", "dsType": "influxdb", "groupBy": [{"params": ["$interval"], "type": "time"},
-                                                                {"params": ["null"], "type": "fill"}], "measurement": "bytesPerSec", "policy": "default", "refId": nextId(), "resultFormat": "time_series", 
-              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "max"}]], 
-              "tags": [{"key": "source", "operator": "=", "value": "bang"}]}], 
+                                                                {"params": ["null"], "type": "fill"}], "measurement": "bytesPerSec", "policy": "default", "refId": nextId(), "resultFormat": "time_series",
+              "select": [[{"params": ["value"], "type": "field"}, {"params": [], "type": "max"}]],
+              "tags": [{"key": "source", "operator": "=", "value": "bang"}]}],
           "thresholds": [], "timeFrom": null, "timeShift": null,
-          "title": "out to ISP", "tooltip": {"msResolution": true, "shared": true, "sort": 0, "value_type": "cumulative"}, "type": "graph", 
-          "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []}, 
+          "title": "out to ISP", "tooltip": {"msResolution": true, "shared": true, "sort": 0, "value_type": "cumulative"}, "type": "graph",
+          "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []},
           "yaxes": [{"format": "Bps", "label": null, "logBase": 1, "max": 210000, "min": 0, "show": true},
                     {"format": "short", "show": true}]
       }]},
     {"height": 250, "panels": [
-        { "dashLength": 10, "dashes": false, "datasource": "telegraf", "fill": 1, "id": 3, 
+        { "dashLength": 10, "dashes": false, "datasource": "telegraf", "fill": 1, "id": 3,
           "legend": { "show": true}, "lines": true, "linewidth": 1, "links": [], "nullPointMode": "null", "percentage": false, "pointradius": 5, "points": false,
-          "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 12, "stack": false, "steppedLine": false, 
+          "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 12, "stack": false, "steppedLine": false,
           "targets": [{"dsType": "influxdb", "groupBy": [
               {"params": ["$__interval"], "type": "time"},
               {"params": ["null"], "type": "fill"}
-          ], "measurement": "procstat", "orderByTime": "ASC", "policy": "default", "refId": nextId(), "resultFormat": "time_series", 
-                       "select": [[{"params": ["cpu_usage"], "type": "field"}, {"params": [], "type": "mean"}]], 
-                       "tags": [{"key": "process_name", "operator": "=", "value": "netbars"}]}], 
+          ], "measurement": "procstat", "orderByTime": "ASC", "policy": "default", "refId": nextId(), "resultFormat": "time_series",
+                       "select": [[{"params": ["cpu_usage"], "type": "field"}, {"params": [], "type": "mean"}]],
+                       "tags": [{"key": "process_name", "operator": "=", "value": "netbars"}]}],
           "thresholds": [], "timeFrom": null, "timeShift": null,
-          "title": "netbars cpu usage", "tooltip": {"shared": true, "sort": 0, "value_type": "individual"}, "type": "graph", 
-          "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []}, 
+          "title": "netbars cpu usage", "tooltip": {"shared": true, "sort": 0, "value_type": "individual"}, "type": "graph",
+          "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []},
           "yaxes": [{"format": "short", "show": true}, {"format": "short", "show": true}]}
     ],  },
-    
+
     {"height": 239, "panels": [
         netRow('changing'),
         netRow('slash'),
