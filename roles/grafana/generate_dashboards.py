@@ -149,9 +149,9 @@ def clearDir():
     for p in os.listdir(root):
         os.unlink(root + '/' + p)
 
-def writeDashboard(title, rows=[], panels=[], timeSpan='3h'):
+def writeDashboard(title, rows=[], panels=[], timeSpan='3h', moreDash={}):
     with open('%s/%s.json' % (root, title.replace(' ', '_')), 'w') as out:
-        out.write(json.dumps({
+        out.write(json.dumps(combine({
             "__inputs": [
                 {"name": "DS_TELEGRAF", "label": "telegraf", "description": "", "type": "datasource", "pluginId": "influxdb", "pluginName": "InfluxDB"}
             ],
@@ -173,7 +173,7 @@ def writeDashboard(title, rows=[], panels=[], timeSpan='3h'):
                 "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"]
             },
             "title": title,
-        }))
+        }, moreDash)))
 
 clearDir()
 writeDashboard('pi cpu', [
@@ -572,17 +572,8 @@ writeDashboard('cameras', [
          },
 ])
 
-def zfsDatasetTargets():
-    return [{
-        "alias": p,
-        "groupBy": [{ "params": ["$__interval"],"type": "time" },{ "params": ["null"],"type": "fill" }],
-        "measurement": "used_bytes",
-        "orderByTime": "ASC",
-        "policy": "default",
-        "refId": nextId(),
-        "resultFormat": "time_series",
-        "select": [[{ "params": ["value"],"type": "field" },{ "params": [],"type": "mean" }]],"tags": [{ "key": "dataset","operator": "=","value": "stor6"+p }]
-    } for p in [
+def zfsDatasetTargets(storageType='dataset'):
+    largeMounts = [
 #'/my',
 '/my/archive/ALL',
 '/my/backup',
@@ -608,152 +599,194 @@ def zfsDatasetTargets():
 #'/my/rayz',
 '/my/site',
 #'/my/tv',
-'/my/video',
+#'/my/video',
+    ]
+    return [{
+        "alias": p,
+        "groupBy": [{ "params": [
+            "$zfs_vol_interval",
+        ],"type": "time" },{ "params": ["null"],"type": "fill" }],
+        "measurement": "used_bytes",
+        "orderByTime": "ASC",
+        "policy": "default",
+        "refId": nextId(),
+        "resultFormat": "time_series",
+        "select": [[{ "params": ["value"],"type": "field" },{ "params": [],"type": "mean" }]],
+        "tags": [{ "key": storageType,"operator": "=","value": "stor6"+p }]
+    } for p in largeMounts]
 
-    ]]
+diskFreeHost = {
+    "aliasColors": {},
+    "bars": false,
+    "dashLength": 10,
+    "dashes": false,
+    "datasource": "telegraf",
+    "editable": true,
+    "error": false,
+    "fill": 1,
+    "legend": {"avg": false, "current": false, "max": false, "min": false, "show": false, "total": false, "values": false},
+    "lines": true,
+    "linewidth": 2,
+    "links": [],
+    "nullPointMode": "null",
+    "options": {},
+    "percentage": false,
+    "pointradius": 5,
+    "points": false,
+    "renderer": "flot",
+    "seriesOverrides": [],
+    "spaceLength": 10,
+    "stack": false,
+    "steppedLine": false,
+    "thresholds": [],
+    "timeFrom": null,
+    "timeRegions": [],
+    "timeShift": null,
+    "tooltip": {"msResolution": true, "shared": true, "sort": 0, "value_type": "cumulative"},
+    "type": "graph",
+    "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []},
+    "yaxes": [{"format": "bytes", "label": null, "logBase": 1, "max": null, "min": 0, "show": true}, {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}],
+    "yaxis": {"align": false, "alignLevel": null}
+}
 
-writeDashboard('disk-free-space', timeSpan='7d', rows=[
-    {
-      "height": "250px",
-      "panels": [
-
+writeDashboard(
+    'disk-free-space',
+    timeSpan='30d',
+    moreDash={"templating": {"list": [
         {
-          "aliasColors": {}, "bars": false, "dashLength": 10, "dashes": false, "datasource": "telegraf", "editable": true, "error": false,
-          "fill": 1,
-               "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 0,
-        "y": 0
-      },
-"id": 2, "legend": {"avg": false, "current": false, "max": false, "min": false, "show": false, "total": false, "values": false},
-          "lines": true, "linewidth": 2, "links": [], "nullPointMode": "null", "percentage": false, "pointradius": 5, "points": false, "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 3, "stack": false, "steppedLine": false,
-          "targets": [
-            {
-              "dsType": "influxdb",
-              "groupBy": [{"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "disk", "orderByTime": "ASC", "policy": "default", "refId": "A", "resultFormat": "time_series",
-              "select": [[{"params": ["free"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [
-                {"key": "host", "operator": "=", "value": "bang"},
-                {"condition": "AND", "key": "path", "operator": "=", "value": "/"}
-              ]
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "bang root",
-          "tooltip": {"msResolution": true, "shared": true, "sort": 0, "value_type": "cumulative"},
-          "type": "graph",
-          "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []},
-          "yaxes": [
-            {"format": "bytes", "label": null, "logBase": 1, "max": null, "min": 0, "show": true},
-            {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}
-          ]
+            "name": "zfs_vol_interval",
+            "type": "textbox",
+            "current": {"value": "1d"}, # boost this if the zfs plot is getting truncated
+        }]}},
+    panels=[
+        combine(diskFreeHost,  {
+            "gridPos": {"h": 7, "w": 10, "x": 0, "y": 0},
+            "id": nextId(),
+            "targets": [
+                {
+                    "dsType": "influxdb",
+                    "groupBy": [{"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
+                    "measurement": "disk",
+                    "orderByTime": "ASC",
+                    "policy": "default",
+                    "refId": "A",
+                    "resultFormat": "time_series",
+                    "select": [[{"params": ["free"], "type": "field"}, {"params": [], "type": "mean"}]],
+                    "tags": [{"key": "host", "operator": "=", "value": "bang"}, {"condition": "AND", "key": "path", "operator": "=", "value": "/"}]
+                }
+            ],
+            "title": "bang root",
+        }),
+        combine(diskFreeHost, {
+            "gridPos": {"h": 7, "w": 7, "x": 10, "y": 0},
+            "id": nextId(),
+            "targets": [
+                {
+                    "dsType": "influxdb",
+                    "groupBy": [{"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
+                    "measurement": "disk",
+                    "orderByTime": "ASC",
+                    "policy": "default",
+                    "refId": "A",
+                    "resultFormat": "time_series",
+                    "select": [[{"params": ["free"], "type": "field"}, {"params": [], "type": "mean"}]],
+                    "tags": [{"key": "host", "operator": "=", "value": "dash"}, {"condition": "AND", "key": "path", "operator": "=", "value": "/"}]
+                }
+            ],
+            "title": "dash root",
+        }),
+        combine(diskFreeHost,{
+            "gridPos": {"h": 7, "w": 7, "x": 17, "y": 0},
+            "id": nextId(),
+            "targets": [
+                {
+                    "dsType": "influxdb",
+                    "groupBy": [{"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
+                    "measurement": "disk",
+                    "orderByTime": "ASC",
+                    "policy": "default",
+                    "refId": "A",
+                    "resultFormat": "time_series",
+                    "select": [[{"params": ["free"], "type": "field"}, {"params": [], "type": "mean"}]],
+                    "tags": [{"key": "host", "operator": "=", "value": "slash"}, {"condition": "AND", "key": "path", "operator": "=", "value": "/"}]
+                }
+            ],
+            "title": "slash root",
+        }),
+        {
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": "main",
+            "fill": 1,
+            "gridPos": {"h": 28, "w": 24, "x": 0, "y": 7},
+            "id": nextId(),
+            "interval": "10m",
+            "legend": {"alignAsTable": true, "avg": false, "current": true, "hideZero": false, "max": false, "min": false, "rightSide": true, "show": true, "total": false, "values": true},
+            "lines": true,
+            "linewidth": 1,
+            "links": [],
+            "nullPointMode": "null",
+            "options": {},
+            "percentage": false,
+            "pointradius": 5,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": true,
+            "steppedLine": false,
+            "targets": zfsDatasetTargets(),
+            "thresholds": [],
+            "timeFrom": null,
+            "timeRegions": [],
+            "timeShift": null,
+            "title": "zfs stor6",
+            "tooltip": {"shared": true, "sort": 0, "value_type": "individual"},
+            "type": "graph",
+            "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []},
+            "yaxes": [{"format": "bytes", "label": null, "logBase": 1, "max": null, "min": "0", "show": true}, {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}],
+            "yaxis": {"align": false, "alignLevel": null},
         },
         {
-          "aliasColors": {}, "bars": false, "dashLength": 10, "dashes": false, "datasource": "telegraf", "editable": true, "error": false,
-          "fill": 1,  "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 6,
-        "y": 0
-      },"id": 5, "legend": {"avg": false, "current": false, "max": false, "min": false, "show": false, "total": false, "values": false},
-          "lines": true, "linewidth": 2, "links": [], "nullPointMode": "null", "percentage": false, "pointradius": 5, "points": false, "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 3, "stack": false, "steppedLine": false,
-          "targets": [
-            {
-              "dsType": "influxdb",
-              "groupBy": [{"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "disk", "orderByTime": "ASC", "policy": "default", "refId": "A", "resultFormat": "time_series",
-              "select": [[{"params": ["free"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [
-                {"key": "host", "operator": "=", "value": "dash"},
-                {"condition": "AND", "key": "path", "operator": "=", "value": "/"}
-              ]
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "dash root",
-          "tooltip": {"msResolution": true, "shared": true, "sort": 0, "value_type": "cumulative"},
-          "type": "graph",
-          "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []},
-          "yaxes": [
-            {"format": "bytes", "label": null, "logBase": 1, "max": null, "min": 0, "show": true},
-            {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}
-          ]
-        },
-        {
-          "aliasColors": {}, "bars": false, "dashLength": 10, "dashes": false, "datasource": "telegraf", "editable": true, "error": false,
-          "fill": 1,    "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 12,
-        "y": 0
-      },"id": 6, "legend": {"avg": false, "current": false, "max": false, "min": false, "show": false, "total": false, "values": false},
-          "lines": true, "linewidth": 2, "links": [], "nullPointMode": "null", "percentage": false, "pointradius": 5, "points": false, "renderer": "flot", "seriesOverrides": [], "spaceLength": 10, "span": 3, "stack": false, "steppedLine": false,
-          "targets": [
-            {
-              "dsType": "influxdb",
-              "groupBy": [{"params": ["$interval"], "type": "time"}, {"params": ["null"], "type": "fill"}],
-              "measurement": "disk", "orderByTime": "ASC", "policy": "default", "refId": "A", "resultFormat": "time_series",
-              "select": [[{"params": ["free"], "type": "field"}, {"params": [], "type": "mean"}]],
-              "tags": [
-                {"key": "host", "operator": "=", "value": "slash"},
-                {"condition": "AND", "key": "path", "operator": "=", "value": "/"}
-              ]
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "slash root",
-          "tooltip": {"msResolution": true, "shared": true, "sort": 0, "value_type": "cumulative"},
-          "type": "graph",
-          "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []},
-          "yaxes": [
-            {"format": "bytes", "label": null, "logBase": 1, "max": null, "min": 0, "show": true},
-            {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}
-          ]
-        },
-          {
-              "aliasColors": {}, "bars": false, "dashLength": 10, "dashes": false, "datasource": "main", "fill": 1,
-              "gridPos": { "h": 20,"w": 24,"x": 0,"y": 7 },
-              "id": nextId(),  "interval": "10m",
-              "legend": {"alignAsTable": true, "avg": false, "current": true, "hideZero": false, "max": false, "min": false, "rightSide": true, "show": true, "total": false, "values": true},
-              "lines": true, "linewidth": 1, "links": [], "nullPointMode": "null", "percentage": false, "pointradius": 5, "points": false, "renderer": "flot",
-              "seriesOverrides": [], "spaceLength": 10, "stack": true, "steppedLine": false,
-              "targets": list(reversed([
-                  {
-                      "alias": "free",
-                      "groupBy": [{ "params": ["$__interval"],"type": "time" },{ "params": ["null"],"type": "fill" }],
-                      "measurement": "available_bytes",
-                      "orderByTime": "ASC",
-                      "policy": "default",
-                      "refId": "A",
-                      "resultFormat": "time_series",
-                      "select": [[{ "params": ["value"],"type": "field" },{ "params": [],"type": "mean" }]],"tags": [{ "key": "volume","operator": "=","value": "stor6" }]
-                  },
-              ] + zfsDatasetTargets())),
-              "thresholds": [],
-              "timeFrom": null,
-              "timeRegions": [],
-              "timeShift": null,
-              "title": "zfs stor6",
-              "tooltip": { "shared": true,"sort": 0,"value_type": "individual" },
-              "type": "graph",
-              "xaxis": { "buckets": null,"mode": "time","name": null,"show": true,"values": [] },
-              "yaxes": [
-                  { "format": "bytes","label": null,"logBase": 1,"max": null,"min": "0","show": true },
-                  { "format": "short","label": null,"logBase": 1,"max": null,"min": null,"show": true }
-              ],
-              "yaxis": { "align": false,"alignLevel": null }
-          }
-      ],
-    },
-])
+            "aliasColors": {},
+            "bars": false,
+            "dashLength": 10,
+            "dashes": false,
+            "datasource": "main",
+            "fill": 1,
+            "gridPos": {"h": 12, "w": 24, "x": 0, "y": 35},
+            "id": nextId(),
+            "interval": "10m",
+            "legend": {"alignAsTable": true, "avg": false, "current": true, "hideZero": false, "max": false, "min": false, "rightSide": true, "show": true, "total": false, "values": true},
+            "lines": true,
+            "linewidth": 1,
+            "links": [],
+            "nullPointMode": "null",
+            "options": {},
+            "percentage": false,
+            "pointradius": 5,
+            "points": false,
+            "renderer": "flot",
+            "seriesOverrides": [],
+            "spaceLength": 10,
+            "stack": true,
+            "steppedLine": false,
+            "targets": zfsDatasetTargets('snapshots'),
+            "thresholds": [],
+            "timeFrom": null,
+            "timeRegions": [],
+            "timeShift": null,
+            "title": "zfs stor6 snapshots",
+            "tooltip": {"shared": true, "sort": 0, "value_type": "individual"},
+            "type": "graph",
+            "xaxis": {"buckets": null, "mode": "time", "name": null, "show": true, "values": []},
+            "yaxes": [{"format": "bytes", "label": null, "logBase": 1, "max": null, "min": "0", "show": true}, {"format": "short", "label": null, "logBase": 1, "max": null, "min": null, "show": true}],
+            "yaxis": {"align": false, "alignLevel": null},
+
+    }
+    ])
 
 writeDashboard('mongodb', timeSpan='1d', rows=[
     {
