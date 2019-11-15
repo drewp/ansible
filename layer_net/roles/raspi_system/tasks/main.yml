@@ -4,9 +4,10 @@
 - timezone: name="America/Los_Angeles"
 
 - apt: pkg=dirmngr
+  name: dirmngr
 - set_fact: rel=stretch
 - set_fact: rel=buster
-  when: inventory_hostname in ['frontdoor2','kitchen']
+  when: inventory_hostname in ['frontdoor','kitchen','workshop','piedmont']
   
 - copy: content="deb http://mirrordirector.raspbian.org/raspbian/ {{rel}} main contrib non-free rpi\ndeb http://security.debian.org/ {{rel}}/updates main contrib non-free rpi\ndeb http://archive.raspberrypi.org/debian {{rel}} main" dest=/etc/apt/sources.list
 - apt_key: url=https://ftp-master.debian.org/keys/archive-key-8.asc
@@ -14,12 +15,6 @@
 - apt_key: url=https://ftp-master.debian.org/keys/archive-key-9-security.asc
 - apt_key: keyserver=keyserver.ubuntu.com id=8B48AD6246925553
 - file: path=/etc/apt/sources.list.d/raspi.list state=absent
-- apt: pkg=debian-keyring
-  name: deb keyring
-  when: inventory_hostname not in ['frontdoor2','kitchen']
-- apt: pkg=debian-archive-keyring
-  name: deb archive keyring
-  when: inventory_hostname not in ['frontdoor2','kitchen']
 - apt: pkg=apt-utils
 
   
@@ -39,34 +34,31 @@
 #  name: apt upgrade
 # may need reboot here for kernel.
 
-- apt: pkg=build-essential 
+- apt: pkg=build-essential update_cache=yes
   name: "apt build-essential"
-- apt: pkg=libffi-dev update_cache=yes
-  name: "apt libffi and update for some reason"
-  when: inventory_hostname not in ['frontdoor2','kitchen']
-- apt: pkg=libpython2.7-dev  
-  when: inventory_hostname not in ['frontdoor2','kitchen']
-- apt: pkg=libssl-dev  
-  when: inventory_hostname not in ['frontdoor2','kitchen']
-- apt: pkg=python-pip
-  name: "python-pip"
-- apt: pkg=python-setuptools update_cache=yes
-- apt: pkg=python-virtualenv
-- apt: pkg=python-docker
-- apt: pkg=rsync  
-- apt: pkg=i2c-tools
-- apt: pkg=sysstat
+#- apt: pkg=libffi-dev 
+- apt:
+    pkg:
+      - python-pip
+      - python-setuptools
+      - python-virtualenv
+      - python-docker
+      - rsync  
+      - i2c-tools
+      - sysstat
 
 # still needed? was part of supdebug.
 # https://github.com/graphite-project/graphite-web/issues/1721
 - apt: pkg=python-openssl state=absent
-
+  name: no python-openssl
 
 # stop SD card corruption
 - apt: pkg=dphys-swapfile state=absent
   name: reduce sd writes
 - mount: path=/var/log src=tmpfs fstype=tmpfs state=present opts=defaults,noatime,mode=0755
+  name: /var/log to tmpfs
 - mount: path=/tmp src=tmpfs fstype=tmpfs state=present opts=defaults,noatime
+  name: /tmp to tmpfs
     
 
 #  /boot/config.txt could have gpu_mem=16

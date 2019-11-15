@@ -1,5 +1,5 @@
 #!/bin/sh
-export EASY_RSA=/my/proj/ansible/roles/openvpn_server/files/new
+export EASY_RSA=/my/proj/ansible/layer_net/roles/openvpn_server/files/new
 export OPENSSL="openssl"
 export PKCS11TOOL="pkcs11-tool"
 export GREP="grep"

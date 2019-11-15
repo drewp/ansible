@@ -1,13 +1,14 @@
 ---
 
 - lineinfile: path=/etc/resolv.conf regex="8\.8\.8\.8" line="nameserver 8.8.8.8"
+  name: temporary dns for setup. see below for removal.
 
 - apt: pkg=docker.io state=absent
+  name: not docker.io pkg
 
 - apt:
     pkg:
       - python-docker
-      - apt-transport-https
   
 - apt_key: url="https://download.docker.com/linux/raspbian/gpg"
   when: ansible_distribution == "Debian"

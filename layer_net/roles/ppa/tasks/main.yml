@@ -16,15 +16,18 @@
 - apt_key: keyserver=keyserver.ubuntu.com id=0CD0F565F8CDAB41
 #- apt_key: url=https://dl-ssl.google.com/linux/linux_signing_key.pub
 
-- apt: pkg=apt-transport-https
-  name: apt https
+#- apt: pkg=apt-transport-https
+#  name: apt https
     
 - apt_repository: repo='deb [arch=amd64] https://dl-ssl.google.com/linux/chrome/deb/ stable main'
+  name: chrome repo
   when: ansible_distribution != "Debian"
 
 - apt_repository: repo='ppa:thomas-schiex/blender'
+  name: blender repo
   when: ansible_distribution != "Debian"
 
 - apt_repository: repo='ppa:ansible/ansible'
+  name: ansible repo
   when: ansible_hostname in "bang"
   

@@ -79,12 +79,12 @@
 
 - apt: pkg=nfs-kernel-server
   tags: ['nfs']
-- copy: dest=/etc/exports content="/var/cache/photo dash(sync,rw,no_subtree_check) 10.1.0.229(sync,rw,no_subtree_check) 10.1.0.21(sync,rw,no_subtree_check)\n"
+- copy: dest=/etc/exports content="/var/cache/photo dash(sync,rw,no_subtree_check) slash(sync,rw,no_subtree_check)\n"
   tags: ['nfs']
 
 
 # homephone is 
-# 10.2.0.40 from 00:0b:82:c7:a8:cb on ens6
+# 10.2.0.40 from 00:0b:82:c7:a8:cb on ens6 (out of date)
 # on ports udp/5004 (and udp/5005, tcp/59293)
 # run this (https://github.com/automatthias/hfsc/blob/master/hfsc, modified) to do traffic shaping:
 #   sudo ../files/hfsc start 

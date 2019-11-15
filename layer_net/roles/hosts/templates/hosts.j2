@@ -1,0 +1,30 @@
+# written by ansible
+
+127.0.0.1       localhost  {{ansible_hostname}}
+#127.0.1.1       {{ansible_hostname}}
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+{% if inventory_hostname in ['prime','piedmont'] %}
+10.3.0.1 prime prime.bigasterisk.com
+10.3.0.37 bang bang6 bang.bigasterisk.com local.bigasterisk.com local.fantasyfamegame.com
+10.3.0.5 plus
+
+# some nginx config still looks for this; it won't work until I have a unified mesh network again.
+1.1.1.1 slash.bigasterisk.com
+{% endif %}
+
+
+{% if inventory_hostname in ['garage', 'living', 'kitchen'] %}
+
+# experimental: rpi hosts are asking for two names several times per
+# second, making up maybe 10% of our wifi packets. They need a local
+# dns cache that works, or else these two lines:
+
+10.4.0.1 bang.vpn-home.bigasterisk.com
+10.2.0.1 bang6.bigasterisk.com
+
+{% endif %}
