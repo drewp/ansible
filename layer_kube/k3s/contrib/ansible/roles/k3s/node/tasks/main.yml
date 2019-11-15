@@ -14,3 +14,6 @@
     daemon_reload: yes
     state: restarted
     enabled: yes
+
+  # might need this
+# kubectl label node frontbed node-role.kubernetes.io/worker=worker
