@@ -3,31 +3,25 @@
 - lineinfile: path=/etc/resolv.conf regex="8\.8\.8\.8" line="nameserver 8.8.8.8"
   name: temporary dns for setup. see below for removal.
 
-- apt: pkg=docker.io state=absent
-  name: not docker.io pkg
+# was docker-ce but i lost that in 2020-03. trying docker.io again.
+- apt: pkg=docker-ce state=absent
+  name: not docker-ce pkg
 
-- apt:
-    pkg:
-      - python-docker
-  
-- apt_key: url="https://download.docker.com/linux/raspbian/gpg"
-  when: ansible_distribution == "Debian"
-- apt_repository: repo="deb [arch=armhf] https://download.docker.com/linux/raspbian stretch stable"
-  when: ansible_distribution == "Debian"
+- apt: pkg=python3-docker
+  name: python_docker
 
-- apt_key: url="https://download.docker.com/linux/ubuntu/gpg"
-  when: ansible_distribution != "Debian"
-- apt_repository: repo="deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
-  when: ansible_distribution != "Debian"
 
 # don't try to get aufs-dkms on rpi-- https://github.com/docker/for-linux/issues/709
-- apt: pkg=docker-ce install_recommends=no
+- apt: pkg=docker.io install_recommends=no
+  name: docker_io
   notify: "restart docker"
 
 - copy: dest=/etc/docker/daemon.json content='{ "insecure-registries":["bang6:5000","bang:5000"] }'
+  name: docker_registry_config
   notify: "restart docker"
 
-#notify wasn't running soon enough, and we need docker config in the next role, so here's an extra restart
-- service: name=docker state=restarted
+#notify wasn't running soon enough, and we need docker config in the next role, so here's an extra restart.
+# but, this should run only if there were changes,
+#- service: name=docker state=restarted
 
 - lineinfile: path=/etc/resolv.conf regex="8\.8\.8\.8" line="#nameserver 8.8.8.8"

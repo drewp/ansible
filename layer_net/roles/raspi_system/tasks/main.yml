@@ -43,6 +43,7 @@
       - python-setuptools
       - python-virtualenv
       - python-docker
+      - python3-docker
       - rsync  
       - i2c-tools
       - sysstat
