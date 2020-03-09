@@ -21,6 +21,7 @@
   roles:
     - {role: ssh, tags: ['ssh']}
     - {role: ppa, tags: ['ppa']}
+    - {role: wireguard, tags: ['wg-install']}
     - {role: docker, tags: ['docker']}
     - {role: supervisord, tags: ['supervisord']}
       
@@ -41,7 +42,7 @@
     - include: handlers/main.yml
   roles:
     - {role: docker_registry, tags: ['docker_registry']}
-    - {role: openvpn_server, tags: ['openvpn_server'], vpn_net: 'vpn_home'}
+#    - {role: openvpn_server, tags: ['openvpn_server'], vpn_net: 'vpn_home'}
     - {role: network_bigasterisk_gateway, tags: ['network_bigasterisk_gateway']}
     - {role: dnsmasq, tags: ['dnsmasq']}
     
@@ -51,7 +52,7 @@
   roles:
     - {role: bigasterisk_users, tags: ['bigasterisk_users']}
     - {role: hosts, tags: ['hosts']}
-    - {role: openvpn_server, tags: ['openvpn_server'], vpn_net: 'vpn_ext'}
+#    - {role: openvpn_server, tags: ['openvpn_server'], vpn_net: 'vpn_ext'}
     - {role: prime_firewall, tags: ['prime_firewall']}
   tasks:
     - hostname: name=prime
@@ -61,8 +62,8 @@
     - include: handlers/main.yml
   roles:
 # get these from /my/proj/ansible/roles/dnsmasq/templates/hosts.j2
-    - {role: openvpn_client, tags: ['openvpn_client'], vpn_remote_addr: '10.3.0.5'}
-    - {role: openvpn_client, tags: ['openvpn_client'], vpn_remote_addr: '10.4.0.5'}
+#    - {role: openvpn_client, tags: ['openvpn_client'], vpn_remote_addr: '10.3.0.5'}
+#    - {role: openvpn_client, tags: ['openvpn_client'], vpn_remote_addr: '10.4.0.5'}
 
 - hosts: slash
   handlers:
@@ -74,11 +75,12 @@
     - include: handlers/main.yml
   roles:
     - {role: ubuntu_system, tags: ['ubuntu_system']}
-    - {role: openvpn_client, tags: ['openvpn_client'], vpn_remote_addr: '10.3.0.30'}
-    - {role: openvpn_client, tags: ['openvpn_client'], vpn_remote_addr: '10.4.0.30'}
+#    - {role: openvpn_client, tags: ['openvpn_client'], vpn_remote_addr: '10.3.0.30'}
+#    - {role: openvpn_client, tags: ['openvpn_client'], vpn_remote_addr: '10.4.0.30'}
         
-- hosts: vpn_client
-  handlers:
-    - include: handlers/main.yml
-  roles:
-    - {role: openvpn_client, tags: ['openvpn_client']}
+#- hosts: vpn_client
+#  handlers:
+#    - include: handlers/main.yml
+#  roles:
+#    - {role: openvpn_client, tags: ['openvpn_client']}
+#

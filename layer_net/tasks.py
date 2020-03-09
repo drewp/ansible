@@ -23,3 +23,27 @@ ansible-playbook net.yml %s
 @task
 def dnsmasq_reread_config(ctx):
     playbook(ctx, _args='-l bang -t dnsmasq')
+
+@task
+def docker(ctx):
+    playbook(ctx, _args='-l bang -t docker')
+
+@task
+def wireguard_install(ctx):
+    playbook(ctx, _args='-l all -t wg-install')
+
+@task
+def wireguard(ctx):
+    playbook(ctx, _args='-l all -t wg-config,wg-generate-keys')
+
+@task
+def prime_firewall(ctx):
+    playbook(ctx, _args='-l prime -t prime_firewall')
+
+@task
+def run_hosts(ctx):
+    playbook(ctx, _args='-t hosts')
+
+@task
+def ppa(ctx):
+    playbook(ctx, _args='-l all -t ppa')

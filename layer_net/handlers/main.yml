@@ -30,3 +30,9 @@
   
 - name: dnsmasq hup
   command: "docker kill --signal HUP dnsmasq_10_1 dnsmasq_10_2"
+
+- name: restart wireguard
+  service:
+    name: "wg-quick@{{ wireguard_interface }}"
+    state: restarted
+

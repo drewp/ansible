@@ -8,23 +8,45 @@
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 
+10.5.0.1   bang5
+10.5.0.2   prime5
+10.5.0.5   dash5
+10.5.0.6   slash5
+10.5.0.10  kitchen5
+10.5.0.11  living5
+10.5.0.12  frontdoor5
+10.5.0.13  workshop5
+10.5.0.14  garage5
+10.5.0.15  bed5
+10.5.0.16  changing5
+10.5.0.17  frontbed5
+10.5.0.30  dot5
+10.5.0.112  drew-note85
+10.5.0.99  piedmont5
+10.5.0.110  plus5
+
 {% if inventory_hostname in ['prime','piedmont'] %}
-10.3.0.1 prime prime.bigasterisk.com
-10.3.0.37 bang bang6 bang.bigasterisk.com local.bigasterisk.com local.fantasyfamegame.com
-10.3.0.5 plus
+10.5.0.2 prime prime.bigasterisk.com
+10.5.0.1 bang bang6 bang.bigasterisk.com local.bigasterisk.com local.fantasyfamegame.com
+10.5.0.110 plus
 
 # some nginx config still looks for this; it won't work until I have a unified mesh network again.
-1.1.1.1 slash.bigasterisk.com
+10.5.0.6 slash.bigasterisk.com
 {% endif %}
 
 
-{% if inventory_hostname in ['garage', 'living', 'kitchen'] %}
+{% if inventory_hostname in ['garage', 'living', 'kitchen', 'bed', 'frontdoor', 'frontbed', 'workshop', 'changing'] %}
 
 # experimental: rpi hosts are asking for two names several times per
 # second, making up maybe 10% of our wifi packets. They need a local
 # dns cache that works, or else these two lines:
 
-10.4.0.1 bang.vpn-home.bigasterisk.com
-10.2.0.1 bang6.bigasterisk.com
+10.5.0.1 bang.vpn-home.bigasterisk.com
+10.5.0.1 bang6.bigasterisk.com
 
+{% endif %}
+
+{% if inventory_hostname in ['dash'] %}
+# error with split dns; breaks photo_worker on dash
+10.1.0.1 bang
 {% endif %}

@@ -15,10 +15,11 @@
 - apt_key: keyserver=keyserver.ubuntu.com id=B5115B98AA836CA8
 - apt_key: keyserver=keyserver.ubuntu.com id=0CD0F565F8CDAB41
 #- apt_key: url=https://dl-ssl.google.com/linux/linux_signing_key.pub
-
-#- apt: pkg=apt-transport-https
-#  name: apt https
-    
+- apt_key: keyserver=keyserver.ubuntu.com id=7638D0442B90D010
+  tags: ['wg-install']
+- apt_key: keyserver=keyserver.ubuntu.com id=04EE7237B7D453EC
+  tags: ['wg-install']
+  
 - apt_repository: repo='deb [arch=amd64] https://dl-ssl.google.com/linux/chrome/deb/ stable main'
   name: chrome repo
   when: ansible_distribution != "Debian" and ansible_hostname in ["dash", "plus"]
@@ -31,3 +32,41 @@
   name: ansible repo
   when: ansible_hostname in ["bang"]
   
+- name: Add WireGuard repository
+  apt_repository:
+    repo: "ppa:wireguard/wireguard"
+    state: present
+  tags: ['wg-install']
+  when: ansible_distribution != "Debian"
+  
+- apt_key: url="https://download.docker.com/linux/raspbian/gpg"
+  when: ansible_distribution == "Debian"
+- apt_repository: repo="deb [arch=armhf] https://download.docker.com/linux/raspbian stretch stable"
+  when: ansible_distribution == "Debian"
+
+- apt_key: url="https://download.docker.com/linux/ubuntu/gpg"
+  when: ansible_distribution != "Debian"
+# still disco per https://download.docker.com/linux/ubuntu/dists/
+- apt_repository: repo="deb [arch=amd64] https://download.docker.com/linux/ubuntu disco stable"
+  when: ansible_distribution != "Debian"
+
+- apt_repository: repo='deb http://deb.debian.org/debian/ unstable main'
+  tags: ['wg-install']
+  when: ansible_distribution == "Debian"
+
+- file: path=/etc/apt/sources.list.d/dl_yarnpkg_com_debian.list state=absent
+  name: clear_yarnpkg
+  
+- apt: update_cache=yes
+  name: apt_cache_update
+  tags: ['apt_update']
+
+- apt: upgrade=full
+  name: apt_upgrade 
+#- name: Check if a reboot is required
+#  register: file
+#  stat: path=/var/run/reboot-required get_md5=no
+#- name: Reboot the server
+#  command: /sbin/reboot
+#  when: file.stat.exists == true
+

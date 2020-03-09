@@ -1,0 +1,163 @@
+---
+
+# from https://github.com/githubixx/ansible-role-wireguard
+
+- name: Install required packages
+  package:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - software-properties-common
+    - linux-headers-{{ ansible_kernel }}
+  tags:
+    - wg-install
+  when: ansible_distribution != "Debian"
+
+
+- apt: pkg=raspberrypi-kernel-headers
+  when: ansible_distribution == "Debian"
+
+- name: Install WireGuard
+  package:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - wireguard-dkms
+    - wireguard-tools
+  tags:
+    - wg-install
+
+- name: Enable WireGuard kernel module
+  modprobe:
+    name: wireguard
+    state: present
+  register: wireguard_module_enabled
+  until:  wireguard_module_enabled is succeeded
+  retries: 3
+  delay: 5
+  failed_when: wireguard_module_enabled is failure
+  tags:
+    - wg-install
+
+- set_fact:
+    wireguard_remote_directory: "/etc/wireguard"
+    wireguard_port: "1195"
+    wireguard_interface: "wg0"
+    wireguard_endpoint: "bigasterisk.com"
+  tags:
+    - wg-generate-keys
+    - wg-config
+    - wg-svc
+
+- name: Set WireGuard IP (without mask)
+  set_fact:
+    wireguard_ip: "{{ wireguard_address.split('/')[0] }}"
+  tags:
+    - wg-generate-keys
+    - wg-config
+
+- name: Register if config/private key already exists on target host
+  stat:
+    path: "{{ wireguard_remote_directory }}/{{ wireguard_interface }}.conf"
+  register: config_file_stat
+  tags:
+    - wg-generate-keys
+    - wg-config
+
+- block:
+  - name: Generate WireGuard private key
+    shell: "wg genkey"
+    register: wg_private_key_result
+    tags:
+      - wg-generate-keys
+
+  - name: Set private key fact1
+    set_fact:
+      private_key: "{{ wg_private_key_result.stdout }}"
+    tags:
+      - wg-generate-keys
+  when: not config_file_stat.stat.exists
+
+- block:
+  - name: Read WireGuard config file
+    slurp:
+      src: "{{ wireguard_remote_directory }}/{{ wireguard_interface }}.conf"
+    register: wg_config
+    tags:
+      - wg-config
+
+  - name: Set private key fact2
+    set_fact:
+      private_key: "{{ wg_config['content'] | b64decode | regex_findall('PrivateKey = (.*)') | first }}"
+    tags:
+      - wg-config
+  when: config_file_stat.stat.exists
+
+- name: Derive WireGuard public key
+  shell: "echo '{{ private_key }}' | wg pubkey" # noqa 306
+  register: wg_public_key_result
+  changed_when: false
+  tags:
+    - wg-config
+
+- name: Set public key fact
+  set_fact:
+    public_key: "{{ wg_public_key_result.stdout }}"
+  tags:
+    - wg-config
+
+- name: Create WireGuard configuration directory
+  file:
+    dest: "{{ wireguard_remote_directory }}"
+    state: directory
+    mode: 0700
+  tags:
+    - wg-config
+
+# to finish this, roamers must reconnect with new dns, and bang/prime
+# need to reconfig when roamers changed
+- name: adjust roamers
+  set_fact:
+    plus_is_away: true
+    note8_is_away: true
+  tags:
+    - wg-config
+    
+- name: Generate WireGuard configuration file
+  template:
+    src: wg.conf.j2
+    dest: "{{ wireguard_remote_directory }}/{{ wireguard_interface }}.conf"
+    owner: root
+    group: root
+    mode: 0600
+  tags:
+    - wg-config
+  notify:
+    - restart wireguard
+
+- name: Check if reload-module-on-update is set
+  stat:
+    path: "{{ wireguard_remote_directory }}/.reload-module-on-update"
+  register: reload_module_on_update
+  tags:
+    - wg-config
+
+- name: Set WireGuard reload-module-on-update
+  file:
+    dest: "{{ wireguard_remote_directory }}/.reload-module-on-update"
+    state: touch
+  when: not reload_module_on_update.stat.exists
+  tags:
+    - wg-config
+
+- name: Start and enable WireGuard service
+  service:
+    name: "wg-quick@{{ wireguard_interface }}"
+    state: started
+    enabled: yes
+  tags:
+    - wg-svc
+    - wg-config
+

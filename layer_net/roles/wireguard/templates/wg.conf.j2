@@ -1,0 +1,104 @@
+#jinja2: lstrip_blocks:"True",trim_blocks:"True"
+[Interface]
+# {{ inventory_hostname }}
+Address = {{hostvars[inventory_hostname].wireguard_address}}/24
+PrivateKey = {{private_key}}
+ListenPort = {{wireguard_port}}
+{% if hostvars[inventory_hostname].wireguard_dns is defined %}
+DNS = {{hostvars[inventory_hostname].wireguard_dns}}
+{% endif %}
+{% if hostvars[inventory_hostname].wireguard_fwmark is defined %}
+FwMark = {{hostvars[inventory_hostname].wireguard_fwmark}}
+{% endif %}
+{% if hostvars[inventory_hostname].wireguard_mtu is defined %}
+MTU = {{hostvars[inventory_hostname].wireguard_mtu}}
+{% endif %}
+{% if hostvars[inventory_hostname].wireguard_table is defined %}
+Table = {{hostvars[inventory_hostname].wireguard_table}}
+{% endif %}
+{% if hostvars[inventory_hostname].wireguard_preup is defined %}
+PreUp = {{hostvars[inventory_hostname].wireguard_preup}}
+{% endif %}
+{% if hostvars[inventory_hostname].wireguard_predown is defined %}
+PreDown = {{hostvars[inventory_hostname].wireguard_predown}}
+{% endif %}
+{% if hostvars[inventory_hostname].wireguard_postup is defined %}
+PostUp = {{hostvars[inventory_hostname].wireguard_postup}}
+{% endif %}
+{% if hostvars[inventory_hostname].wireguard_postdown is defined %}
+PostDown = {{hostvars[inventory_hostname].wireguard_postdown}}
+{% endif %}
+{% if hostvars[inventory_hostname].wireguard_save_config is defined %}
+SaveConfig = true
+{% endif %}
+
+
+{% for host in ansible_play_hosts %}
+  {% if host != inventory_hostname %}
+    {% if inventory_hostname == 'bang' or host == 'bang' or (hostvars[host].net == hostvars[inventory_hostname].net and hostvars[host].net in ['wired', 'wifi']) %}
+      {% if 'public_key' not in hostvars[host] %}
+        # {{host}} has no public_key- skipping
+        
+      {% else %}
+        [Peer]
+        # {{inventory_hostname}} -> {{host}}
+        PublicKey = {{hostvars[host].public_key}}
+    
+        {% if host == 'bang' %}
+          AllowedIPs = 10.5.0.0/24
+          {% if inventory_hostname == 'prime' %}
+            # prime -> bang
+            # no endpoint
+          {% else %}
+            # <home or roam> -> bang
+            Endpoint = bigasterisk.com:{{wireguard_port}}  # changes with dns
+          {% endif %}
+        {% elif host == 'prime' %}
+          # bang -> prime
+          AllowedIPs = 10.5.0.0/24
+          Endpoint = public.bigasterisk.com:{{wireguard_port}}
+          {% if inventory_hostname == 'bang' %}
+            PersistentKeepalive = 50
+          {% endif %}
+        {% elif inventory_hostname == 'bang' and host != 'prime' %}
+          # bang -> <home or roam>
+          AllowedIPs = {{hostvars[host].wireguard_address}}/32
+          Endpoint = {{host}}:{{wireguard_port}}
+        {% elif hostvars[host].net == hostvars[inventory_hostname].net %}
+          # {{hostvars[host].net}} <-> {{hostvars[inventory_hostname].net}}
+          AllowedIPs = {{hostvars[host].wireguard_address}}/32
+          Endpoint = {{host}}:{{wireguard_port}}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+{% if inventory_hostname == 'prime' and plus_is_away %}
+[Peer]
+# plus (away)
+PublicKey = tH2og4BbXaH6BrHSBd73Fx1XT0DxR8vjQxjqHFa913A=
+AllowedIPs = 10.5.0.110/32
+{% endif %}
+
+{% if inventory_hostname == 'bang' and not plus_is_away %}
+[Peer]
+# plus (at home)
+PublicKey = tH2og4BbXaH6BrHSBd73Fx1XT0DxR8vjQxjqHFa913A=
+AllowedIPs = 10.5.0.110/32
+{% endif %}
+
+{% if inventory_hostname == 'prime' and note8_is_away %}
+[Peer]
+# drew-note8 (away)
+PublicKey = QMgx4cmuUTfJ7RH4Q46b54tSQl4eISOmdEney17fnE8=
+AllowedIPs = 10.5.0.112/32
+{% endif %}
+
+{% if inventory_hostname == 'bang' and not note8_is_away %}
+[Peer]
+# drew-note8 (at home)
+PublicKey = QMgx4cmuUTfJ7RH4Q46b54tSQl4eISOmdEney17fnE8=
+AllowedIPs = 10.5.0.112/32
+{% endif %}
+

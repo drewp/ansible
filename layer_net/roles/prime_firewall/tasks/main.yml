@@ -1,34 +1,36 @@
 ---
 - apt: pkg=ufw state=present
 
-# here we'd clear existing rules but i'm scared to lose my ansible connection
-  
-- ufw: rule=allow proto=tcp to_port=ssh
-- ufw: rule=allow proto=tcp to_port=http
-- ufw: rule=allow proto=tcp to_port=https
-- ufw: rule=allow proto=tcp to_port=smtp
-- ufw: rule=allow proto=tcp to_port=imaps
-- ufw: rule=allow to_port=openvpn
+- ufw: state=reset  
+# don't die now, or we'll be left open
+
+- ufw: rule=allow proto=udp to_port=1195 comment=wireguard
+- ufw: rule=allow proto=tcp to_port=1195 comment="socat to wireguard"
+- ufw: rule=allow proto=tcp to_port=ssh comment=ssh
+- ufw: rule=allow proto=tcp to_port=http comment=http
+- ufw: rule=allow proto=tcp to_port=https comment=https
+- ufw: rule=allow proto=tcp to_port=smtp comment=smtp
+- ufw: rule=allow proto=tcp to_port=imaps comment=imaps
 
 #- name: mqtt
 #  ufw: rule=allow to_port=1883
 
-- name: bling openvpn
-  ufw: rule=allow to_port=1195
+- name: internal, wireguard
+  ufw: rule=allow from_ip=10.5.0.0/24 comment="internal wireguard"
 
-- name: cjdns
-  ufw: rule=allow to_port=9878
+#- name: internal wireguard by interface- should be redundant
+#  ufw: rule=allow interface=wg0 direction=out comment="internal wireguard"
 
-- name: internal
-  ufw: rule=allow from_ip=10.3.0.0/24
+- name: internal, wireguard
+#  ufw: rule=allow interface=wg0 direction=in comment="internal wireguard"
+  ufw: default=allow route=yes
 
-- name: internal, bling openvpn
-  ufw: rule=allow from_ip=10.5.0.0/24
-
-- name: smtp send from cjdns
-  ufw: rule=allow proto=tcp to_port=587 
+- name: smtp send from openvpn?
+  ufw: rule=allow proto=tcp to_port=587 comment="MSA incoming mail"
 
 # also one in roles/minecraft (at least)
+
+- ufw: default=deny route=no
 
 - ufw: state=enabled
 
