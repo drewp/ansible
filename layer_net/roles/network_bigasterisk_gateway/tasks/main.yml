@@ -81,7 +81,7 @@
   tags: ['nfs']
 - copy: dest=/etc/exports content="/var/cache/photo dash(sync,rw,no_subtree_check) slash(sync,rw,no_subtree_check)\n"
   tags: ['nfs']
-
+# (notify systemctl restart nfs-server.service)
 
 # homephone is 
 # 10.2.0.40 from 00:0b:82:c7:a8:cb on ens6 (out of date)

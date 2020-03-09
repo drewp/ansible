@@ -1,10 +1,12 @@
 from invoke import task
 
+# this is hard to use on bang without 'invoke' present:
+#   sudo pip3 install -U invoke
+
 # sudo inv playbook --hosts=dash
 
 @task
 def playbook(ctx, hosts='all', _args=None):
-
     if _args is None:
         _args = "-l %s" % hosts
 

@@ -5,9 +5,7 @@
 
 - apt: pkg=dirmngr
   name: dirmngr
-- set_fact: rel=stretch
 - set_fact: rel=buster
-  when: inventory_hostname in ['frontdoor','kitchen','workshop','piedmont']
   
 - copy: content="deb http://mirrordirector.raspbian.org/raspbian/ {{rel}} main contrib non-free rpi\ndeb http://security.debian.org/ {{rel}}/updates main contrib non-free rpi\ndeb http://archive.raspberrypi.org/debian {{rel}} main" dest=/etc/apt/sources.list
 - apt_key: url=https://ftp-master.debian.org/keys/archive-key-8.asc
@@ -36,6 +34,7 @@
 
 - apt: pkg=build-essential update_cache=yes
   name: "apt build-essential"
+  tags: ['apt_update']
 #- apt: pkg=libffi-dev 
 - apt:
     pkg:

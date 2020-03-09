@@ -21,7 +21,7 @@
     
 - apt_repository: repo='deb [arch=amd64] https://dl-ssl.google.com/linux/chrome/deb/ stable main'
   name: chrome repo
-  when: ansible_distribution != "Debian"
+  when: ansible_distribution != "Debian" and ansible_hostname in ["dash", "plus"]
 
 - apt_repository: repo='ppa:thomas-schiex/blender'
   name: blender repo
@@ -29,5 +29,5 @@
 
 - apt_repository: repo='ppa:ansible/ansible'
   name: ansible repo
-  when: ansible_hostname in "bang"
+  when: ansible_hostname in ["bang"]
   

@@ -2,12 +2,16 @@
 
 # used on pi and non-pi
 
+- file: path=/tmp/common_users.bogus state=absent
+  name: common_users
+
 # raspbian took 1000 for 'pi' group, but drewp is rarely used on pi
 # setups so hopefully it won't matter much that drew group has a
 # different id.
 - set_fact: drewp_gid={{1000 if ansible_distribution != "Debian" else 501}}
   tags: ['users']
 - set_fact: drewp_uid={{501 if inventory_hostname != "dot" else 1000}}
+  tags: ['users']
 
 - group: name=fuse
 - group: name=spi
@@ -18,8 +22,11 @@
 - group: name=docker
 
 - group: name=drewp gid={{drewp_gid}}
+  name: drewp_gid
   tags: ['users']
 - user: name=drewp uid={{drewp_uid}} group=drewp groups=lp,adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,netdev,i2c,input,spi,gpio,fuse,docker
+  name: drewp_uid
+  when: inventory_hostname != "dot"
   tags: ['users']
 - file: path=/home/drewp state=directory owner=drewp group=drewp
   tags: ['users']
