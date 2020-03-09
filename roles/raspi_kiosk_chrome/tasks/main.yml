@@ -9,10 +9,37 @@
 - apt: pkg=lightdm state=absent
 - apt: pkg=nodm
 
-- apt: pkg=chromium state=absent
 - apt: pkg=chromium-browser
-  
-- copy: dest=/etc/slim.conf src=slim.conf
+- apt: pkg=chromium  state=absent
+  name: 'get chrome 78'
 
-- service: name=slim status=restarted
-  
+- lineinfile: path=/etc/default/nodm regexp="NODM_USER" line="NODM_USER=drewp"
+
+- set_fact: winsize=""
+- set_fact: winsize="--window-position=0,0 --window-size=1580,1190"
+  when: inventory_hostname == 'piedmont'
+- copy: dest=/home/drewp/.xsession content="#!/bin/sh\nexec chromium-browser {{winsize}} --disable-pinch --overscroll-history-navigation=0 --app={{url}}\n"
+
+- service: name=nodm enabled=yes state=restarted
+
+#- cron: user=root name=x_restart job="systemctl restart nodm" hour=4 minute=35
+
+- file: path=/home/drewp/.cache/chromium/Default state=directory owner=drewp
+- file: path=/home/drewp/.cache/chromium/Default/Cache state=absent
+  name: chrome cache on tmpfs
+- file: path=/home/drewp/.cache/chromium/Default/Cache state=link src=/tmp
+
+# https://ubuntuforums.org/showthread.php?t=1946716&p=11794926#post11794926 for how to redir .xsession-errors
+
+# After all that, nodm still doesn't start. It just says 'Active:
+# inactive (dead)' and doesn't appear in any logs I've found.
+- lineinfile: path=/etc/rc.local line="systemctl start nodm" insertbefore="exit 0"
+  name: fix nodm startup
+
+# cmd_nodm_restart.conf
+#[program:cmd_nodm_restart]
+#command=systemctl restart nodm
+#user=root
+#autostart=false
+#autorestart=false
+
