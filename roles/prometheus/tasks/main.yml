@@ -1,0 +1,32 @@
+---
+
+- file: path=/opt/prometheus owner=nobody state=directory
+
+- template:
+    dest=/opt/prometheus/prometheus.yml
+    src=prometheus.yml
+
+- name: container
+  docker_container:
+    name: prometheus
+    image: prom/prometheus:v2.17.1
+    volumes:
+      - /opt/prometheus:/prometheus
+      - /opt/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    auto_remove: yes
+    cleanup: yes
+    dns_servers:
+      - 10.2.0.1
+    dns_search_domains:
+      - bigasterisk.com
+    published_ports: 9092:9090
+    command:
+      - --web.external-url=https://bigasterisk.com/prometheus/
+      - --web.route-prefix=/
+      - --storage.tsdb.path=1y
+      
+    
+- template:
+    dest=/var/lib/openid_proxy.d/prometheus.n3
+    src=openid_proxy_statements.n3.j2
+  notify: openid_proxy restart    

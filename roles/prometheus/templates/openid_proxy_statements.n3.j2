@@ -1,0 +1,13 @@
+@prefix : <http://bigasterisk.com/openid_proxy#> .
+@prefix site: <http://bigasterisk.com/openidProxySite/> .
+@prefix acl: <http://www.w3.org/ns/auth/acl#> .
+
+site:prometheus
+  :host "bigasterisk.com";
+  :requestPrefix "/prometheus/";
+  :hasLocalLoginPaths true;
+  :proxyUrlPrefix "http://bang.bigasterisk.com:9092/" .
+
+:admin1 acl:accessTo site:prometheus .
+:admin2 acl:accessTo site:prometheus .
+

@@ -76,6 +76,8 @@
     - {role: mosquitto, tags: ['mosquitto'], pport: 1883, id: 'public'}
     - {role: mosquitto, tags: ['mosquitto'], pport: 10010, id: 'frontDoor'}
     - {role: ntopng, tags: ['ntop']}
+    - {role: owncloud_server, tags: ['owncloud']}
+    - {role: prometheus, tags: ['prometheus']}
   tasks:
     - apt: pkg=dphys-swapfile state=absent
       tags: ['swap']
