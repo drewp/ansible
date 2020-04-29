@@ -16,7 +16,13 @@
   name: docker_io
   notify: "restart docker"
 
-- copy: dest=/etc/docker/daemon.json content='{ "insecure-registries":["bang6:5000","bang:5000"] }'
+- command: systemctl unmask docker
+  name: unmask_docker
+
+- service: state=started name=docker
+  name: docker_started
+  
+- copy: dest=/etc/docker/daemon.json content='{ "experimental":true, "insecure-registries":["bang6:5000", "bang5:5000","bang:5000"] }'
   name: docker_registry_config
   notify: "restart docker"
 
