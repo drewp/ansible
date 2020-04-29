@@ -12,6 +12,7 @@
 - apt_key: url=https://ftp-master.debian.org/keys/archive-key-8-security.asc
 - apt_key: url=https://ftp-master.debian.org/keys/archive-key-9-security.asc
 - apt_key: keyserver=keyserver.ubuntu.com id=8B48AD6246925553
+  when: ansible_distribution != "Debian"
 - file: path=/etc/apt/sources.list.d/raspi.list state=absent
 - apt: pkg=apt-utils
 
