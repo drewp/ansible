@@ -47,3 +47,7 @@ def run_hosts(ctx):
 @task
 def ppa(ctx):
     playbook(ctx, _args='-l all -t ppa')
+
+@task
+def users(ctx):
+    playbook(ctx, _args='-l all -t bigasterisk_users')
