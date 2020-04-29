@@ -6,13 +6,17 @@
   name: "apt resolvconf"
   when: ansible_hostname != 'bang'
 - copy: dest="/etc/resolvconf/resolv.conf.d/base" content="nameserver 10.2.0.1\ndomain bigasterisk.com\n"
+  name: "resolveconf base"
   when: ansible_hostname != 'bang'
 - command: resolvconf -u
+  name: update resolvconf
   when: ansible_hostname != 'bang'
   
 - apt: pkg=resolvconf state=absent
+  name: no resolvconf on bang
   when: ansible_hostname == 'bang'
 - copy: dest="/etc/resolv.conf" content="nameserver 10.2.0.1\ndomain bigasterisk.com\n"
+  name: custom resolv.conf on bang
   when: ansible_hostname == 'bang'
 
 

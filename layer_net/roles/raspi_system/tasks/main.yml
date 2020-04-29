@@ -15,7 +15,9 @@
 - file: path=/etc/apt/sources.list.d/raspi.list state=absent
 - apt: pkg=apt-utils
 
-  
+# plus this, for chromium?
+#deb http://security.debian.org/debian-security buster/updates main 
+
 #- copy: dest="/etc/network/interfaces.d/wlan1" content="auto wlx0087341d93e7\n iface wlx0087341d93e7 inet dhcp\n  post-up iw wlx0087341d93e7 set power_save off\n auto wlan0\n iface wlan0 inet manual\n post-up /sbin/ifdown wlan0\n "
 #  when: ansible_hostname == "frontdoor"
   
