@@ -51,3 +51,7 @@
 
 - group: name=drewnote gid=1009
 - user: name=drewnote uid=1009
+
+- group: name=prometheus gid=1010
+- user: name=prometheus uid=1010
+  
