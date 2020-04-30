@@ -1,13 +1,8 @@
 ---
 - set_fact: job=telegraf image_tag="latest"
 - set_fact: base_image_platform="{{'pi' if ansible_architecture=='armv7l' else 'x86'}}"
-- set_fact: image=bang6:5000/{{job}}_{{base_image_platform}}:{{image_tag}}
-- docker_image: name={{image}} force=yes
-
-
-- service: name=collectd enabled=no state=stopped
-  when: "ansible_hostname in ['bang', 'dash',  'prime']"
-  name: "no collectd"
+- set_fact: image={{job}}_{{base_image_platform}}
+- docker_image_local: image={{image}} tag={{image_tag}}
 
 # Errors on new boxes who never had that service. Ansible, why?
 #- service: name=telegraf enabled=no state=stopped
@@ -17,9 +12,30 @@
     - reload telegraf
   
 - supervisor_process_mod:
-    name=telegraf
-    user=root
-    command="docker run --rm --name telegraf --net=host --pid=host --hostname={{ansible_hostname}} --cap-add=SYS_PTRACE --security-opt=apparmor=unconfined -e HOST_PROC=/rootfs/proc -e HOST_SYS=/rootfs/sys -e HOST_ETC=/rootfs/etc -v /opt/telegraf.conf:/opt/telegraf.conf:ro -v /var/run/docker.sock:/var/run/docker.sock:ro -v /sys:/rootfs/sys:ro -v /proc:/rootfs/proc:ro -v /etc:/rootfs/etc:ro {{image}} /usr/bin/telegraf --config /opt/telegraf.conf"
+    name: telegraf
+    user: root
+    command: >
+      docker run 
+      --rm 
+      --name telegraf
+      --pid=host
+      --dns 10.2.0.1 
+      --dns-search bigasterisk.com 
+      --hostname={{ansible_hostname}} 
+      --cap-add=SYS_PTRACE 
+      --security-opt=apparmor=unconfined
+      {{'--network prometheus_on_bang' if True else ''}}
+      -e HOST_PROC=/rootfs/proc 
+      -e HOST_SYS=/rootfs/sys 
+      -e HOST_ETC=/rootfs/etc 
+      -v /etc:/rootfs/etc:ro 
+      -v /opt/telegraf.conf:/opt/telegraf.conf:ro 
+      -v /proc:/rootfs/proc:ro 
+      -v /sys:/rootfs/sys:ro 
+      -v /var/run/docker.sock:/var/run/docker.sock:ro 
+      -p 9273:9273 
+      bang5:5000/{{image}} 
+      /usr/bin/telegraf --config /opt/telegraf.conf
   notify:
     - supervisord update
   

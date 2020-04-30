@@ -5,14 +5,19 @@
 - template:
     dest=/opt/prometheus/prometheus.yml
     src=prometheus.yml
+  notify: prometheus reconfig
 
 - name: container
   docker_container:
     name: prometheus
     image: prom/prometheus:v2.17.1
+    networks:
+      - name: prometheus_on_bang    
     volumes:
       - /opt/prometheus:/prometheus
-      - /opt/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /opt/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - /etc/hosts:/etc/hosts:ro
+
     auto_remove: yes
     cleanup: yes
     dns_servers:
@@ -23,6 +28,7 @@
     command:
       - --web.external-url=https://bigasterisk.com/prometheus/
       - --web.route-prefix=/
+      - --web.enable-lifecycle
       - --storage.tsdb.path=1y
       
     
@@ -30,3 +36,6 @@
     dest=/var/lib/openid_proxy.d/prometheus.n3
     src=openid_proxy_statements.n3.j2
   notify: openid_proxy restart    
+
+- docker_network:
+    name: prometheus_on_bang
