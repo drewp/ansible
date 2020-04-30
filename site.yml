@@ -38,6 +38,7 @@
     - {role: postfix, tags: ['postfix']}
     - {role: dovecot, tags: ['dovecot']}
     - {role: map_mqtt_receiver, tags: ['map_mqtt_receiver']}
+    - {role: telegraf, tags: ['telegraf']}
   tasks:
     - hostname: name=prime
 
@@ -59,9 +60,9 @@
     - {role: nginx_ssl_certs, tags: ['nginx_ssl_certs']}
     - {role: photo, tags: ['photo']}
     - {role: photo_worker, tags: ['photo_worker']}
-    - {role: ruler, tags: ['ruler']}
-    - {role: ruler_client, tags: ['ruler']}
-    - {role: ruler_server, tags: ['ruler']}
+#    - {role: ruler, tags: ['ruler']}
+#    - {role: ruler_client, tags: ['ruler']}
+#    - {role: ruler_server, tags: ['ruler']}
     - {role: shortener, tags: ['shortener']}
     - {role: influxdb, tags: ['influxdb']}
     - {role: grafana, tags: ['grafana']}
@@ -69,10 +70,6 @@
     - {role: zfs_monitorable, tags: ['zfs_monitorable']}
     - {role: zfs_auto_snapshot, tags: ['zfs_auto_snapshot']}
     - {role: etcd, tags: ['etcd']}
-    - {role: webcam, tags: ['webcam'], camName: 'livingRoom', internalPort: 9016, camArgs: '--dafang http://livingcam/ --location livingRoom' }
-    - {role: webcam, tags: ['webcam'], camName: 'garden', internalPort: 9017, camArgs: '--dafang http://gardencam/ --location garden' }
-    - {role: webcam, tags: ['webcam'], camName: 'baby', internalPort: 10017, camArgs: '--dafang http://babycam/ --location baby' }
-    - {role: webcam, tags: ['webcam'], camName: 'bed', internalPort: 10019, camArgs: '--dafang http://bedcam/ --location bed' }
     - {role: mosquitto, tags: ['mosquitto'], pport: 1883, id: 'public'}
     - {role: mosquitto, tags: ['mosquitto'], pport: 10010, id: 'frontDoor'}
     - {role: ntopng, tags: ['ntop']}
@@ -96,11 +93,11 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: cups, tags: ['cups']}
     - {role: mail_relay, tags: ['mail_relay']}
     - {role: photo_worker, tags: ['photo_worker']}
-    - {role: ruler_client, tags: ['ruler']}
-    - {role: ruler_server, tags: ['ruler']}
+#    - {role: cups, tags: ['cups']}
+#    - {role: ruler_client, tags: ['ruler']}
+#    - {role: ruler_server, tags: ['ruler']}
   tasks:
     - supervisor_process_mod:
         name=picinput_11008
@@ -131,12 +128,6 @@
   roles:
     - {role: laptop_x11, tags: ['laptop_x11']}
     
-- hosts: dot
-  handlers:
-    - include: handlers/main.yml
-  roles:
-    - { role: webcam, tags: ['webcam'], camName: 'dotScreen', internalPort: 9021, camArgs: '--screen --location dotScreen' }
-
 - hosts: with_speakers
   handlers:
     - include: handlers/main.yml
@@ -153,11 +144,11 @@
     - {role: raspi_shell, tags: ['raspi_shell']}
     - {role: telegraf, tags: ['telegraf']}
  
-- hosts: with_ble
-  handlers:
-    - include: handlers/main.yml
-  roles:
-    - {role: beacon_scan, tags: ['beacon_scan']}  
+#- hosts: with_ble
+#  handlers:
+#    - include: handlers/main.yml
+#  roles:
+#    - {role: beacon_scan, tags: ['beacon_scan']}  
     
 - hosts: with_x11
   handlers:
@@ -192,10 +183,10 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono"}
     - {role: raspi_airport_speaker, tags: ['raspi_speaker']}
     - {role: raspi_lirc, tags: ['raspi_lirc'], gpio_in_pin: 23, gpio_out_pin: 22}
-    - {role: raspi_icecast, tags: ['raspi_icecast'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono", ice_mount: "mic"}
+    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.mono-fallback.2"}
+    - {role: raspi_icecast,      tags: ['raspi_icecast'],      pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.mono-fallback.2", ice_mount: "mic"}
 
 - hosts: changing
   handlers:
@@ -221,15 +212,15 @@
   handlers:
     - include: handlers/main.yml
   roles:
-    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono"}
-    - {role: raspi_icecast, tags: ['raspi_icecast'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono", ice_mount: "mic"}
+    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.mono-fallback"}
+    - {role: raspi_icecast,      tags: ['raspi_icecast'],      pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.mono-fallback", ice_mount: "mic"}
 
 - hosts: kitchen
   handlers:
     - include: handlers/main.yml
   roles:
     - {role: pulse, tags: ['pulse']}
-    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono"}
+    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.mono-fallback"}
 #    - {role: raspi_lirc, tags: ['raspi_lirc'], gpio_in_pin: 18, gpio_out_pin: 22}  # install not working atm
     - {role: google_assistant, tags: ['google_assistant']}
     
@@ -238,5 +229,5 @@
     - include: handlers/main.yml
   roles:
     - {role: raspi_airport_speaker, tags: ['raspi_speaker']}
-    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono"}
-    - {role: raspi_icecast, tags: ['raspi_icecast'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.analog-mono", ice_mount: "mic"}
+    - {role: audio_input_levels, tags: ['audio_input_levels'], pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.mono-fallback"}
+    - {role: raspi_icecast,      tags: ['raspi_icecast'],      pulse_input: "alsa_input.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00.mono-fallback", ice_mount: "mic"}
