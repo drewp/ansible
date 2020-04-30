@@ -78,6 +78,7 @@
     - {role: ntopng, tags: ['ntop']}
     - {role: owncloud_server, tags: ['owncloud']}
     - {role: prometheus, tags: ['prometheus']}
+    - {role: redis, tags: ['redis']}
   tasks:
     - apt: pkg=dphys-swapfile state=absent
       tags: ['swap']

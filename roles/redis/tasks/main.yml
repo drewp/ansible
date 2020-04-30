@@ -1,0 +1,20 @@
+---
+
+- file: path=/opt/redis owner=nobody state=directory
+- copy: dest=/opt/redis/redis.conf src=redis.conf
+  
+- name: container
+  docker_container:
+    name: redis
+    image: redis:5.0.9
+    volumes:
+      - /opt/redis:/data
+    auto_remove: yes
+    cleanup: yes
+    dns_servers:
+      - 10.2.0.1
+    dns_search_domains:
+      - bigasterisk.com
+    published_ports: 6379:6379
+    command:
+      - /data/redis.conf
