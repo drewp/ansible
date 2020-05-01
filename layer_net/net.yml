@@ -44,6 +44,7 @@
     - {role: docker_registry, tags: ['docker_registry']}
 #    - {role: openvpn_server, tags: ['openvpn_server'], vpn_net: 'vpn_home'}
     - {role: network_bigasterisk_gateway, tags: ['network_bigasterisk_gateway']}
+    - {role: bang_firewall, tags: ['bang_firewall']}
     - {role: dnsmasq, tags: ['dnsmasq']}
     
 - hosts: prime
