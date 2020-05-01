@@ -36,8 +36,8 @@ ufw allow from ${DOCKER_NET} comment 'from docker'
 ufw deny in on ${WIFI} to ${BANG_10_2} # with exceptions above
 
 # part 3
-ufw route deny in on ${EXT} # maasquerade is in another file
-ufw route deny in on ${WIFI}
+ufw route deny in on ${EXT} comment 'protect from outside'
+ufw route deny in on ${WIFI} out on ${INT} comment 'protect 10.1'
 
 ufw route allow in on ${INT}
 ufw allow in on ${INT} to any
